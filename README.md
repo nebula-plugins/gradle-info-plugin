@@ -1,4 +1,3 @@
-gradle-nothing-plugin
+Nebula Nothing Plugin
 =====================
-
-Literally does nothing. Used for testing gradle-plugin-plugin
+Just does nothing. But does serve as a decent template for projects.
