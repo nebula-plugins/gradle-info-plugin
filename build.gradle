@@ -10,6 +10,10 @@ apply plugin: 'nebula-sign'
 dependencies {
 }
 
+task printProperties << {
+    project.properties.each { println "Prop: ${it}" }
+}
+
 def pomConfig = {
     inceptionYear '2014'
 
