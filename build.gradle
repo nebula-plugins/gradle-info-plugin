@@ -5,6 +5,7 @@ buildscript {
 
 description 'Gradle plugin to do nothing'
 apply plugin: 'nebula-plugin'
+apply plugin: 'nebula-sign'
 
 dependencies {
 }
