@@ -1,6 +1,6 @@
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.9.2' }
+    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.9.3' }
 }
 
 description 'Gradle plugin to do nothing'
@@ -8,10 +8,6 @@ apply plugin: 'nebula-plugin'
 apply plugin: 'nebula-sign'
 
 dependencies {
-}
-
-task printProperties << {
-    project.properties.each { println "Prop: ${it}" }
 }
 
 def pomConfig = {
