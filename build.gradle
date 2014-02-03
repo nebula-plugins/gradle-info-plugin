@@ -1,11 +1,10 @@
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.9.6-SNAPSHOT' }
+    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.9.+' }
 }
 
-description 'Gradle plugin to do nothing'
+description 'Gradle plugin collect and provide information about the environment'
 apply plugin: 'nebula-plugin'
-apply plugin: 'nebula-sign'
 
 dependencies {
 }
