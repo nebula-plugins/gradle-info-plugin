@@ -86,7 +86,21 @@ apply plugin: 'info-scm'
 ```
 
 Detects the current source control being used and reports upon the repository and where in the source the project is.
-Git and Perforce are currently supported.
+Git and Perforce are currently supported. Since real java libraries are used to determine these values but we don't want
+to pollute too many people with Perforce, all the plugin implementations are optional. You'll have to add a dependency to
+your specific SCM implementation. Technically, these are not optional right now, but they will be in the future.
+
+```
+buildscript {
+    repositories { jcenter() }
+    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:1.9.+' }
+
+    dependencies { classpath 'com.perforce:p4java:2012.3.551082' }
+    // or
+    dependencies { classpath 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r' }
+}
+```
+
 
 info-scm Plugin (Collector)
 --------------
