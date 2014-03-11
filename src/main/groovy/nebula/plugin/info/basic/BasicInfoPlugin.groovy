@@ -5,6 +5,7 @@ import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import static java.util.jar.Attributes.Name.*
 /**
  * Simple provider, for common fields, like build status. Current values:
  *
@@ -23,10 +24,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
         // All fields are known upfront, so we pump these in immediately.
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            manifestPlugin.add('Manifest-Version', '1.0') // Java Standard
+            manifestPlugin.add(MANIFEST_VERSION.toString(), '1.0') // Java Standard
+            manifestPlugin.add(IMPLEMENTATION_TITLE.toString()) { "${project.group}#${project.name};${project.version}" } // !${jarTask.name}(jar)"
+            manifestPlugin.add(IMPLEMENTATION_VERSION.toString()) { project.version }
             manifestPlugin.add('Built-Status') { project.status } // Could be promoted, so this is the actual status necessarily
-            manifestPlugin.add('Implementation-Title') { "${project.group}#${project.name};${project.version}" } // !${jarTask.name}(jar)"
-            manifestPlugin.add('Implementation-Version') { project.version }
             manifestPlugin.add('Built-By', System.getProperty('user.name'))
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
