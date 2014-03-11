@@ -20,6 +20,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     void apply(Project project) {
         this.project = project
 
+        // TODO Delay findProvider() as long as possible
         providers = [new GitScmProvider(), new PerforceScmProvider(), new UnknownScmProvider()]
         selectedProvider = findProvider()
 

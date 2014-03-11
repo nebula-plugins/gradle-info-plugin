@@ -22,10 +22,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     void apply(Project project) {
 
         // All fields are known upfront, so we pump these in immediately.
-        project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
+        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add('Manifest-Version', '1.0') // Java Standard
             manifestPlugin.add('Built-Status') { project.status } // Could be promoted, so this is the actual status necessarily
-            manifestPlugin.add('Implementation-Title', { "${project.group}#${project.name};${project.version}" } ) // !${jarTask.name}(jar)"
+            manifestPlugin.add('Implementation-Title') { "${project.group}#${project.name};${project.version}" } // !${jarTask.name}(jar)"
             manifestPlugin.add('Implementation-Version') { project.version }
             manifestPlugin.add('Built-By', System.getProperty('user.name'))
 

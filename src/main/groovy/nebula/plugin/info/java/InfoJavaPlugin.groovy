@@ -28,8 +28,8 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
                 JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention)
 
                 project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-                    manifestPlugin.add(TARGET_PROPERTY, javaConvention.targetCompatibility)
-                    manifestPlugin.add(SOURCE_PROPERTY, javaConvention.sourceCompatibility)
+                    manifestPlugin.add(TARGET_PROPERTY, { javaConvention.targetCompatibility } )
+                    manifestPlugin.add(SOURCE_PROPERTY, { javaConvention.sourceCompatibility } )
                 }
             }
         }
