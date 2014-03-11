@@ -19,6 +19,9 @@ class InfoJarManifestPlugin implements Plugin<Project>, InfoReporterPlugin {
                 def manifestTask = project.tasks.create("${jarTask.name}Manifest", ApplyManifest)
                 manifestTask.jarTask = jarTask
 
+                // Technically, the jar task depends on the manifest task (even though we need it to modify the manifest)
+                jarTask.dependsOn manifestTask
+
                 // Gradle can only expose outputs as Files, so we need to piggyback into the one we're modifying
                 manifestTask.jarBeingModified = jarTask.archivePath
             }

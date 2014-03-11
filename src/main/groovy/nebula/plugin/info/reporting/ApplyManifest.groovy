@@ -12,7 +12,7 @@ import org.gradle.api.tasks.bundling.Jar
  * the manifest alone even though some important piece has changed.
  */
 class ApplyManifest extends DefaultTask {
-    @Input
+    // @Input
     Jar jarTask
 
     @Input
