@@ -13,12 +13,29 @@ import static java.util.jar.Attributes.Name.*
  *     <li>Built-Status (project.status)</li>
  *     <li>Implementation-Title (project.group#project.name;project.version)</li>
  *     <li>Implementation-Version (project.version)</li>
- *     <li></li>
- *     <li></li>
- *     <li></li>
+ *     <li>Built-Status (project.status)</li>
+ *     <li>Built-By (user.name)</li>
+ *     <li>Build-Date</li>
+ *     <li>Gradle-Version (project.gradle.gradleVersion)</li>
+ * </ul>
  */
 class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
+    // Sample from commons-lang, and hence via Maven
+    // Manifest-Version: 1.0
+    // Ant-Version: Apache Ant 1.7.0
+    // Created-By: 1.5.0_13-119 (Apple Inc.)
+    // Package: org.apache.commons.lang
+    // Extension-Name: commons-lang
+    // Specification-Version: 2.4
+    // Specification-Vendor: Apache Software Foundation
+    // Specification-Title: Commons Lang
+    // Implementation-Version: 2.4
+    // Implementation-Vendor: Apache Software Foundation
+    // Implementation-Title: Commons Lang
+    // Implementation-Vendor-Id: org.apache
+    // X-Compile-Source-JDK: 1.3
+    // X-Compile-Target-JDK: 1.2
 
     void apply(Project project) {
 
@@ -32,6 +49,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
             manifestPlugin.add('Build-Date', new Date().format('yyyy-MM-dd_HH:mm:ss')).changing = true
+
+            manifestPlugin.add('Gradle-Version', { project.gradle.gradleVersion })
+
+            // TODO Include hostname
         }
     }
 }
