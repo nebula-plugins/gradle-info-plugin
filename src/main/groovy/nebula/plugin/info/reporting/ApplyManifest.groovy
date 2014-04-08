@@ -10,12 +10,15 @@ import org.gradle.api.tasks.bundling.Jar
 /**
  * Use ManifestHelper to create a manifest for the jar.  If we don't capture the input correctly, we could leave the
  * the manifest alone even though some important piece has changed.
+ *
+ * If we mark the jarTask as an @Input, we get a NotSerializableException. If we don't put an @Input on it
+ * then the task will only ever run once, even though we need to run every time the jar task is run, since
+ * we're configuring it. The logical conclusion is to not participate in the up-to-date check, by not having
+ * any Inputs or Outputs.
  */
 class ApplyManifest extends DefaultTask {
-    // @Input
     Jar jarTask
 
-    @Input
     Map<String, ?> getManifest() {
         InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin)
 
@@ -24,7 +27,6 @@ class ApplyManifest extends DefaultTask {
         return entireMap
     }
 
-    @OutputFile
     File jarBeingModified
 
     /**
