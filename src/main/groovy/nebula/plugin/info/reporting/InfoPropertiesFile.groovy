@@ -30,6 +30,8 @@ class InfoPropertiesFile extends ConventionTask {
         // Gather all values, in contrast to buildNonChangingManifest
         def attrs = basePlugin.buildManifest()
 
+        logger.info("Writing manifest values to ${getPropertiesFile()}")
+
         def manifestStr = attrs.collect { "${it.key}=${it.value}"}.join('\n')
         getPropertiesFile().text = manifestStr
     }

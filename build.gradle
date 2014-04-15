@@ -6,33 +6,16 @@ buildscript {
 description 'Gradle plugin collect and provide information about the environment'
 apply plugin: 'nebula-plugin'
 
+contacts {
+    'justin@halfempty.org' {
+        moniker 'Justin Ryan'
+        github 'quidryan'
+    }
+}
+
 dependencies {
     // TODO, make these optional
     compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
-}
-
-def pomConfig = {
-    inceptionYear '2014'
-
-    developers {
-        developer {
-            id 'quidryan'
-            name 'Justin Ryan'
-            email 'justin@halfempty.org'
-            roles{
-                role 'Developer'
-            }
-            timezone '-8'
-        }
-    }
-}
-
-import nebula.plugin.publishing.maven.NebulaBaseMavenPublishingPlugin
-plugins.withType(NebulaBaseMavenPublishingPlugin) {
-    withMavenPublication {
-        pom.withXml {
-            asNode().children().last() + pomConfig
-        }
-    }
+    testCompile 'com.netflix.nebula:nebula-test:1.9.5'
 }
