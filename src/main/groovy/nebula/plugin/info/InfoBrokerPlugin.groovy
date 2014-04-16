@@ -1,7 +1,6 @@
 package nebula.plugin.info
 
-import com.beust.jcommander.internal.Lists
-import com.google.common.base.Preconditions
+import com.google.common.collect.Lists
 import groovy.transform.Canonical
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
