@@ -1,6 +1,5 @@
 package nebula.plugin.info
 
-import com.google.common.collect.Lists
 import groovy.transform.Canonical
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
@@ -20,7 +19,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
     void apply(Project project) {
 
-        container = Lists.newArrayList()
+        container = new ArrayList<ManifestEntry>()
 
         // Leaving out for now. I find that the configure methods, when called this way, aren't being called.
         //project.getExtensions().add('manifest', container)
