@@ -17,15 +17,15 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        def result = runTasksSuccessfully('jar')
 
         then:
-        !wasUpToDate(':jarManifest')
+        !result.wasUpToDate(':jarManifest')
 
         when:
-        runTasksSuccessfully('jar')
+        def secondResult = runTasksSuccessfully('jar')
 
         then:
-        !wasUpToDate(':jarManifest')
+        !secondResult.wasUpToDate(':jarManifest')
     }
 }
