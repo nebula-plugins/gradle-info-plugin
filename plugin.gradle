@@ -19,3 +19,5 @@ dependencies {
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
     testCompile 'com.netflix.nebula:nebula-test:1.12.+'
 }
+
+createWrapper.gradleVersion='1.12'
