@@ -53,7 +53,7 @@ dependencies {
     compile localGroovy()
     compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
-    testCompile 'com.netflix.nebula:nebula-test:1.12.0'
+    testCompile 'com.netflix.nebula:nebula-test:1.12.0-SNAPSHOT'
 }
 
 task createWrapper(type: Wrapper) {
