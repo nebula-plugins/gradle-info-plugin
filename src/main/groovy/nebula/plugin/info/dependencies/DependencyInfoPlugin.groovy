@@ -3,75 +3,54 @@ package nebula.plugin.info.dependencies
 import nebula.plugin.info.InfoBrokerPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.ComponentMetadataDetails
 import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.ResolvableDependencies
-import org.gradle.api.artifacts.ResolvedArtifact
 import org.gradle.api.artifacts.ResolvedDependency
-import org.gradle.api.internal.artifacts.DefaultResolvedArtifact
-import org.gradle.api.internal.artifacts.DefaultResolvedDependency
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+import java.lang.reflect.Method
 
 /**
- * TODO Make configuration configurable
- * TODO NOt sure we should force the resolve the configuration, or react it.
+ * TODO Make configuration configurable via DSL
  */
 class DependencyInfoPlugin implements Plugin<Project> {
 
+    Logger logger = LoggerFactory.getLogger(DependencyInfoPlugin.class)
+
     String configurationName = 'runtime'
+
+    // TODO Eliminate need for a default status, we have the scheme and in this case we just want the largest one.
     public static final String DEFAULT_STATUS = 'release'
 
     def minimum(Configuration configuration) {
-        configuration.resolvedConfiguration.firstLevelModuleDependencies.each { ResolvedDependency resolvedDependency ->
-            println "Resolved: ${resolvedDependency}"
-            //println "Resolved: ${resolvedDependency.moduleArtifacts.iterator().next()}"
-        }
-        def miniumum = configuration.resolvedConfiguration.resolvedArtifacts.inject(DEFAULT_STATUS) { String minimumStatus, ResolvedArtifact artifact ->
-
-            if (artifact instanceof DefaultResolvedArtifact) {
-                def artifactDefault = (DefaultResolvedArtifact) artifact
-                //println ((DefaultResolvedArtifact) artifact).status
-                println "${artifactDefault.resolvedDependency}"
-                println "${artifactDefault.artifactSource}"
-                println "${artifactDefault.ownerSource}"
+        def minimum = configuration.resolvedConfiguration.firstLevelModuleDependencies.inject(DEFAULT_STATUS) { String minimumStatus, ResolvedDependency resolvedDependency ->
+            def minimumIdx = resolvedDependency.getStatusScheme().indexOf(minimumStatus)
+            def status = resolvedDependency.getStatus()
+            def statusIdx = resolvedDependency.getStatusScheme().indexOf(status)
+            if (statusIdx < minimumIdx) {
+                logger.debug("For ${resolvedDependency.module.id}, chosing ${status} over ${minimumStatus}")
+                return status
             } else {
-                println "Unable to look at status"
+                return minimumStatus
             }
-            return minimumStatus
         }
-        return miniumum
+        return minimum
     }
+
     @Override
     void apply(Project project) {
+        // A custom distribution is required to read the status of modules after resolution. Try to protect this plugin
+        // against it's use outside the custom distribution
+        boolean supportsStatus = ResolvedDependency.class.declaredMethods.any { Method m -> m.getName().equals("getStatusScheme") }
 
-        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin broker ->
-            project.configurations.matching { it.name == configurationName }.all { Configuration configuration ->
-                broker.add('Status-Minimum') {
-                    // TODO My worry is that this will be forced too early, put check in afterResolve
-                    println configuration.dump()
-                    return minimum(configuration)
+        if(supportsStatus) {
+            project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin broker ->
+                project.configurations.matching { it.name == configurationName }.all { Configuration configuration ->
+                    broker.add('Status-Minimum') {
+                        return minimum(configuration)
+                    }
                 }
             }
         }
-
-        // Record status schemes
-        // Might be able to collect statuses here. Hmm, unless it's dynamic?
-        project.dependencies.components.eachComponent { ComponentMetadataDetails details ->
-            println "${details.id}: ${details.statusScheme}" // [integration, milestone, release]
-        }
-
-//                    configuration.resolvedConfiguration.firstLevelModuleDependencies.inject(DEFAULT_STATUS) { ResolvedDependency resolved ->
-//
-//                        resolved.moduleArtifacts.findAll {it instanceof DefaultResolvedArtifact }.each { DefaultResolvedArtifact artifact ->
-//                            if (artifact.status) { // status could be null when downloading sources and javadoc in a detached configuration
-//                                // Ensure dependencies aren't upside down.
-//                                int projectStatusIdx = statusScheme.indexOf(project.status)
-//                                int depStatusIdx = statusScheme.indexOf(artifact.status)
-//                                if (depStatusIdx < projectStatusIdx ) {
-//                                    // TODO Only throw error if we're publishing and only check confs for which we're publishing
-//                                    throw new UpsideDownDependencyException(project.status, resolvedDependency.module.id, artifact.status)
-//                                }
-//                            }
-//
-//                        }
     }
 }
