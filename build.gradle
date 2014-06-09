@@ -1,1 +1,23 @@
-plugin.gradle
+buildscript {
+    repositories { jcenter() }
+    dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:1.12.0-RC2' }
+}
+
+description 'Gradle plugin collect and provide information about the environment'
+apply plugin: 'nebula-plugin'
+
+contacts {
+    'justin@halfempty.org' {
+        moniker 'Justin Ryan'
+        github 'quidryan'
+    }
+}
+
+dependencies {
+    // TODO, make these optional
+    compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
+    compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
+    testCompile 'com.netflix.nebula:nebula-test:1.12.+'
+}
+
+createWrapper.gradleVersion='1.12'
