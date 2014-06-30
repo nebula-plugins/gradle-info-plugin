@@ -15,7 +15,14 @@ contacts {
 
 dependencies {
     // TODO, make these optional
-    compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
+
+    // Specifically not using com.perforce:p4java since it has a META-INF/INDEX.LIST file that lists
+    // com.jcraft. In additional to wrongness of bundle thirdparty libraries, it doesn't even have 
+    // those class files. The classloader will consider the INDEX.LIST file depending on ordering
+    // of the classpath, so it's very likely that just havine p4java in your path will prevent the
+    // JVM from even running.
+    compile 'com.perforce:p4java-jfrog:2011.1.297684'
+
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
     testCompile 'com.netflix.nebula:nebula-test:1.12.+'
 }
