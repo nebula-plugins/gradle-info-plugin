@@ -1,6 +1,7 @@
 package nebula.plugin.info
 
 import nebula.plugin.info.basic.BasicInfoPlugin
+import nebula.plugin.info.basic.ManifestOwnersPlugin
 import nebula.plugin.info.ci.ContinuousIntegrationInfoPlugin
 import nebula.plugin.info.java.InfoJavaPlugin
 import nebula.plugin.info.reporting.InfoJarManifestPlugin
@@ -22,6 +23,7 @@ class InfoPlugin implements Plugin<Project> {
 
         // Collectors
         project.plugins.apply(BasicInfoPlugin)
+        project.plugins.apply(ManifestOwnersPlugin)
         project.plugins.apply(ScmInfoPlugin)
         project.plugins.apply(ContinuousIntegrationInfoPlugin)
         project.plugins.apply(InfoJavaPlugin)
