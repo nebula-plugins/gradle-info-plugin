@@ -2,6 +2,7 @@ package nebula.plugin.info.reporting
 
 import nebula.plugin.info.InfoBrokerPlugin
 import org.gradle.api.DefaultTask
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Task
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
@@ -40,7 +41,7 @@ class ApplyManifest extends DefaultTask {
         Task task = project.tasks.getByName(jarTaskName)
 
         if(!(task instanceof Jar)) {
-            throw new IllegalStateException("The task with the provided name '$jarTaskName' is not of type Jar.")
+            throw new InvalidUserDataException("The task with the provided name '$jarTaskName' is not of type Jar.")
         }
 
         ((Jar)task).manifest.attributes.putAll(attrs)
