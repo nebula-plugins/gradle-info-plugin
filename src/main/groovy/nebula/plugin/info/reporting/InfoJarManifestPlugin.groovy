@@ -17,7 +17,7 @@ class InfoJarManifestPlugin implements Plugin<Project>, InfoReporterPlugin {
             // Searching the Gradle code base shows that Archive Tasks are the primary consumers of project.version
             project.tasks.withType(Jar) { Jar jarTask ->
                 def manifestTask = project.tasks.create("${jarTask.name}Manifest", ApplyManifest)
-                manifestTask.jarTask = jarTask
+                manifestTask.jarTaskName = jarTask.name
 
                 // Technically, the jar task depends on the manifest task (even though we need it to modify the manifest)
                 jarTask.dependsOn manifestTask
