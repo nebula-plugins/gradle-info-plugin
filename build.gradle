@@ -5,6 +5,7 @@ buildscript {
 
 description 'Gradle plugin collect and provide information about the environment'
 apply plugin: 'nebula-plugin'
+apply plugin: 'idea'
 
 contacts {
     'justin@halfempty.org' {
