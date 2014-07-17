@@ -17,7 +17,6 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
             def propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin)
             def manifestTask = propFilePlugin.getManifestTask()
 
-            // Searching the Gradle code base shows that Archive Tasks are the primary consumers of project.version
             project.tasks.withType(Jar) { Jar jarTask ->
                 jarTask.from(manifestTask.outputs) {
                     into "META-INF"

@@ -5,12 +5,8 @@ import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.IConventionAware
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 
 class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    private static Logger logger = Logging.getLogger(ContinuousIntegrationInfoPlugin)
-
     protected Project project
     List<ContinuousIntegrationInfoProvider> providers
     ContinuousIntegrationInfoProvider selectedProvider

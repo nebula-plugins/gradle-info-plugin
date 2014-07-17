@@ -46,6 +46,7 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(IMPLEMENTATION_VERSION.toString()) { project.version }
             manifestPlugin.add('Built-Status') { project.status } // Could be promoted, so this is the actual status necessarily
             manifestPlugin.add('Built-By', System.getProperty('user.name'))
+            manifestPlugin.add('Built-OS', System.getProperty('os.name'))
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
             manifestPlugin.add('Build-Date', new Date().format('yyyy-MM-dd_HH:mm:ss')).changing = true

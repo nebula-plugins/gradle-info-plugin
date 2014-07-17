@@ -85,6 +85,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Implementation-Version')
         assertMainfestKeyExists(attributes, 'Built-Status')
         assertMainfestKeyExists(attributes, 'Built-By')
+        assertMainfestKeyExists(attributes, 'Built-OS')
         assertMainfestKeyExists(attributes, 'Build-Date')
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
