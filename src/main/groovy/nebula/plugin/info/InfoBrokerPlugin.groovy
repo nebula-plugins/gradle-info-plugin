@@ -112,10 +112,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
     @Canonical
     static class ManifestEntry {
-        /**
-         * Constructor called by DomainNamedContainer
-         * @param name
-         */
         ManifestEntry(String name) {
             this.name = name
         }
