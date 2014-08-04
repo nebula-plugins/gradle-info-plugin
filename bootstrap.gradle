@@ -53,11 +53,13 @@ dependencies {
     compile localGroovy()
     compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
-    testCompile 'com.netflix.nebula:nebula-test:1.12.0-SNAPSHOT'
+    testCompile('com.netflix.nebula:nebula-test:2.0.0-SNAPSHOT') {
+        exclude group: 'org.codehaus.groovy'
+    }
 }
 
 test.exclude '**/*Local*'
 
 task createWrapper(type: Wrapper) {
-    gradleVersion = '1.12'
+    gradleVersion = '2.0'
 }
