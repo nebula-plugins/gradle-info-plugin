@@ -101,6 +101,26 @@ buildscript {
 }
 ```
 
+info-owners (Collector)
+--------------
+```
+apply plugin: 'info-owners'
+```
+
+Collects "owners" and "notify" users and inject them as 'Module-Owner' and 'Module-Email', respectively. The values come
+from the gradle-contacts plugin.
+
+```
+apply plugin: 'contacts' 
+contacts {
+    'mickey@disney.com' {
+        moniker 'Mickey Mouse'
+       role 'owner'
+     }
+}
+```
+
+The above will make sure the manifest contains a Module-Owner of mickey@disney.com.
 
 info Plugin
 --------------
