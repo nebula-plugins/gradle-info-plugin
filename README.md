@@ -102,7 +102,7 @@ buildscript {
 ```
 
 
-info-scm Plugin (Collector)
+info Plugin
 --------------
 ```
 apply plugin: 'info'
