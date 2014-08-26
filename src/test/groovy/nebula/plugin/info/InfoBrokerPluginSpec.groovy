@@ -5,6 +5,8 @@ import nebula.test.ProjectSpec
 import org.gradle.api.NamedDomainObjectContainer
 import spock.lang.Ignore
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 class InfoBrokerPluginSpec extends ProjectSpec {
     def 'apply plugin'() {
         when:
@@ -82,5 +84,64 @@ class InfoBrokerPluginSpec extends ProjectSpec {
         def attrs3 = basePlugin.buildManifest()
         attrs3['MyKey2'] == 'MyValue2'
         attrs3['MyKey'] == 'MyValue' // Still around
+    }
+
+    def 'can not add multiple values'() {
+        when:
+        InfoBrokerPlugin broker = project.plugins.apply(InfoBrokerPlugin)
+        broker.add('Key', 'Value')
+
+        then:
+        noExceptionThrown()
+
+        when:
+        broker.add('Key', 'Value2')
+
+        then:
+        def thrown = thrown(IllegalStateException)
+        thrown.message == 'A entry with the key Key already exists, with the value "Value"'
+    }
+
+    def 'listen for values'() {
+        when:
+        def broker = project.plugins.apply(InfoBrokerPlugin)
+
+        AtomicBoolean watched = new AtomicBoolean(false)
+        AtomicBoolean ran = new AtomicBoolean(false)
+        String watchedValue
+        broker.watch('Manifest-Version') {
+            watched.set(true)
+            watchedValue = it
+        }
+
+        String delayedValue
+        broker.watch('Delayed') {
+            ran.set(true)
+            delayedValue = it
+        }
+
+        then:
+        ran.get() == false
+        watched.get() == false
+
+        when:
+        broker.add('Manifest-Version') {
+            '1.0'
+        }
+
+        then: 'Delayed is not triggered too'
+        ran.get() == false
+        watched.get() == true
+        watchedValue == '1.0'
+
+        when:
+        broker.add('Delayed') {
+            '2.0'
+        }
+
+        then:
+        ran.get() == true
+        delayedValue == '2.0'
+
     }
 }
