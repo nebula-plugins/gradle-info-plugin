@@ -18,45 +18,41 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
             ${applyPlugin(InfoJarManifestPlugin)}
 
             apply plugin: 'java'
+            status = 'release'
         """.stripIndent()
 
         when:
+        // Make sure we have some history already in place
+        runTasksSuccessfully('jar')
+        runTasksSuccessfully('clean')
+
         def result = runTasksSuccessfully('jar')
+        File jarFile = new File(projectDir, "build/libs/${moduleName}.jar")
 
         then:
-        !result.wasUpToDate(':jarManifest')
+        jarFile.exists()
+        !result.wasUpToDate(':jar')
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        manifestKey(attributes, 'Built-Status') == 'release'
 
-        when:
+        when: 'Nothing has changed'
         def secondResult = runTasksSuccessfully('jar')
 
         then:
-        secondResult.wasUpToDate(':jarManifest')
-    }
+        secondResult.wasUpToDate(':jar')
 
-    def "Task of type ApplyManifest throws exception if provided JAR task name does not have expected type"() {
-        given:
-        writeHelloWorld('nebula.test')
+        when: 'A manifest field was changed'
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
-
-            apply plugin: 'java'
-
-            task nonJarTask
-
-            task myTask(type: nebula.plugin.info.reporting.ApplyManifest) {
-                jarTaskName = nonJarTask.name
-                jarBeingModified = jar.archivePath
-            }
+        status = 'integration'
         """.stripIndent()
-
-        when:
-        def result = runTasksWithFailure('myTask')
+        def thirdResult = runTasksSuccessfully('jar')
 
         then:
-        result.standardOutput.contains(":myTask FAILED")
-        result.standardError.contains("The task with the provided name 'nonJarTask' is not of type Jar.")
+        !thirdResult.wasUpToDate(':jar')
+        Manifest manifestSnapshot = new JarFile(jarFile).manifest
+        Attributes attributesSnapshot = manifestSnapshot.mainAttributes
+        manifestKey(attributesSnapshot, 'Built-Status') == 'integration'
     }
 
     def "Creates JAR file with populated manifest attributes by basic info plugin"() {
@@ -92,5 +88,9 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
 
     private void assertMainfestKeyExists(Attributes attributes, String key) {
         assert attributes.containsKey(new Attributes.Name(key))
+    }
+
+    private manifestKey(Attributes attributes, String key) {
+        attributes.get(new Attributes.Name(key))
     }
 }
