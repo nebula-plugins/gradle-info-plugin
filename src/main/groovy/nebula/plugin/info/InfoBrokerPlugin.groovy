@@ -89,10 +89,8 @@ class InfoBrokerPlugin implements Plugin<Project> {
         if (!entry.value && entry.valueProvider) {
             // Force resolution
             def value = entry.valueProvider.call()
-            if (!entry.changing) {
-                // And then cache value, even nulls
-                entry.value = value
-            }
+            // And then cache value, even nulls
+            entry.value = value
         }
     }
 
