@@ -28,7 +28,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
         def extMapping = ((IConventionAware) extension).getConventionMapping()
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
-        extMapping.source = { selectedProvider.calculateSource(project) }
+        extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
         extMapping.change = { selectedProvider.calculateChange(project) }
 
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
