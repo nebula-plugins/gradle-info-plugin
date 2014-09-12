@@ -7,8 +7,8 @@ class SvnScmProvider extends AbstractScmProvider {
 
     @Override
     boolean supports(Project project) {
-        def isVersioned = SVNWCUtil.isVersionedDirectory(project.projectDir)
-        return isVersioned
+        // TODO When we can make p4java optional, we'll add a classForName check here.
+        return findFile(project.projectDir, '.svn') != null
     }
 
     private SVNWCClient getWorkingCopyClient() {
@@ -40,11 +40,11 @@ class SvnScmProvider extends AbstractScmProvider {
     String calculateChange(File projectDir) {
         def revision = System.getenv('SVN_REVISION') // From Jenkins
         if (revision==null) {
-            def head = getInfo(projectDir).getRevision()
-            if (head==null) {
+            def base = getInfo(projectDir).getRevision()
+            if (base==null) {
                 return null
             }
-            revision = head.getNumber()
+            revision = base.getNumber()
         }
         return revision
     }
