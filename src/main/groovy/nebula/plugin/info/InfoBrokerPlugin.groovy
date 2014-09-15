@@ -10,16 +10,17 @@ import org.gradle.api.Project
  * Reporters call this plugin to get values.
  *
  * TBD Allow user build scripts to easily provide values, maybe via an extension
- * TBD Provide DomainObjectCollection like services, so projects can react to values being resolved. It has to be resolved, or else
- *     the act of reacting to values could cause resolving too early.
+ * TBD Make thread-safe
  */
 class InfoBrokerPlugin implements Plugin<Project> {
 
     List<ManifestEntry> container
+    Map<String, Collection<Closure>> watchers
 
     void apply(Project project) {
 
         container = new ArrayList<ManifestEntry>()
+        watchers = [:].withDefault { [] }
 
         // Leaving out for now. I find that the configure methods, when called this way, aren't being called.
         //project.getExtensions().add('manifest', container)
@@ -29,14 +30,29 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
     def add(String key, Closure closure) {
         def entry = new ManifestEntry(key, closure)
-        container.add( entry )
-        entry
+        addEntry(entry)
     }
 
     def add(String key, Object value) {
         def entry = new ManifestEntry(key, value)
+        addEntry(entry)
+    }
+
+    private ManifestEntry addEntry(ManifestEntry entry) {
+        def existing = container.find { it.name == entry.name }
+        if (existing) {
+            resolve(existing)
+            throw new IllegalStateException("A entry with the key ${entry.name} already exists, with the value \"${existing.value}\"")
+        }
         container.add( entry )
-        entry
+        def specificWatchers = watchers[entry.name]
+        specificWatchers.each {
+            callWatcher(entry, it)
+        }
+        // Clean up watchers which were called, so that someone could inspect what watchers were no called later.
+        specificWatchers.clear()
+
+        return entry
     }
 
     Map<String, String> buildNonChangingManifest() {
@@ -73,10 +89,8 @@ class InfoBrokerPlugin implements Plugin<Project> {
         if (!entry.value && entry.valueProvider) {
             // Force resolution
             def value = entry.valueProvider.call()
-            if (!entry.changing) {
-                // And then cache value, even nulls
-                entry.value = value
-            }
+            // And then cache value, even nulls
+            entry.value = value
         }
     }
 
@@ -108,14 +122,25 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
         resolve(entry)
         return entry.value
-
     }
+
+    def watch(String key, Closure reaction) {
+        // If we have the key already, we can process it now
+        def entry = container.find { it.name == key }
+        if (entry) {
+            callWatcher(entry, reaction)
+        } else {
+            watchers[key] << reaction
+        }
+    }
+
+    private callWatcher(ManifestEntry entry, Closure reaction) {
+        resolve(entry)
+        reaction.call(entry.value)
+    }
+
     @Canonical
     static class ManifestEntry {
-        /**
-         * Constructor called by DomainNamedContainer
-         * @param name
-         */
         ManifestEntry(String name) {
             this.name = name
         }
