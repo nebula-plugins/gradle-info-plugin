@@ -22,7 +22,7 @@ dependencies {
     // of the classpath, so it's very likely that just havine p4java in your path will prevent the
     // JVM from even running.
     compile 'com.perforce:p4java-jfrog:2011.1.297684'
-    compile 'com.netflix.nebula:gradle-contacts-plugin:1.12.+'
+    compile 'com.netflix.nebula:gradle-contacts-plugin:2.0.+'
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
     testCompile('com.netflix.nebula:nebula-test:2.0.+') {
         exclude group: 'org.codehaus.groovy'
