@@ -21,14 +21,14 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         this.project = project
 
         // TODO Delay findProvider() as long as possible
-        providers = [new GitScmProvider(), new PerforceScmProvider(), new UnknownScmProvider()]
+        providers = [new GitScmProvider(), new PerforceScmProvider(), new SvnScmProvider(), new UnknownScmProvider()]
         selectedProvider = findProvider()
 
         extension = project.extensions.create('scminfo', ScmInfoExtension)
 
         def extMapping = ((IConventionAware) extension).getConventionMapping()
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
-        extMapping.source = { selectedProvider.calculateSource(project) }
+        extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
         extMapping.change = { selectedProvider.calculateChange(project) }
 
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
