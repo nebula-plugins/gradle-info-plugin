@@ -24,6 +24,7 @@ dependencies {
     compile 'com.perforce:p4java-jfrog:2011.1.297684'
     compile 'com.netflix.nebula:gradle-contacts-plugin:2.0.+'
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
+    compile 'org.tmatesoft.svnkit:svnkit:1.8.5'
     testCompile('com.netflix.nebula:nebula-test:2.0.+') {
         exclude group: 'org.codehaus.groovy'
     }
