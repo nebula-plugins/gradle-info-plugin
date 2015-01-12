@@ -44,8 +44,7 @@ class GitScmProvider extends AbstractScmProvider {
             }
             hash = head.name
         }
-        def shortHash = hash?.substring(0,7)
-        return shortHash
+        return hash
     }
 
 }
