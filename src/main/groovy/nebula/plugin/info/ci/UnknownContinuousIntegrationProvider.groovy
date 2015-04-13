@@ -1,7 +1,9 @@
 package nebula.plugin.info.ci
 
+import groovy.util.logging.Log
 import org.gradle.api.Project
 
+@Log
 class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegrationProvider {
 
     public static final String LOCAL = 'LOCAL'
@@ -25,7 +27,24 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
         try {
             return InetAddress.getLocalHost().getCanonicalHostName()
         } catch(UnknownHostException e) {
-            return InetAddress.localHost.hostAddress
+            try {
+                return InetAddress.localHost.hostAddress
+            } catch(UnknownHostException e2) {
+                log.warning("Your hostname isn't set.")
+                // Grab first up and not loopback interface, with an IP address
+                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces()
+                while( interfaces.hasMoreElements() ) {
+                    NetworkInterface nif = interfaces.nextElement()
+                    if (!nif.loopback && nif.up) {
+                        Enumeration<InetAddress> addresses = nif.inetAddresses
+                        if( addresses.hasMoreElements()) {
+                            return addresses.nextElement().hostAddress
+                        }
+                    }
+                }
+
+                return "localhost"
+            }
         }
     }
 
