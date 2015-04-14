@@ -1,10 +1,18 @@
 package nebula.plugin.info.ci
 
+import com.sun.jna.LastErrorException
+import com.sun.jna.Library
+import com.sun.jna.Native
 import groovy.util.logging.Log
 import org.gradle.api.Project
 
 @Log
 class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegrationProvider {
+    private static final C c = (C) Native.loadLibrary("c", C.class);
+
+    private static interface C extends Library {
+        public int gethostname(byte[] name, int size_t) throws LastErrorException;
+    }
 
     public static final String LOCAL = 'LOCAL'
     @Override
@@ -24,28 +32,9 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
 
     @Override
     String calculateHost(Project project) {
-        try {
-            return InetAddress.getLocalHost().getCanonicalHostName()
-        } catch(UnknownHostException e) {
-            try {
-                return InetAddress.localHost.hostAddress
-            } catch(UnknownHostException e2) {
-                log.warning("Your hostname isn't set.")
-                // Grab first up and not loopback interface, with an IP address
-                Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces()
-                while( interfaces.hasMoreElements() ) {
-                    NetworkInterface nif = interfaces.nextElement()
-                    if (!nif.loopback && nif.up) {
-                        Enumeration<InetAddress> addresses = nif.inetAddresses
-                        if( addresses.hasMoreElements()) {
-                            return addresses.nextElement().hostAddress
-                        }
-                    }
-                }
-
-                return "localhost"
-            }
-        }
+        byte[] hostname = new byte[128];
+        c.gethostname(hostname, hostname.length)
+        return Native.toString(hostname)
     }
 
     @Override
