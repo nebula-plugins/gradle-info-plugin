@@ -32,7 +32,7 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
 
     @Override
     String calculateHost(Project project) {
-        byte[] hostname = new byte[128];
+        byte[] hostname = new byte[255];
         c.gethostname(hostname, hostname.length)
         return Native.toString(hostname)
     }
