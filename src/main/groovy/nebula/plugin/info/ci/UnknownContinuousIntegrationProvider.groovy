@@ -1,8 +1,5 @@
 package nebula.plugin.info.ci
 
-import com.sun.jna.LastErrorException
-import com.sun.jna.Library
-import com.sun.jna.Native
 import com.sun.jna.platform.win32.Kernel32Util
 import groovy.util.logging.Log
 import org.gradle.api.Project
@@ -12,12 +9,6 @@ import java.util.logging.Level
 
 @Log
 class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegrationProvider {
-    private static final C c = (C) Native.loadLibrary("c", C.class);
-
-    private static interface C extends Library {
-        public int gethostname(byte[] name, int size_t) throws LastErrorException;
-    }
-
     public static final String LOCAL = 'LOCAL'
 
     @Override
@@ -37,13 +28,11 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
 
     @Override
     String calculateHost(Project project) {
-        def currentOs = OperatingSystem.current();
+        def currentOs = OperatingSystem.current()
         if (currentOs.isWindows()) {
             return Kernel32Util.getComputerName()
         } else if (currentOs.isUnix()) {
-            byte[] hostname = new byte[256];
-            c.gethostname(hostname, hostname.length)
-            return Native.toString(hostname)
+            return POSIXUtil.getHostName()
         } else {
             log.log(Level.WARNING, "Unknown operating system $currentOs, could not detect hostname")
             return 'localhost'
