@@ -1,10 +1,9 @@
 package nebula.plugin.info.scm
 
 import com.energizedwork.spock.extensions.TempDirectory
-import spock.lang.Specification
+import nebula.test.ProjectSpec
 
-class PerforceScmProviderSpec extends Specification {
-    @TempDirectory File projectDir
+class PerforceScmProviderSpec extends ProjectSpec {
     def provider = new PerforceScmProvider()
 
     def 'lookup settings'() {

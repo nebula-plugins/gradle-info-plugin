@@ -1,6 +1,6 @@
 {
-  "com.netflix.nebula:gradle-contacts-plugin": { "locked": "2.2.0", "requested": "2.2.+" },
-  "com.netflix.nebula:nebula-test": { "locked": "2.2.0", "requested": "2.2.+" },
+  "com.netflix.nebula:gradle-contacts-plugin": { "locked": "2.4.0", "requested": "2.4.+" },
+  "com.netflix.nebula:nebula-test": { "locked": "2.4.0", "requested": "2.4.+" },
   "com.perforce:p4java-jfrog": { "locked": "2011.1.297684", "requested": "2011.1.297684" },
   "org.eclipse.jgit:org.eclipse.jgit": { "locked": "3.2.0.201312181205-r", "requested": "3.2.0.201312181205-r" }
 }

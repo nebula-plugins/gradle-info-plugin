@@ -1,13 +1,9 @@
 package nebula.plugin.info.scm
 
-import com.energizedwork.spock.extensions.TempDirectory
 import nebula.test.ProjectSpec
 import org.eclipse.jgit.api.Git
 
 class GitScmProviderLocalSpec extends ProjectSpec {
-
-    @TempDirectory File projectDir
-
     def provider = new GitScmProvider()
 
     def 'calculate module origin'() {
