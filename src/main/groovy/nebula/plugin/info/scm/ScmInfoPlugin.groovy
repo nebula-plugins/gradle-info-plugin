@@ -30,13 +30,14 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
         extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
         extMapping.change = { selectedProvider.calculateChange(project) }
+        extMapping.branch = { selectedProvider.calculateBranch(project) }
 
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
             manifestPlugin.add('Module-Source') { extension.source }
             manifestPlugin.add('Module-Origin') { extension.origin }
             manifestPlugin.add('Change') { extension.change }
+            manifestPlugin.add('Branch') { extension.branch }
         }
-
     }
 
     ScmInfoProvider findProvider() {

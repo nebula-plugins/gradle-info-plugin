@@ -1,10 +1,11 @@
 package nebula.plugin.info.scm
 
-import com.energizedwork.spock.extensions.TempDirectory
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class PerforceScmProviderSpec extends Specification {
-    @TempDirectory File projectDir
+    @Rule TemporaryFolder temp
     def provider = new PerforceScmProvider()
 
     def 'lookup settings'() {
@@ -22,6 +23,7 @@ class PerforceScmProviderSpec extends Specification {
 
     def 'find file in project direct'() {
         setup:
+        def projectDir = temp.newFolder()
         def deep = new File(projectDir, "level1/level2/level3")
         deep.mkdirs()
         def configName = 'p4config'
@@ -44,6 +46,7 @@ class PerforceScmProviderSpec extends Specification {
 
     def 'find perforce defaults'() {
         setup:
+        def projectDir = temp.newFolder()
         def config = new File(projectDir, 'p4config')
         config.text = "P4CLIENT=jryan_uber\nP4USER=jryan"
         provider.p4configFile = config

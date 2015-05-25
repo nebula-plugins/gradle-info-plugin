@@ -41,4 +41,11 @@ abstract class AbstractScmProvider implements ScmInfoProvider {
     }
 
     abstract calculateChange(File projectDir)
+
+    @Override
+    String calculateBranch(Project project) {
+        return calculateBranch(project.projectDir)
+    }
+
+    abstract calculateBranch(File projectDir)
 }

@@ -49,4 +49,8 @@ class SvnScmProvider extends AbstractScmProvider {
         return revision
     }
 
+    @Override
+    def calculateBranch(File projectDir) {
+        return null // unsupported in svn
+    }
 }
