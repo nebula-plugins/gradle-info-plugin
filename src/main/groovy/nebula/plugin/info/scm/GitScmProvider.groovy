@@ -48,4 +48,8 @@ class GitScmProvider extends AbstractScmProvider {
         return shortHash
     }
 
+    @Override
+    def calculateBranch(File projectDir) {
+        return getRepository(projectDir).branch
+    }
 }

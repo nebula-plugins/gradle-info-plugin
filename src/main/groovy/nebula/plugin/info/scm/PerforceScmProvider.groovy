@@ -70,6 +70,11 @@ class PerforceScmProvider extends AbstractScmProvider {
         return System.getenv('P4_CHANGELIST')
     }
 
+    @Override
+    def calculateBranch(File projectDir) {
+        return null // unsupported in perforce
+    }
+
     @PackageScope
     <T> T withPerforce(File projectDir, Closure<T> closure) {
         Map<String, String> defaults = perforceDefaults(projectDir)
