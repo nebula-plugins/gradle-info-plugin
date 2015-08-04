@@ -32,7 +32,8 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
         if (currentOs.isWindows()) {
             try {
                 return Kernel32Util.getComputerName()
-            } catch(UnsatisfiedLinkError e) {
+            } catch(Throwable e) {
+                // with variations in Gradle versions and JVMs, this can sometimes break
                 log.log(Level.WARNING, "Unable to determine the host name on this Windows instance")
                 return 'localhost'
             }
