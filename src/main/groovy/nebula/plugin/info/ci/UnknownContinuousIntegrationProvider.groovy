@@ -30,7 +30,12 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
     String calculateHost(Project project) {
         def currentOs = OperatingSystem.current()
         if (currentOs.isWindows()) {
-            return Kernel32Util.getComputerName()
+            try {
+                return Kernel32Util.getComputerName()
+            } catch(UnsatisfiedLinkError e) {
+                log.log(Level.WARNING, "Unable to determine the host name on this Windows instance")
+                return 'localhost'
+            }
         } else if (currentOs.isUnix()) {
             return POSIXUtil.getHostName()
         } else {
