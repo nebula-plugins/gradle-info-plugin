@@ -8,7 +8,7 @@ class ScmInfoPluginProjectSpec extends ProjectSpec {
      */
     def 'apply plugin'() {
         when:
-        project.apply plugin: 'info-scm'
+        project.apply plugin: 'nebula.info-scm'
 
         then:
         def plugin = project.plugins.getPlugin(ScmInfoPlugin)

@@ -26,7 +26,7 @@ Both the Collectors and Reporters know about the broker.
 info-broker Plugin (Broker)
 ---------------
 ```
-apply plugin: 'info-broker'
+apply plugin: 'nebula.info-broker'
 ```
 
 This would leave an empty broker around for other plugins to play with.
@@ -34,7 +34,7 @@ This would leave an empty broker around for other plugins to play with.
 info-jar Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'info-jar'
+apply plugin: 'nebula.info-jar'
 ```
 
 Pumps all values from the broker into the manifest of all jar's being built.
@@ -42,7 +42,7 @@ Pumps all values from the broker into the manifest of all jar's being built.
 info-props Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'info-props'
+apply plugin: 'nebula.info-props'
 ```
 
 Creates a property files with broker's values, defaults to "manifest/${baseConvention.archivesBaseName}.properties". Uses
@@ -51,7 +51,7 @@ InfoPropertiesFile task to create file.
 info-jar-props Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'info-jar-props'
+apply plugin: 'nebula.info-jar-props'
 ```
 
 Leverages info-props to create a file, which this plugin then puts into the META-INF of all jars.
@@ -60,7 +60,7 @@ info-basic Plugin (Collector)
 --------------
 
 ```
-apply plugin: 'info-basic'
+apply plugin: 'nebula.info-basic'
 ```
 
 Provides some basic values relavant to the Gradle build, e.g. build status.
@@ -69,7 +69,7 @@ info-java Plugin (Collector)
 --------------
 
 ```
-apply plugin: 'info-java'
+apply plugin: 'nebula.info-java'
 ```
 
 Reports on the version of Java being used, and compatibility version if the Java plugin is being used.
@@ -78,7 +78,7 @@ info-ci Plugin (Collector)
 --------------
 
 ```
-apply plugin: 'info-ci'
+apply plugin: 'nebula.info-ci'
 ```
 
 Detects the current Continuous Integration environment and reports upon Job Name and Build Number. Currently only Jenkins
@@ -87,7 +87,7 @@ is supported.
 info-scm Plugin (Collector)
 --------------
 ```
-apply plugin: 'info-scm'
+apply plugin: 'nebula.info-scm'
 ```
 
 Detects the current source control being used and reports upon the repository and where in the source the project is.
@@ -109,7 +109,7 @@ buildscript {
 info-owners (Collector)
 --------------
 ```
-apply plugin: 'info-owners'
+apply plugin: 'nebula.info-owners'
 ```
 
 Collects "owners" and "notify" users and inject them as 'Module-Owner' and 'Module-Email', respectively. The values come

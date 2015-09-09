@@ -21,7 +21,7 @@ import nebula.test.PluginProjectSpec
 class ManifestOwnersPluginSpec extends PluginProjectSpec {
     @Override
     String getPluginName() {
-        'info-owners'
+        'nebula.info-owners'
     }
 
     def 'values in broker'() {
