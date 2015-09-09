@@ -57,6 +57,8 @@ dependencies {
     compile 'org.tmatesoft.svnkit:svnkit:1.8.5'
 }
 
+test.exclude '**/*Local*'
+
 pluginBundle {
     plugins {
         info {
