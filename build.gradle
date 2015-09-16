@@ -62,8 +62,56 @@ test.exclude '**/*Local*'
 pluginBundle {
     plugins {
         info {
-            id = 'nebula.gradle-info-plugin'
+            id = 'nebula.info'
             displayName = 'Gradle Info plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.basic'
+            displayName = 'Gradle Info Basic plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.broker'
+            displayName = 'Gradle Info Broker plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.ci'
+            displayName = 'Gradle Info CI plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.jar'
+            displayName = 'Gradle Info JAR plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.java'
+            displayName = 'Gradle Info Java plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.owners'
+            displayName = 'Gradle Info Owners plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.props'
+            displayName = 'Gradle Info Properties plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        info {
+            id = 'nebula.scm'
+            displayName = 'Gradle Info SCM plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
