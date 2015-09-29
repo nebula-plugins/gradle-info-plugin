@@ -68,49 +68,49 @@ pluginBundle {
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.basic'
+            id = 'nebula.info-basic'
             displayName = 'Gradle Info Basic plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.broker'
+            id = 'nebula.info-broker'
             displayName = 'Gradle Info Broker plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.ci'
+            id = 'nebula.info-ci'
             displayName = 'Gradle Info CI plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.jar'
+            id = 'nebula.info-jar'
             displayName = 'Gradle Info JAR plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.java'
+            id = 'nebula.info-java'
             displayName = 'Gradle Info Java plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.owners'
+            id = 'nebula.info-owners'
             displayName = 'Gradle Info Owners plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.props'
+            id = 'nebula.info-props'
             displayName = 'Gradle Info Properties plugin'
             description = project.description
             tags = ['nebula', 'info']
         }
         info {
-            id = 'nebula.scm'
+            id = 'nebula.info-scm'
             displayName = 'Gradle Info SCM plugin'
             description = project.description
             tags = ['nebula', 'info']
