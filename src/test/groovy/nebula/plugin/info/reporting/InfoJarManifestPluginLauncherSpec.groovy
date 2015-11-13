@@ -4,6 +4,7 @@ import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.basic.BasicInfoPlugin
 import nebula.test.IntegrationSpec
 
+import java.text.SimpleDateFormat
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
@@ -83,6 +84,12 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Built-By')
         assertMainfestKeyExists(attributes, 'Built-OS')
         assertMainfestKeyExists(attributes, 'Build-Date')
+        assertMainfestKeyExists(attributes, 'Build-Date-Format')
+        // ensure that the Build-Date can be parsed and the parsed Date formats to the Build-Date
+        SimpleDateFormat sdf = new SimpleDateFormat(manifestKey(attributes, 'Build-Date-Format'))
+        String manifestBuildDate = manifestKey(attributes, 'Build-Date')
+        Date buildDate = sdf.parse(manifestBuildDate)
+        sdf.format(buildDate) == manifestBuildDate
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
 
