@@ -10,7 +10,7 @@ Noninvasively collect information about the environment, and make information av
 ```
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:1.9.+' }
+    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:3.+' }
 }
 ```
 
@@ -98,7 +98,7 @@ your specific SCM implementation. Technically, these are not optional right now,
 ```
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:1.9.+' }
+    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:3.0.+' }
 
     dependencies { classpath 'com.perforce:p4java:2012.3.551082' }
     // or
@@ -130,7 +130,7 @@ The above will make sure the manifest contains a Module-Owner of mickey@disney.c
 info Plugin
 --------------
 ```
-apply plugin: 'info'
+apply plugin: 'nebula.info'
 ```
 
 *Uber plugin that applies all other plugins. Since each one is relatively safe to run, this is the recommended plugin to
