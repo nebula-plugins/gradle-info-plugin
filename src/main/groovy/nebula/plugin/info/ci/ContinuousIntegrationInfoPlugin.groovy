@@ -2,13 +2,15 @@ package nebula.plugin.info.ci
 
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.IConventionAware
 
 class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     protected Project project
-    List<ContinuousIntegrationInfoProvider> providers
+	
+    
     ContinuousIntegrationInfoProvider selectedProvider
     ContinuousIntegrationInfoExtension extension
 
@@ -16,7 +18,6 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     void apply(Project project) {
         this.project = project
 
-        providers = [new JenkinsProvider(), new UnknownContinuousIntegrationProvider()]
         selectedProvider = findProvider()
 
         extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)
@@ -37,11 +38,6 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     }
 
     ContinuousIntegrationInfoProvider findProvider() {
-        def provider = providers.find { it.supports(project) }
-        if (provider) {
-            return provider
-        } else {
-            throw new IllegalStateException('Unable to find a SCM provider, even the Unknown provider')
-        }
+		return new ContinuousIntegrationInfoProviderResolver().findProvider(project)
     }
 }
