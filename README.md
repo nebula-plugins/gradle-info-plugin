@@ -32,10 +32,6 @@ apply plugin: 'nebula.info'
 *Uber plugin that applies all other plugins. Since each one is relatively safe to run, this is the recommended plugin to
 apply.*
 
-# TODO
-* Have release plugin contribute Label
-* Link to generated Javadoc
-
 info-broker Plugin (Broker)
 ---------------
 ```
@@ -139,3 +135,7 @@ contacts {
 ```
 
 The above will make sure the manifest contains a Module-Owner of mickey@disney.com.
+
+# TODO
+* Have release plugin contribute Label
+* Link to generated Javadoc
