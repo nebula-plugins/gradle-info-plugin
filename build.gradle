@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2015 Netflix, Inc.
+ * Copyright 2014-2016 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ plugins {
     id 'jacoco'
     id 'nebula.info' version '3.0.3'
     id 'nebula.contacts' version '3.0.1'
-    id 'nebula.maven-publish' version '4.2.2'
+    id 'nebula.maven-publish' version '4.4.4'
     id 'nebula.nebula-release' version '3.0.5'
     id 'nebula.nebula-bintray' version '3.1.0'
-    id 'com.gradle.plugin-publish' version '0.9.1'
-    id 'nebula.javadoc-jar' version '4.2.2'
-    id 'nebula.source-jar' version '4.2.2'
-    id 'nebula.maven-apache-license' version '4.2.2'
-    id 'com.github.kt3k.coveralls' version '2.4.0'
+    id 'com.gradle.plugin-publish' version '0.9.3'
+    id 'nebula.javadoc-jar' version '4.4.4'
+    id 'nebula.source-jar' version '4.4.4'
+    id 'nebula.maven-apache-license' version '4.4.4'
+    id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
 description 'Gradle plugin collect and provide information about the environment'
@@ -49,10 +49,10 @@ dependencies {
     // Specifically not using com.perforce:p4java since it has a META-INF/INDEX.LIST file that lists
     // com.jcraft. In additional to wrongness of bundle thirdparty libraries, it doesn't even have 
     // those class files. The classloader will consider the INDEX.LIST file depending on ordering
-    // of the classpath, so it's very likely that just havine p4java in your path will prevent the
+    // of the classpath, so it's very likely that just having p4java in your path will prevent the
     // JVM from even running.
     compile 'com.perforce:p4java-jfrog:2011.1.297684'
-    compile 'com.netflix.nebula:gradle-contacts-plugin:2.2.+'
+    compile 'com.netflix.nebula:gradle-contacts-plugin:3.+'
     compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
     compile 'org.tmatesoft.svnkit:svnkit:1.8.5'
 }
