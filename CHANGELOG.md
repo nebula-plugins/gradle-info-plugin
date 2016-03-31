@@ -1,4 +1,4 @@
-2.3.0 / 2016-3-30
+3.0.4 / 2016-3-30
 =================
 
 * Allow plugins to send end-of-build reports to InfoBroker

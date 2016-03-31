@@ -101,8 +101,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     Map<String, Object> buildReports() {
-        println "About to check if build finished: ${buildFinished.get()}"
-
         if (!buildFinished.get()) {
             throw new IllegalStateException('Cannot retrieve build reports before the build has finished')
         }
