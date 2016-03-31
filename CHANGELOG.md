@@ -1,5 +1,10 @@
+3.0.4 / 2016-3-30
+=================
+
+* Allow plugins to send end-of-build reports to InfoBroker
+
 2.2.0 / 2015-1-30
-===================
+=================
 
 * Move to gradle 2.2.1
 

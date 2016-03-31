@@ -1,9 +1,29 @@
+/*
+ * Copyright 2014-2016 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package nebula.plugin.info
 
 import groovy.transform.Canonical
+import org.gradle.BuildAdapter
+import org.gradle.BuildResult
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Broker between Collectors and Reporters. Collectors report to this plugin about manifest values,
@@ -14,14 +34,23 @@ import org.gradle.api.Project
  */
 class InfoBrokerPlugin implements Plugin<Project> {
 
-    List<ManifestEntry> container
-    Map<String, Collection<Closure>> watchers
+    private List<ManifestEntry> manifestEntries
+    private Map<String, Collection<Closure>> watchers
+    private Map<String, Object> reportEntries
+    private AtomicBoolean buildFinished = new AtomicBoolean(false)
 
     void apply(Project project) {
 
-        container = new ArrayList<ManifestEntry>()
+        manifestEntries = new ArrayList<ManifestEntry>()
+        reportEntries = new HashMap<>()
         watchers = [:].withDefault { [] }
 
+        project.rootProject.gradle.addBuildListener(new BuildAdapter() {
+            @Override
+            void buildFinished(BuildResult buildResult) {
+                this.buildFinished.set(true)
+            }
+        })
         // Leaving out for now. I find that the configure methods, when called this way, aren't being called.
         //project.getExtensions().add('manifest', container)
 
@@ -38,13 +67,21 @@ class InfoBrokerPlugin implements Plugin<Project> {
         addEntry(entry)
     }
 
+    def addReport(String reportName, Object value) {
+        if (reportEntries.containsKey(reportName)) {
+            def existingEntry = reportEntries.get(reportName)
+            throw new IllegalStateException("A report with key $reportName already exists, with the value \"${existingEntry}\"")
+        }
+        reportEntries.put(reportName, value)
+    }
+
     private ManifestEntry addEntry(ManifestEntry entry) {
-        def existing = container.find { it.name == entry.name }
+        def existing = manifestEntries.find { it.name == entry.name }
         if (existing) {
             resolve(existing)
             throw new IllegalStateException("A entry with the key ${entry.name} already exists, with the value \"${existing.value}\"")
         }
-        container.add( entry )
+        manifestEntries.add( entry )
         def specificWatchers = watchers[entry.name]
         specificWatchers.each {
             callWatcher(entry, it)
@@ -56,11 +93,18 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     Map<String, String> buildNonChangingManifest() {
-        return collectEntries(container.findAll { it.changing == false })
+        return collectEntries(manifestEntries.findAll { it.changing == false })
     }
 
     Map<String, String> buildManifest() {
-        return collectEntries(container)
+        return collectEntries(manifestEntries)
+    }
+
+    Map<String, Object> buildReports() {
+        if (!buildFinished.get()) {
+            throw new IllegalStateException('Cannot retrieve build reports before the build has finished')
+        }
+        return Collections.unmodifiableMap(reportEntries)
     }
 
     private Map<String,String> collectEntries(Collection<ManifestEntry> entries) {
@@ -117,7 +161,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
      * @return String based value of entry
      */
     String buildEntry(String key) {
-        def entry = container.find { it.name == key }
+        def entry = manifestEntries.find { it.name == key }
         if (!entry) throw new IllegalArgumentException("Unable to find $key")
 
         resolve(entry)
@@ -126,7 +170,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
     def watch(String key, Closure reaction) {
         // If we have the key already, we can process it now
-        def entry = container.find { it.name == key }
+        def entry = manifestEntries.find { it.name == key }
         if (entry) {
             callWatcher(entry, reaction)
         } else {
