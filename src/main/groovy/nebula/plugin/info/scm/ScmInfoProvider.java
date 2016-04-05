@@ -24,7 +24,7 @@ import org.gradle.api.Project;
 public interface ScmInfoProvider {
     /**
      * Determine support. Attempt to not use a library, to reduce impact and side effect of calling
-     * @param project
+     * @param project project to validate support against
      * @return boolean of the provider's availibility to support the current environment.
      */
     boolean supports(Project project);

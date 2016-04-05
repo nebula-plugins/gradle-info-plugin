@@ -22,6 +22,8 @@ import org.gradle.BuildResult
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -34,16 +36,20 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class InfoBrokerPlugin implements Plugin<Project> {
 
+    private Logger logger = LoggerFactory.getLogger(InfoBrokerPlugin)
+
     private List<ManifestEntry> manifestEntries
     private Map<String, Collection<Closure>> watchers
     private Map<String, Object> reportEntries
     private AtomicBoolean buildFinished = new AtomicBoolean(false)
+    private Project project
 
     void apply(Project project) {
 
-        manifestEntries = new ArrayList<ManifestEntry>()
-        reportEntries = new HashMap<>()
-        watchers = [:].withDefault { [] }
+        this.manifestEntries = new ArrayList<ManifestEntry>()
+        this.reportEntries = new HashMap<>()
+        this.watchers = [:].withDefault { [] }
+        this.project = project
 
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
@@ -68,10 +74,15 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     def addReport(String reportName, Object value) {
+        if (project != project.rootProject) {
+            throw new IllegalStateException('Build reports should only be used from the root project')
+        }
+
         if (reportEntries.containsKey(reportName)) {
             def existingEntry = reportEntries.get(reportName)
-            throw new IllegalStateException("A report with key $reportName already exists, with the value \"${existingEntry}\"")
+            logger.warn("A report with key $reportName already exists, with the value '${existingEntry}'. Replacing.")
         }
+
         reportEntries.put(reportName, value)
     }
 
@@ -101,9 +112,14 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     Map<String, Object> buildReports() {
+        if (project != project.rootProject) {
+            throw new IllegalStateException('Build reports should only be used from the root project')
+        }
+
         if (!buildFinished.get()) {
             throw new IllegalStateException('Cannot retrieve build reports before the build has finished')
         }
+
         return Collections.unmodifiableMap(reportEntries)
     }
 
