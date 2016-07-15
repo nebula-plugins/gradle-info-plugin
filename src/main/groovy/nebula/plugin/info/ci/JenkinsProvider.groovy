@@ -44,8 +44,4 @@ class JenkinsProvider extends AbstractContinuousIntegrationProvider {
     String calculateJob(Project project) {
         getEnvironmentVariable('JOB_NAME')
     }
-
-    private String getEnvironmentVariable(String envKey) {
-        System.getenv(envKey)
-    }
 }
