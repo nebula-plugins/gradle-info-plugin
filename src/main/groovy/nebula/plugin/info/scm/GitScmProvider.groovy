@@ -16,12 +16,16 @@
 
 package nebula.plugin.info.scm
 
+import groovy.util.logging.Log
 import org.eclipse.jgit.lib.Config
 import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Project
 
+import java.util.logging.Level
+
+@Log
 class GitScmProvider extends AbstractScmProvider {
 
     @Override
@@ -39,6 +43,9 @@ class GitScmProvider extends AbstractScmProvider {
         Repository repository = getRepository(projectDir)
         Config storedConfig = repository.getConfig();
         String url = storedConfig.getString('remote', 'origin', 'url');
+        if (url.startsWith("https://")) {
+            url = hideSensitiveInformation(url)
+        }
         return url
     }
 
@@ -67,5 +74,17 @@ class GitScmProvider extends AbstractScmProvider {
     @Override
     def calculateBranch(File projectDir) {
         return getRepository(projectDir).branch
+    }
+
+    def hideSensitiveInformation(String url) {
+        try {
+            def credentials = url.toURL().getUserInfo()
+            if (credentials != null) {
+                return url.replaceFirst(credentials, credentials.replaceFirst(/:.*/, ""))
+            }
+        } catch (Exception e) {
+            log.log(Level.WARNING, "Unable to remove credentials from repository URL. {0}", e.getMessage())
+        }
+        return url
     }
 }
