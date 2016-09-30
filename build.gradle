@@ -30,6 +30,8 @@ contacts {
 }
 
 dependencies {
+    compile gradleApi()
+
     // TODO, make these optional
     compile 'com.perforce:p4java:latest.release'
     compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
@@ -50,6 +52,12 @@ pluginBundle {
         infoBasic {
             id = 'nebula.info-basic'
             displayName = 'Gradle Info Basic plugin'
+            description = project.description
+            tags = ['nebula', 'info']
+        }
+        infoDependencies {
+            id = 'nebula.info-dependencies'
+            displayName = 'Gradle Info Dependencies plugin'
             description = project.description
             tags = ['nebula', 'info']
         }

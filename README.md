@@ -94,6 +94,14 @@ apply plugin: 'nebula.info-ci'
 Detects the current Continuous Integration environment and reports upon Job Name and Build Number. Currently only Jenkins
 is supported.
 
+info-dependencies Plugin (Collector)
+--------------
+```
+apply plugin: 'nebula.info-dependencies'
+```
+
+Reports on selected binary module versions (including transitives) of configurations that are resolved.
+
 info-scm Plugin (Collector)
 --------------
 ```
