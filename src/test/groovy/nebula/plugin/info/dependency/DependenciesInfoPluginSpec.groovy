@@ -50,6 +50,6 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
 
     @Override
     String getPluginName() {
-        'info-dependencies'
+        'nebula.info-dependencies'
     }
 }
