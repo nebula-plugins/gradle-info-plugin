@@ -1,10 +1,15 @@
-3.0.4 / 2016-3-30
-=================
+3.3.4 / 2016-11-11
+==================
+
+* BUGFIX: omit Resolved-Dependencies-<configuration> if there are no dependencies, empty value was failing validation
+
+3.0.4 / 2016-03-30
+==================
 
 * Allow plugins to send end-of-build reports to InfoBroker
 
-2.2.0 / 2015-1-30
-=================
+2.2.0 / 2015-01-30
+==================
 
 * Move to gradle 2.2.1
 

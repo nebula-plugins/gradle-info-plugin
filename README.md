@@ -116,7 +116,7 @@ your specific SCM implementation. Technically, these are not optional right now,
 ```
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:3.0.+' }
+    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:3.3.+' }
 
     dependencies { classpath 'com.perforce:p4java:2012.3.551082' }
     // or

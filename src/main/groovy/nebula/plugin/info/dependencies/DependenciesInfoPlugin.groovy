@@ -1,3 +1,18 @@
+/*
+ * Copyright 2016 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package nebula.plugin.info.dependencies
 
 import nebula.plugin.info.InfoBrokerPlugin
@@ -16,15 +31,18 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             for(Configuration conf: project.configurations) {
                 conf.incoming.afterResolve {
-                    manifestPlugin.add("Resolved-Dependencies-${it.name.capitalize()}",
-                        it.resolutionResult.allComponents.findAll { it.id instanceof ModuleComponentIdentifier }*.moduleVersion
+                    def resolvedDependencies = it.resolutionResult.allComponents.findAll { it.id instanceof ModuleComponentIdentifier }*.moduleVersion
                                 .sort(true, { m1, m2 ->
                                     if(m1.group != m2.group)
                                         return m1.group?.compareTo(m2.group) ?: -1
                                     if(m1.name != m2.name)
                                         return m1.name.compareTo(m2.name) // name is required
                                     versionComparator.compare(m1.version, m2.version)
-                                })*.toString().join(','))
+                                })*.toString().join(',')
+
+                    if (resolvedDependencies) {            
+                        manifestPlugin.add("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
+                    }
                 }
             }
         }
