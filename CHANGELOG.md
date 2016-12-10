@@ -1,3 +1,8 @@
+3.4.0 / 2016-12-09
+==================
+
+* Add report for dependencies for metrics to pick up
+
 3.3.4 / 2016-11-11
 ==================
 
