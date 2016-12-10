@@ -33,8 +33,10 @@ class InfoBrokerPluginIntegrationSpec extends IntegrationSpec {
                 println broker.buildReports().get('report')
             }
 
-            task createReport << {
-                broker.addReport('report', '$report')
+            task createReport {
+                doLast {
+                    broker.addReport('report', '$report')
+                }
             }
 
         """.stripIndent()
