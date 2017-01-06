@@ -33,10 +33,10 @@ dependencies {
     compile gradleApi()
 
     // TODO, make these optional
-    compile 'com.perforce:p4java:latest.release'
-    compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
-    compile 'org.eclipse.jgit:org.eclipse.jgit:latest.release'
-    compile 'org.tmatesoft.svnkit:svnkit:1.8.+'
+    compile 'com.perforce:p4java:2015.2.1365273'
+    compile 'com.netflix.nebula:gradle-contacts-plugin:3.0.1'
+    compile 'org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r'
+    compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
 }
 
 test.exclude '**/*Local*'
