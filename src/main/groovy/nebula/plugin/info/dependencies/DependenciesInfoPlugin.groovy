@@ -44,8 +44,7 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
                                         return m1.name.compareTo(m2.name) // name is required
                                     versionComparator.compare(m1.version, m2.version)
                                 })*.toString().join(',')
-                    if (resolvedDependencies) {            
-                        manifestPlugin.add("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
+                    if (resolvedDependencies) {
                         dependencies.put("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
                     }
                 }

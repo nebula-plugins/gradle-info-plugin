@@ -1,3 +1,8 @@
+3.5.0 / 2017-01-17
+==================
+
+* Remove resovled configurations from jar manifest
+
 3.4.0 / 2016-12-09
 ==================
 
