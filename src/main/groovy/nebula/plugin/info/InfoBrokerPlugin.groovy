@@ -116,10 +116,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
             throw new IllegalStateException('Build reports should only be used from the root project')
         }
 
-        if (!buildFinished.get()) {
-            throw new IllegalStateException('Cannot retrieve build reports before the build has finished')
-        }
-
         return Collections.unmodifiableMap(reportEntries)
     }
 
