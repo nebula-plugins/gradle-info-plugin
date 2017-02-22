@@ -18,11 +18,12 @@ package nebula.plugin.info.dependency
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.dependencies.DependenciesInfoPlugin
 import nebula.test.PluginProjectSpec
-import org.gradle.api.artifacts.ResolveException
-import spock.lang.Unroll
+import nebula.test.dependencies.DependencyGraphBuilder
+import nebula.test.dependencies.GradleDependencyGenerator
+import nebula.test.dependencies.ModuleBuilder
 
 class DependenciesInfoPluginSpec extends PluginProjectSpec {
-    def 'omits manifest entry if no dependencies'() {
+    def 'adds a dependencies entry to the reports even if there are no dependencies'() {
         setup:
         project.apply plugin: 'java'
         def brokerPlugin = project.plugins.apply(InfoBrokerPlugin)
@@ -30,15 +31,113 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         project.configurations.compile.resolve()
 
         when:
-        def manifest = brokerPlugin.buildManifest()
+        def reports = brokerPlugin.buildReports()
 
         then:
         noExceptionThrown()
-        !manifest.containsKey('Resolved-Dependencies-Compile')
+        reports.containsKey("dependencies")
     }
+
 
     @Override
     String getPluginName() {
         'nebula.info-dependencies'
+    }
+
+    def 'adds per-configuration dependency information to the reports'() {
+        setup:
+        def repoPath = "build/testrepogen"
+
+        new GradleDependencyGenerator(
+            new DependencyGraphBuilder()
+                .addModule(
+                    new ModuleBuilder("test.example:foo:1.0.0")
+                        .addDependency("test.example:bar:1.0.0")
+                        .build()
+
+                )
+                .addModule(
+                    new ModuleBuilder("test.example:baz:1.0.0")
+                        .addDependency("test.example:bar:2.0.0")
+                        .build()
+                )
+                .build(),
+            repoPath
+        )
+            .generateTestMavenRepo()
+
+
+        project.apply plugin: 'java'
+        def brokerPlugin = project.plugins.apply(InfoBrokerPlugin)
+        project.apply plugin: DependenciesInfoPlugin
+        project.dependencies {
+            compile "test.example:foo:1.0.0"
+            testCompile "test.example:baz:1.0.0"
+        }
+        project.repositories {
+            maven {
+                url {
+                    new File("$repoPath/mavenrepo")
+                        .absolutePath
+                }
+            }
+        }
+        project.configurations.compile.resolve()
+        project.configurations.testCompile.resolve()
+
+        when:
+        def dependencyReportForProject = brokerPlugin
+            .buildReports()
+            .get("dependencies")
+            .entrySet()[0]
+            .value as Map<String, Object>
+
+        then:
+        noExceptionThrown()
+        dependencyReportForProject.containsKey("compile") && dependencyReportForProject.containsKey("testCompile")
+    }
+
+
+    def 'does not add dependency information to the manifest'() {
+        setup:
+        def repoPath = "build/testrepogen"
+
+        new GradleDependencyGenerator(
+            new DependencyGraphBuilder()
+                .addModule(
+                    new ModuleBuilder("test.example:foo:1.0.0")
+                        .addDependency("test.example:bar:1.0.0")
+                        .build()
+
+                )
+                .build(),
+            repoPath
+        )
+            .generateTestMavenRepo()
+
+
+        project.apply plugin: 'java'
+        def brokerPlugin = project.plugins.apply(InfoBrokerPlugin)
+        project.apply plugin: DependenciesInfoPlugin
+        project.dependencies {
+            compile "test.example:foo:1.0.0"
+        }
+        project.repositories {
+            maven {
+                url {
+                    new File("$repoPath/mavenrepo")
+                        .absolutePath
+                }
+            }
+        }
+        project.configurations.compile.resolve()
+        project.configurations.testCompile.resolve()
+
+        when:
+        def manifest = brokerPlugin.buildManifest()
+
+        then:
+        noExceptionThrown()
+        !manifest.containsKey("dependencies")
     }
 }
