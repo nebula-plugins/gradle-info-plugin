@@ -37,6 +37,35 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         !manifest.containsKey('Resolved-Dependencies-Compile')
     }
 
+    def 'only includes configurations on configuration container'() {
+        setup:
+        project.apply plugin: 'java'
+        def brokerPlugin = project.plugins.apply(InfoBrokerPlugin)
+        project.apply plugin: DependenciesInfoPlugin
+
+        def guava = project.dependencies.create('com.google.guava:guava:21.0')
+
+        project.repositories.add(project.repositories.mavenCentral())
+
+        def configurations = project.configurations
+        def config = configurations.compile
+        config.dependencies.add(guava)
+
+        def detached = configurations.detachedConfiguration(guava)
+        configurations.add(detached)
+        configurations.remove(detached)
+
+        config.resolve()
+        detached.resolve()
+
+        when:
+        brokerPlugin.buildFinished.set(true)
+        def reports = brokerPlugin.buildReports()
+
+        then:
+        reports['resolved-dependencies']['only-includes-configurations-on-configuration-container-dependencies'].size() == 1
+    }
+
     @Override
     String getPluginName() {
         'nebula.info-dependencies'
