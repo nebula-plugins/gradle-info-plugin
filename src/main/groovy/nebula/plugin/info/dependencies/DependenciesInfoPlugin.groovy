@@ -21,10 +21,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
+import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.VersionInfo
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultVersionComparator
 
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    def versionComparator = new DefaultVersionComparator().asStringComparator()
+    def versionComparator = new DefaultVersionComparator()
 
     @Override
     void apply(Project project) {
@@ -42,10 +43,10 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
                         }*.moduleVersion
                                 .sort(true, { m1, m2 ->
                             if (m1.group != m2.group)
-                                return m1.group?.compareTo(m2.group) ?: -1
+                                return m1.group <=> m2.group ?: -1
                             if (m1.name != m2.name)
-                                return m1.name.compareTo(m2.name) // name is required
-                            versionComparator.compare(m1.version, m2.version)
+                                return m1.name <=> m2.name // name is required
+                            versionComparator.compare(new VersionInfo(m1.version), new VersionInfo(m2.version))
                         })*.toString().join(',')
                         if (resolvedDependencies) {
                             dependencies.put("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
