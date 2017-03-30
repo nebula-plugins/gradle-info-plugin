@@ -15,15 +15,16 @@
  */
 package nebula.plugin.info.scm
 
-import com.energizedwork.spock.extensions.TempDirectory
 import com.perforce.p4java.client.IClient
 import com.perforce.p4java.impl.generic.client.ClientView
 import com.perforce.p4java.server.IServer
 import nebula.test.ProjectSpec
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 
 class PerforceScmProviderLocalSpec extends ProjectSpec {
-
-    @TempDirectory File projectDir
+    @Rule
+    TemporaryFolder testDir
 
     def provider = new PerforceScmProvider()
 

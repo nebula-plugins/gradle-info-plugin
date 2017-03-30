@@ -20,7 +20,8 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class PerforceScmProviderSpec extends Specification {
-    @Rule TemporaryFolder temp
+    @Rule
+    TemporaryFolder temp
     def provider = new PerforceScmProvider()
 
     def 'lookup settings'() {
