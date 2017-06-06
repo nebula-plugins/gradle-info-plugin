@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '5.15.4'
+    id 'nebula.plugin-plugin' version '5.14.0'
 }
 
 description 'Gradle plugin collect and provide information about the environment'
