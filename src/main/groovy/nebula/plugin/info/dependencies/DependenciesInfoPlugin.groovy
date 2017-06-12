@@ -21,43 +21,69 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.VersionInfo
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultVersionComparator
 
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    def versionComparator = new DefaultVersionComparator()
-
     @Override
     void apply(Project project) {
         if (!project.rootProject.hasProperty('nebulaInfoDependencies')) {
             project.rootProject.ext.nebulaInfoDependencies = [:]
         }
+        if (!project.rootProject.hasProperty('nebulaInfoRequestedDependencies')) {
+            project.rootProject.ext.nebulaInfoRequestedDependencies = [:]
+        }
+        if (!project.rootProject.hasProperty('nebulaInfoExcludes')) {
+            project.rootProject.ext.nebulaInfoExcludes = [:]
+        }
+        if (!project.rootProject.hasProperty('nebulaInfoResolutionStrategies')) {
+            project.rootProject.ext.nebulaInfoResolutionStrategies = [:]
+        }
         def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
         def dependencies = [:]
+        def requestedDependencyMap = project.rootProject.property('nebulaInfoRequestedDependencies')
+        def requestedDependencies = [:]
+        def excludeMap = project.rootProject.property('nebulaInfoExcludes')
+        def excludes = [:]
+        def resolutionStrategyMap = project.rootProject.property('nebulaInfoResolutionStrategies')
+        def resolutionStrategies = [:]
+
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             project.configurations.all( { Configuration conf ->
-                conf.incoming.afterResolve {
+                conf.incoming.afterResolve { resolvableDependencies ->
                     if (project.configurations.contains(conf)) {
-                        def resolvedDependencies = it.resolutionResult.allComponents.findAll {
+                        def requested = resolvableDependencies.dependencies
+
+                        excludes.put(
+                            conf.name,
+                            conf.excludeRules
+                        )
+
+                        resolutionStrategies.put(
+                            conf.name,
+                            conf.resolutionStrategy
+                        )
+
+                        requestedDependencies
+                            .put(conf.name, requested)
+
+                        def resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
                             it.id instanceof ModuleComponentIdentifier
-                        }*.moduleVersion
-                                .sort(true, { m1, m2 ->
-                            if (m1.group != m2.group)
-                                return m1.group <=> m2.group ?: -1
-                            if (m1.name != m2.name)
-                                return m1.name <=> m2.name // name is required
-                            versionComparator.compare(new VersionInfo(m1.version), new VersionInfo(m2.version))
-                        })*.toString().join(',')
+                        }
                         if (resolvedDependencies) {
-                            dependencies.put("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
+                            dependencies.put(resolvableDependencies.name, resolvedDependencies)
                         }
                     }
                 }
             })
 
-            dependencyMap["${project.name}-dependencies".toString()] = dependencies
+            dependencyMap[project.name] = dependencies
+            resolutionStrategyMap[project.name] = resolutionStrategies
+            excludeMap[project.name] = excludes
+            requestedDependencyMap[project.name] = requestedDependencies
             if (project == project.rootProject) {
-                manifestPlugin.addReport('resolved-dependencies', dependencyMap)
+                manifestPlugin.addReport('resolvedDependencies', dependencyMap)
+                manifestPlugin.addReport('requestedDependencies', requestedDependencyMap)
+                manifestPlugin.addReport('resolutionStrategies', resolutionStrategyMap)
+                manifestPlugin.addReport('excludes', excludeMap)
             }
         }
     }
