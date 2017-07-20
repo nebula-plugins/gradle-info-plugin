@@ -59,8 +59,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -81,8 +81,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -103,8 +103,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -125,8 +125,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -193,8 +193,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -215,8 +215,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -237,8 +237,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
@@ -259,8 +259,8 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.0.1",
-            "requested": "6.0.1"
+            "locked": "6.1.0",
+            "requested": "6.+"
         },
         "com.perforce:p4java": {
             "locked": "2015.2.1365273",
