@@ -18,9 +18,7 @@ package nebula.plugin.info.dependency
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.dependencies.DependenciesInfoPlugin
 import nebula.test.PluginProjectSpec
-import org.gradle.api.artifacts.ResolveException
-import org.gradle.api.internal.artifacts.ivyservice.resolutionstrategy.StrictConflictResolution
-import spock.lang.Unroll
+import org.gradle.api.internal.artifacts.configurations.ConflictResolution
 
 class DependenciesInfoPluginSpec extends PluginProjectSpec {
     def 'reports requestedDependencies if zero-sized'() {
@@ -170,8 +168,8 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         then:
         noExceptionThrown()
         reports['resolvedDependencies']['reports-resolvedDependencies']['compile']
-            .findAll { it.moduleVersion.id.toString() == 'org.apache.spark:spark-parent' }
-            .size() == 1
+                .findAll { it.moduleVersion.id.toString() == 'org.apache.spark:spark-parent' }
+                .size() == 1
 
     }
 
@@ -202,8 +200,8 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         noExceptionThrown()
         // the excludes are attached via Gradle's own internal model
         reports['requestedDependencies']['reports-the-dependency-model-per-Gradle-without-transforming-it']['compile'][0]
-            .getExcludeRules()
-            .size() == 1
+                .getExcludeRules()
+                .size() == 1
     }
 
     def 'reports excludes'() {
@@ -251,7 +249,7 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         then:
         noExceptionThrown()
         reports['resolutionStrategies']['reports-resolution-strategies']['compile']
-            .conflictResolution instanceof StrictConflictResolution
+                .conflictResolution == ConflictResolution.strict
 
     }
 
