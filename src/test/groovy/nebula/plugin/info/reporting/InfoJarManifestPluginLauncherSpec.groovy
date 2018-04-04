@@ -151,7 +151,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         jarFile.exists()
         Manifest manifest = new JarFile(jarFile).manifest
         Attributes attributes = manifest.mainAttributes
-        attributes.getValue('Implementation-Title') == "com.netflix#changes-to-group-and-version-are-reflected;1.0"
+        attributes.getValue('Implementation-Title') == "com.netflix#changes-to-group-and-version-after-project-evaluation-are-reflected;1.0"
     }
 
     private void assertMainfestKeyExists(Attributes attributes, String key) {
