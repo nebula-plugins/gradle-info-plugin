@@ -102,6 +102,58 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
 
+    def "changes to group and version are reflected"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            group = 'com.netflix'
+            version = '1.0'
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('jar')
+
+        then:
+        File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
+        jarFile.exists()
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        attributes.getValue('Implementation-Title') == "com.netflix#changes-to-group-and-version-are-reflected;1.0"
+    }
+
+    def "changes to group and version after project evaluation are reflected"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            afterEvaluate {
+                group = 'com.netflix'
+                version = '1.0'
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('jar')
+
+        then:
+        File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
+        jarFile.exists()
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        attributes.getValue('Implementation-Title') == "com.netflix#changes-to-group-and-version-are-reflected;1.0"
+    }
+
     private void assertMainfestKeyExists(Attributes attributes, String key) {
         assert attributes.containsKey(new Attributes.Name(key))
     }
