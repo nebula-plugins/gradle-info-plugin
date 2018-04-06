@@ -32,7 +32,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
 
             gradle.buildFinished {
-                println broker.buildReports().get('resolvedDependencies')
+                println broker.buildReports().get('resolved-dependencies')
             }
         """.stripIndent()
 
@@ -42,7 +42,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         ExecutionResult result = runTasksSuccessfully('assemble')
 
         then:
-        result.standardOutput.contains('{it-returns-build-reports-at-the-end-of-the-build={compileClasspath=[com.google.guava:guava:18.0]}}')
+        result.standardOutput.contains('-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}}')
     }
 
     def 'it returns build reports at the end of multiproject build'() {
@@ -59,7 +59,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
 
             gradle.buildFinished {
-                println broker.buildReports().get('resolvedDependencies')
+                println broker.buildReports().get('resolved-dependencies')
             }
         """.stripIndent()
         def common = addSubproject('common', '''\
@@ -81,6 +81,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         ExecutionResult result = runTasksSuccessfully('build')
 
         then:
-        result.standardOutput.contains('{it-returns-build-reports-at-the-end-of-multiproject-build={}, app={compileClasspath=[com.google.guava:guava:19.0]}, common={compileClasspath=[com.google.guava:guava:18.0]}}')
+        result.standardOutput.contains('common-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}')
+        result.standardOutput.contains('app-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:19.0}')
     }
 }
