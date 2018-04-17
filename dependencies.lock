@@ -59,7 +59,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -81,7 +81,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -103,7 +103,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -125,7 +125,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -143,12 +143,12 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.7.8"
+            "locked": "0.8.1"
         }
     },
     "jacocoAnt": {
         "org.jacoco:org.jacoco.ant": {
-            "locked": "0.7.8"
+            "locked": "0.8.1"
         }
     },
     "runtime": {
@@ -193,7 +193,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -215,7 +215,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -237,7 +237,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -259,7 +259,7 @@
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.1.2",
+            "locked": "6.4.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
