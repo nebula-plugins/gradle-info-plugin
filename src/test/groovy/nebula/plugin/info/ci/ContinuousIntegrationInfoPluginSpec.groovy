@@ -52,16 +52,10 @@ class ContinuousIntegrationInfoPluginSpec extends IntegrationSpec {
         'Gitlab'  | [GITLAB_CI: 'true', CI_BUILD_NAME: 'org/my-repo', CI_BUILD_ID: '1']                                || ['Build-Job': 'org/my-repo', 'Build-Number': '1', 'Build-Id': '1']
         'Jenkins' | [JOB_NAME: 'org/my-repo', BUILD_ID: '1', 'BUILD_NUMBER': '10']                                     || ['Build-Job': 'org/my-repo', 'Build-Number': '10', 'Build-Id': '1']
         'Travis'  | [TRAVIS: 'true', TRAVIS_REPO_SLUG: 'org/my-repo', TRAVIS_BUILD_NUMBER: '10', TRAVIS_BUILD_ID: '1'] || ['Build-Job': 'org/my-repo', 'Build-Number': '10', 'Build-Id': '1']
+        'Unknown' | [:]                                                                                                || ['Build-Job': 'LOCAL', 'Build-Number': 'LOCAL', 'Build-Id': 'LOCAL']
     }
-
 
     private manifestKey(Attributes attributes, String key) {
         attributes.get(new Attributes.Name(key))
     }
-
-    private void assertMainfestKeyExists(Attributes attributes, String key) {
-        assert attributes.containsKey(new Attributes.Name(key))
-    }
-
-
 }
