@@ -19,6 +19,7 @@ package nebula.plugin.info.reporting
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.basic.BasicInfoPlugin
 import nebula.test.IntegrationSpec
+import nebula.test.functional.ExecutionResult
 
 import java.util.jar.Attributes
 import java.util.jar.JarFile
@@ -101,6 +102,100 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Build-Date')
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
+
+    def "Creates JAR file with populated manifest excluding properties in infoBrokerPlugin configuration"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            version = '1.0'
+
+            infoBrokerPlugin {
+                excludedProperties = ['Build-Date', 'Built-OS']
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('jar')
+
+        then:
+        File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
+        jarFile.exists()
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        !attributes.containsKey(new Attributes.Name('Build-Date'))
+        !attributes.containsKey(new Attributes.Name('Build-OS'))
+        assertMainfestKeyExists(attributes, 'Manifest-Version')
+        assertMainfestKeyExists(attributes, 'Implementation-Title')
+        assertMainfestKeyExists(attributes, 'Implementation-Version')
+        assertMainfestKeyExists(attributes, 'Built-Status')
+        assertMainfestKeyExists(attributes, 'Built-By')
+        assertMainfestKeyExists(attributes, 'Gradle-Version')
+    }
+
+    def "Creates JAR file with populated manifest including only properties in infoBrokerPlugin configuration"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            version = '1.0'
+
+            infoBrokerPlugin {
+                includedProperties = ['Build-Date', 'Built-OS']
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('jar')
+
+        then:
+        File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
+        jarFile.exists()
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        assertMainfestKeyExists(attributes, 'Build-Date')
+        assertMainfestKeyExists(attributes, 'Built-OS')
+        !attributes.containsKey(new Attributes.Name('Implementation-Title'))
+        !attributes.containsKey(new Attributes.Name('Built-Status'))
+        !attributes.containsKey(new Attributes.Name('Built-By'))
+        !attributes.containsKey(new Attributes.Name('Gradle-Version'))
+    }
+
+    def "Creates JAR fails if includedProperties and excludedProperties are both provided"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            version = '1.0'
+
+            infoBrokerPlugin {
+                includedProperties = ['Build-Date', 'Built-OS']
+                excludedProperties = ['Build-Date', 'Built-OS']
+            }
+        """.stripIndent()
+
+        when:
+        ExecutionResult executionResult = runTasksWithFailure('jar')
+
+        then:
+        executionResult.standardOutput.contains('includedProperties and excludedProperties are mutually exclusive. Only one should be provided')
+    }
+
 
     def "changes to group and version are reflected"() {
         given:

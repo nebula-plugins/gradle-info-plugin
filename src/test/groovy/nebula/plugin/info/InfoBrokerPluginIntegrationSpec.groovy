@@ -28,7 +28,7 @@ class InfoBrokerPluginIntegrationSpec extends IntegrationSpec {
             ${applyPlugin(InfoBrokerPlugin)}
 
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
-
+            
             gradle.buildFinished {
                 println broker.buildReports().get('report')
             }

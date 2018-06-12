@@ -45,11 +45,12 @@ class InfoBrokerPlugin implements Plugin<Project> {
     private Project project
 
     void apply(Project project) {
-
         this.manifestEntries = new ArrayList<ManifestEntry>()
         this.reportEntries = new HashMap<>()
         this.watchers = [:].withDefault { [] }
         this.project = project
+
+        InfoBrokerPluginExtension extension = project.getExtensions().create('infoBrokerPlugin', InfoBrokerPluginExtension)
 
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
@@ -57,10 +58,40 @@ class InfoBrokerPlugin implements Plugin<Project> {
                 this.buildFinished.set(true)
             }
         })
+
+        project.afterEvaluate {
+            filterManifestEntries(extension)
+        }
         // Leaving out for now. I find that the configure methods, when called this way, aren't being called.
         //project.getExtensions().add('manifest', container)
 
         // The idea is that other plugins will grab a reference to this plugin or manifestEntry and add their entries
+    }
+
+    private void filterManifestEntries(InfoBrokerPluginExtension extension) {
+        if(extension.includedProperties && extension.excludedProperties) {
+            throw new GradleException("includedProperties and excludedProperties are mutually exclusive. Only one should be provided")
+        } else if(extension.excludedProperties) {
+            removeExcludedProperties(extension)
+        } else if(extension.includedProperties) {
+            filterOnlyIncludedProperties(extension)
+        }
+    }
+
+    private void filterOnlyIncludedProperties(InfoBrokerPluginExtension extension) {
+        List<String> includedProperties = extension.includedProperties
+        List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
+            (entry.name in includedProperties)
+        }
+        manifestEntries = filteredManifestEntries
+    }
+
+    private void removeExcludedProperties(InfoBrokerPluginExtension extension) {
+        List<String> excludedProperties = extension.excludedProperties
+        List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
+            !(entry.name in excludedProperties)
+        }
+        manifestEntries = filteredManifestEntries
     }
 
     def add(String key, Closure closure) {
