@@ -54,12 +54,16 @@
         }
     },
     "integTestCompile": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -76,12 +80,16 @@
         }
     },
     "integTestCompileClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -98,12 +106,16 @@
         }
     },
     "integTestRuntime": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -120,12 +132,16 @@
         }
     },
     "integTestRuntimeClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -188,12 +204,16 @@
         }
     },
     "testCompile": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -210,12 +230,16 @@
         }
     },
     "testCompileClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -232,12 +256,16 @@
         }
     },
     "testRuntime": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
@@ -254,12 +282,16 @@
         }
     },
     "testRuntimeClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
         "com.netflix.nebula:gradle-contacts-plugin": {
             "locked": "3.0.1",
             "requested": "3.0.1"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "6.4.0",
+            "locked": "6.7.0",
             "requested": "6.+"
         },
         "com.perforce:p4java": {
