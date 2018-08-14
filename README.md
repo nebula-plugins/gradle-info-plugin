@@ -62,6 +62,12 @@ info-jar-props Plugin (Reporter)
 ---------------
 ```
 apply plugin: 'nebula.info-jar-props'
+
+infoBroker {
+    excludedManifestProperties = ['Build-Date', 'Built-OS']
+    // or, but not both!
+    includedManifestProperties = ['Build-Date']
+}
 ```
 
 Leverages info-props to create a file, which this plugin then puts into the META-INF of all jars.
