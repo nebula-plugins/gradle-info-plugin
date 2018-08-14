@@ -45,6 +45,14 @@ info-jar Plugin (Reporter)
 ---------------
 ```
 apply plugin: 'nebula.info-jar'
+
+// optionally configure MANIFEST.MF entries
+infoBroker {
+    excludedManifestProperties = ['Build-Date', 'Built-OS']
+    // or, but not both!
+    includedManifestProperties = ['Build-Date']
+}
+
 ```
 
 Pumps all values from the broker into the manifest of all jar's being built.
@@ -62,12 +70,6 @@ info-jar-props Plugin (Reporter)
 ---------------
 ```
 apply plugin: 'nebula.info-jar-props'
-
-infoBroker {
-    excludedManifestProperties = ['Build-Date', 'Built-OS']
-    // or, but not both!
-    includedManifestProperties = ['Build-Date']
-}
 ```
 
 Leverages info-props to create a file, which this plugin then puts into the META-INF of all jars.
