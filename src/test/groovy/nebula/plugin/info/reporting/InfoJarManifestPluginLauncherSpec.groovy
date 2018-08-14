@@ -103,7 +103,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
 
-    def "Creates JAR file with populated manifest excluding properties in infoBrokerPlugin configuration"() {
+    def "Creates JAR file with populated manifest excluding properties in infoBroker configuration"() {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
@@ -115,8 +115,8 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
 
             version = '1.0'
 
-            infoBrokerPlugin {
-                excludedProperties = ['Build-Date', 'Built-OS']
+            infoBroker {
+                excludedManifestProperties = ['Build-Date', 'Built-OS']
             }
         """.stripIndent()
 
@@ -138,7 +138,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Gradle-Version')
     }
 
-    def "Creates JAR file with populated manifest including only properties in infoBrokerPlugin configuration"() {
+    def "Creates JAR file with populated manifest including only properties in infoBroker configuration"() {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
@@ -150,8 +150,8 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
 
             version = '1.0'
 
-            infoBrokerPlugin {
-                includedProperties = ['Build-Date', 'Built-OS']
+            infoBroker {
+                includedManifestProperties = ['Build-Date', 'Built-OS']
             }
         """.stripIndent()
 
@@ -171,7 +171,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         !attributes.containsKey(new Attributes.Name('Gradle-Version'))
     }
 
-    def "Creates JAR fails if includedProperties and excludedProperties are both provided"() {
+    def "Creates JAR fails if excludedManifestProperties and excludedManifestProperties are both provided"() {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
@@ -183,9 +183,9 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
 
             version = '1.0'
 
-            infoBrokerPlugin {
-                includedProperties = ['Build-Date', 'Built-OS']
-                excludedProperties = ['Build-Date', 'Built-OS']
+            infoBroker {
+                includedManifestProperties = ['Build-Date', 'Built-OS']
+                excludedManifestProperties = ['Build-Date', 'Built-OS']
             }
         """.stripIndent()
 
@@ -193,7 +193,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         ExecutionResult executionResult = runTasksWithFailure('jar')
 
         then:
-        executionResult.standardOutput.contains('includedProperties and excludedProperties are mutually exclusive. Only one should be provided')
+        executionResult.standardOutput.contains('includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided')
     }
 
 

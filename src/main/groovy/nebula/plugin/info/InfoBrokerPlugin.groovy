@@ -50,7 +50,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
         this.watchers = [:].withDefault { [] }
         this.project = project
 
-        InfoBrokerPluginExtension extension = project.getExtensions().create('infoBrokerPlugin', InfoBrokerPluginExtension)
+        InfoBrokerPluginExtension extension = project.getExtensions().create('infoBroker', InfoBrokerPluginExtension)
 
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
@@ -69,17 +69,17 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void filterManifestEntries(InfoBrokerPluginExtension extension) {
-        if(extension.includedProperties && extension.excludedProperties) {
-            throw new GradleException("includedProperties and excludedProperties are mutually exclusive. Only one should be provided")
-        } else if(extension.excludedProperties) {
+        if(extension.includedManifestProperties && extension.excludedManifestProperties) {
+            throw new GradleException("includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided")
+        } else if(extension.excludedManifestProperties) {
             removeExcludedProperties(extension)
-        } else if(extension.includedProperties) {
+        } else if(extension.includedManifestProperties) {
             filterOnlyIncludedProperties(extension)
         }
     }
 
     private void filterOnlyIncludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> includedProperties = extension.includedProperties
+        List<String> includedProperties = extension.includedManifestProperties
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             (entry.name in includedProperties)
         }
@@ -87,7 +87,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void removeExcludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> excludedProperties = extension.excludedProperties
+        List<String> excludedProperties = extension.excludedManifestProperties
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             !(entry.name in excludedProperties)
         }
