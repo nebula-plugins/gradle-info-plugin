@@ -32,6 +32,7 @@ import static java.util.jar.Attributes.Name.*
  *     <li>Built-Status (project.status)</li>
  *     <li>Built-By (user.name)</li>
  *     <li>Build-Date</li>
+ *     <li>Build-Date-Format</li>
  *     <li>Gradle-Version (project.gradle.gradleVersion)</li>
  * </ul>
  */
@@ -64,8 +65,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add('Built-By', System.getProperty('user.name'))
             manifestPlugin.add('Built-OS', System.getProperty('os.name'))
 
+            String buildDateFormat = "yyyy-MM-dd'T'HH:mm:ssXXX"
             // Makes list of attributes not idempotent, which can throw off "changed" checks
-            manifestPlugin.add('Build-Date', new Date().format('yyyy-MM-dd_HH:mm:ss')).changing = true
+            manifestPlugin.add('Build-Date', new Date().format(buildDateFormat)).changing = true
+            manifestPlugin.add('Build-Date-Format', buildDateFormat)
 
             manifestPlugin.add('Gradle-Version', { project.gradle.gradleVersion })
 
