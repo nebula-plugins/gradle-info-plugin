@@ -1,0 +1,310 @@
+{
+    "compile": {
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "compileClasspath": {
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "default": {
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "integTestCompile": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "integTestCompileClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "integTestRuntime": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "integTestRuntimeClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "jacocoAgent": {
+        "org.jacoco:org.jacoco.agent": {
+            "locked": "0.8.1"
+        }
+    },
+    "jacocoAnt": {
+        "org.jacoco:org.jacoco.ant": {
+            "locked": "0.8.1"
+        }
+    },
+    "runtime": {
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "runtimeClasspath": {
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "testCompile": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "testCompileClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "testRuntime": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    },
+    "testRuntimeClasspath": {
+        "com.github.stefanbirkner:system-rules": {
+            "locked": "1.18.0",
+            "requested": "1.18.0"
+        },
+        "com.netflix.nebula:gradle-contacts-plugin": {
+            "locked": "4.0.2",
+            "requested": "latest.release"
+        },
+        "com.netflix.nebula:nebula-test": {
+            "locked": "7.1.0",
+            "requested": "7.+"
+        },
+        "com.perforce:p4java": {
+            "locked": "2015.2.1365273",
+            "requested": "2015.2.1365273"
+        },
+        "org.eclipse.jgit:org.eclipse.jgit": {
+            "locked": "5.0.1.201806211838-r",
+            "requested": "5.0.1.201806211838-r"
+        },
+        "org.tmatesoft.svnkit:svnkit": {
+            "locked": "1.8.12",
+            "requested": "1.8.12"
+        }
+    }
+}

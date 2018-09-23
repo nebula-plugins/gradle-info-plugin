@@ -31,10 +31,10 @@ contacts {
 
 dependencies {
     // TODO, make these optional
-    compile 'com.netflix.nebula:gradle-contacts-plugin:2.2.+'
+    compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
     compile 'com.perforce:p4java:2012.3.551082' // Perforce SCM Provider, this might not last
-    compile 'org.eclipse.jgit:org.eclipse.jgit:3.2.0.201312181205-r'
-    testCompile('com.netflix.nebula:nebula-test:2.2.+') {
+    compile 'org.eclipse.jgit:org.eclipse.jgit:5.0.1.201806211838-r'
+    testCompile('com.netflix.nebula:nebula-test:7.+') {
         exclude group: 'org.codehaus.groovy'
     }
 }

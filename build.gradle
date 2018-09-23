@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '8.1.0'
+    id 'nebula.plugin-plugin' version '8.1.2'
 }
 
 description 'Gradle plugin collect and provide information about the environment'
@@ -33,8 +33,8 @@ dependencies {
 
     // TODO, make these optional
     compile 'com.perforce:p4java:2015.2.1365273'
-    compile 'com.netflix.nebula:gradle-contacts-plugin:3.0.1'
-    compile 'org.eclipse.jgit:org.eclipse.jgit:4.4.1.201607150455-r'
+    compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
+    compile 'org.eclipse.jgit:org.eclipse.jgit:5.0.1.201806211838-r'
     compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
     testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
 }
