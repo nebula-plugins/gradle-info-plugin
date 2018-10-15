@@ -40,7 +40,7 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
     void apply(Project project) {
         // This can't change, so we can commit it early
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin  manifestPlugin ->
-            manifestPlugin.add(CREATED_PROPERTY, "${System.getProperty('java.runtime.version')} (${System.getProperty('java.vm.specification.vendor')})")
+            manifestPlugin.add(CREATED_PROPERTY, "${System.getProperty('java.runtime.version')} (${System.getProperty('java.vm.vendor')})")
             manifestPlugin.add(JDK_PROPERTY, System.getProperty('java.version'))
         }
 
