@@ -193,7 +193,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         ExecutionResult executionResult = runTasksWithFailure('jar')
 
         then:
-        executionResult.standardOutput.contains('includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided')
+        executionResult.standardError.contains('includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided')
     }
 
 
