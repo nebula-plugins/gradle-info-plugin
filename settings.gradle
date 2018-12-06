@@ -1,4 +1,2 @@
 rootProject.name='gradle-info-plugin' 
 
-enableFeaturePreview('STABLE_PUBLISHING')
-
