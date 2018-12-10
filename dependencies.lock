@@ -1,7 +1,7 @@
 {
     "compile": {
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.perforce:p4java": {
@@ -19,7 +19,7 @@
     },
     "compileClasspath": {
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.perforce:p4java": {
@@ -37,7 +37,7 @@
     },
     "default": {
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.perforce:p4java": {
@@ -59,11 +59,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -85,11 +85,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -111,11 +111,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -137,11 +137,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -159,17 +159,17 @@
     },
     "jacocoAgent": {
         "org.jacoco:org.jacoco.agent": {
-            "locked": "0.8.1"
+            "locked": "0.8.2"
         }
     },
     "jacocoAnt": {
         "org.jacoco:org.jacoco.ant": {
-            "locked": "0.8.1"
+            "locked": "0.8.2"
         }
     },
     "runtime": {
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.perforce:p4java": {
@@ -187,7 +187,7 @@
     },
     "runtimeClasspath": {
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.perforce:p4java": {
@@ -209,11 +209,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -235,11 +235,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -261,11 +261,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -287,11 +287,11 @@
             "requested": "1.18.0"
         },
         "com.netflix.nebula:gradle-contacts-plugin": {
-            "locked": "4.0.2",
+            "locked": "4.1.1",
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.0",
+            "locked": "7.1.2",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
