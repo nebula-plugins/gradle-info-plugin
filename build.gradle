@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2014-2016 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,10 @@ contacts {
     'justin@halfempty.org' {
         moniker 'Justin Ryan'
         github 'quidryan'
+    }
+    'roberto@perezalcolea.info' {
+        moniker 'Roberto Perez Alcolea'
+        github 'rpalcolea'
     }
 }
 
