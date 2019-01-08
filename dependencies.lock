@@ -63,7 +63,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -89,7 +89,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -115,7 +115,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -141,7 +141,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -213,7 +213,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -239,7 +239,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -265,7 +265,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
@@ -291,7 +291,7 @@
             "requested": "latest.release"
         },
         "com.netflix.nebula:nebula-test": {
-            "locked": "7.1.4",
+            "locked": "7.1.7",
             "requested": "7.+"
         },
         "com.perforce:p4java": {
