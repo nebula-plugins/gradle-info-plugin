@@ -16,11 +16,13 @@
 
 package nebula.plugin.info.ci
 
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
 /**
  * Tests for {@link UnknownContinuousIntegrationProvider}.
  */
+@IgnoreIf({ Boolean.valueOf(env['TRAVIS']) })
 class UnknownContinuousIntegrationProviderTest extends Specification {
     def 'calculated hostname matches resolved local host'() {
         given:
