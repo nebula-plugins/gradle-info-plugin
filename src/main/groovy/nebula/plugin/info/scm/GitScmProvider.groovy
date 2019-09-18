@@ -35,37 +35,35 @@ class GitScmProvider extends AbstractScmProvider {
     }
 
     @Override
-    def calculateModuleOrigin(File projectDir) {
+    String calculateModuleOrigin(File projectDir) {
         Repository repository = getRepository(projectDir)
-        Config storedConfig = repository.getConfig();
-        String url = storedConfig.getString('remote', 'origin', 'url');
-        return url
+        Config storedConfig = repository.getConfig()
+        return  storedConfig.getString('remote', 'origin', 'url')
     }
 
     @Override
-    def calculateModuleSource(File projectDir) {
+    String calculateModuleSource(File projectDir) {
         Repository repository = getRepository(projectDir)
-        def gitDir = repository.directory
-        def relative = projectDir.absolutePath - gitDir.parentFile.absolutePath
-        return relative
+        File gitDir = repository.directory
+        return projectDir.absolutePath - gitDir.parentFile.absolutePath
     }
 
     @Override
     String calculateChange(File projectDir) {
-        def hash = System.getenv('GIT_COMMIT') // From Jenkins
-        if (hash==null) {
+        String hash = System.getenv('GIT_COMMIT') // From Jenkins
+        if (!hash) {
             def head = getRepository(projectDir).resolve(Constants.HEAD)
             if (!head) {
                 return null
             }
             hash = head.name
         }
-        def shortHash = hash?.substring(0,7)
+        String shortHash = hash?.substring(0,7)
         return shortHash
     }
 
     @Override
-    def calculateBranch(File projectDir) {
+    String calculateBranch(File projectDir) {
         return getRepository(projectDir).branch
     }
 }

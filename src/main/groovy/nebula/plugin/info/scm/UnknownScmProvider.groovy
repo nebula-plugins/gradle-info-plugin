@@ -28,12 +28,12 @@ class UnknownScmProvider extends AbstractScmProvider {
     }
 
     @Override
-    def calculateModuleOrigin(File projectDir) {
+    String calculateModuleOrigin(File projectDir) {
         return LOCAL
     }
 
     @Override
-    def calculateModuleSource(File projectDir) {
+    String calculateModuleSource(File projectDir) {
         return projectDir.absolutePath
     }
 
@@ -43,7 +43,7 @@ class UnknownScmProvider extends AbstractScmProvider {
     }
 
     @Override
-    def calculateBranch(File projectDir) {
+    String calculateBranch(File projectDir) {
         return null
     }
 }

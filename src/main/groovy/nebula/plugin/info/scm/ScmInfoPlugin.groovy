@@ -65,7 +65,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     }
 
     ScmInfoProvider findProvider() {
-        def provider = providers.find { it.supports(project) }
+        ScmInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider
         } else {

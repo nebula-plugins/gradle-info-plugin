@@ -60,7 +60,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     }
 
     ContinuousIntegrationInfoProvider findProvider() {
-        def provider = providers.find { it.supports(project) }
+        ContinuousIntegrationInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider
         } else {

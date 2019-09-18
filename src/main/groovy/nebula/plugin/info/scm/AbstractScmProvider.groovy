@@ -33,9 +33,9 @@ abstract class AbstractScmProvider implements ScmInfoProvider {
             return null
         }
 
-        def dirToLookIn = starting
+        File dirToLookIn = starting
         while(dirToLookIn) {
-            def p4configFile = new File(dirToLookIn, filename)
+            File p4configFile = new File(dirToLookIn, filename)
             if (p4configFile.exists()) {
                 return p4configFile
             }

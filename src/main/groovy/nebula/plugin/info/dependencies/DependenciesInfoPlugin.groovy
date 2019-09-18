@@ -35,12 +35,12 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     void apply(Project project) {
         setInfoDependencies(project)
         def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
-        def dependencies = [:]
+        Map dependencies = [:]
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             project.configurations.all( { Configuration conf ->
                 conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
                     if (project.configurations.contains(conf)) {
-                        def resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
+                        String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
                             it.id instanceof ModuleComponentIdentifier
                         }*.moduleVersion
                                 .sort(true, { m1, m2 ->
