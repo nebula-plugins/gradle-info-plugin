@@ -135,21 +135,21 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @PackageScope
-    def Map<String, String> perforceDefaults(File projectDir) {
+    Map<String, String> perforceDefaults(File projectDir) {
         // Set some default values then look for overrides
-        def defaults = [
+        Map<String, String> defaults = [
                 P4CLIENT: null,
                 P4USER: 'rolem',
                 P4PASSWD: '',
                 P4PORT: 'perforce:1666'
-        ]
+        ] as Map<String, String>
 
         // First look for P4CONFIG name
         findP4Config(projectDir) // Might be noop
         if (p4configFile) {
             def props = new Properties()
             props.load(new FileReader(p4configFile))
-            defaults = overrideFromMap(defaults, props)
+            defaults = overrideFromMap(defaults, props as Map<String, String>)
         }
 
         // Second user environment variables
@@ -159,8 +159,8 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @PackageScope
-    def Map<String, String> overrideFromMap(Map<String, String> orig, Map<String, String> override) {
-        def dest = [:]
+    Map<String, String> overrideFromMap(Map<String, String> orig, Map<String, String> override) {
+        Map<String, String> dest = [:]
         orig.keySet().each { String key ->
             dest[key] = override.keySet().contains(key) ? override[key] : orig[key]
         }

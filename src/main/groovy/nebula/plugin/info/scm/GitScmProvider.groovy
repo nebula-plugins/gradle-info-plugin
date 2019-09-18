@@ -55,7 +55,7 @@ class GitScmProvider extends AbstractScmProvider {
         def hash = System.getenv('GIT_COMMIT') // From Jenkins
         if (hash==null) {
             def head = getRepository(projectDir).resolve(Constants.HEAD)
-            if (head==null) {
+            if (!head) {
                 return null
             }
             hash = head.name

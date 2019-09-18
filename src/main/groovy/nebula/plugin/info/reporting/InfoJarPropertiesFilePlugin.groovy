@@ -20,6 +20,7 @@ import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoReporterPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.file.copy.CopySpecWrapper
 import org.gradle.api.tasks.bundling.Jar
 
 /**
@@ -30,12 +31,12 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
     void apply(Project project) {
 
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
-            def propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin)
-            def manifestTask = propFilePlugin.getManifestTask()
+            InfoPropertiesFilePlugin propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin) as InfoPropertiesFilePlugin
+            InfoPropertiesFile manifestTask = propFilePlugin.getManifestTask()
 
             project.tasks.withType(Jar) { Jar jarTask ->
-                jarTask.from(manifestTask.outputs) {
-                    into "META-INF"
+                jarTask.from(manifestTask.outputs) { CopySpecWrapper copySpecWrapper ->
+                    copySpecWrapper.into "META-INF"
                 }
             }
         }

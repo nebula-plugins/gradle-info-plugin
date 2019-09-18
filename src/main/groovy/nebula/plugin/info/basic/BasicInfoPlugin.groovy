@@ -21,6 +21,8 @@ import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
+import java.text.SimpleDateFormat
+
 import static java.util.jar.Attributes.Name.*
 /**
  * Simple provider, for common fields, like build status. Current values:
@@ -36,6 +38,7 @@ import static java.util.jar.Attributes.Name.*
  * </ul>
  */
 class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat('yyyy-MM-dd_HH:mm:ss')
 
     // Sample from commons-lang, and hence via Maven
     // Manifest-Version: 1.0
@@ -65,7 +68,7 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add('Built-OS', System.getProperty('os.name'))
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
-            manifestPlugin.add('Build-Date', new Date().format('yyyy-MM-dd_HH:mm:ss')).changing = true
+            manifestPlugin.add('Build-Date', DATE_FORMATTER.format(new Date())).changing = true
 
             manifestPlugin.add('Gradle-Version', { project.gradle.gradleVersion })
 

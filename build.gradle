@@ -19,6 +19,8 @@ plugins {
     id 'nebula.plugin-plugin' version '12.3.5'
 }
 
+compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
+
 description 'Gradle plugin collect and provide information about the environment'
 
 contacts {
