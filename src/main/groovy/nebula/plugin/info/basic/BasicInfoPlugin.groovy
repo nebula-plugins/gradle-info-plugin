@@ -70,9 +70,11 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             // Makes list of attributes not idempotent, which can throw off "changed" checks
             manifestPlugin.add('Build-Date', DATE_FORMATTER.format(new Date())).changing = true
 
+
             manifestPlugin.add('Gradle-Version', { project.gradle.gradleVersion })
 
             // TODO Include hostname
         }
     }
+
 }
