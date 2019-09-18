@@ -16,6 +16,7 @@
 
 
 package nebula.plugin.info.basic
+
 import nebula.plugin.contacts.BaseContactsPlugin
 import nebula.plugin.info.InfoBrokerPlugin
 import org.gradle.api.Plugin

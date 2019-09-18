@@ -29,7 +29,7 @@ class InfoPropertiesFile extends ConventionTask {
 
     @Input
     Map<String, ?> getManifest() {
-        InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin)
+        InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
 
         def entireMap = manifestPlugin.buildNonChangingManifest()
 
@@ -41,7 +41,7 @@ class InfoPropertiesFile extends ConventionTask {
 
     @TaskAction
     def writeOut() {
-        InfoBrokerPlugin basePlugin = project.plugins.getPlugin(InfoBrokerPlugin)
+        InfoBrokerPlugin basePlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
 
         // Gather all values, in contrast to buildNonChangingManifest
         def attrs = basePlugin.buildManifest()

@@ -55,9 +55,9 @@ class SvnScmProvider extends AbstractScmProvider {
     @Override
     String calculateChange(File projectDir) {
         def revision = System.getenv('SVN_REVISION') // From Jenkins
-        if (revision==null) {
+        if (!revision) {
             def base = getInfo(projectDir).getRevision()
-            if (base==null) {
+            if (!base) {
                 return null
             }
             revision = base.getNumber()

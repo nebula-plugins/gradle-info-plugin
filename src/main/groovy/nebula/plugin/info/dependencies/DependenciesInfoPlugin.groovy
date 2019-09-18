@@ -15,30 +15,32 @@
  */
 package nebula.plugin.info.dependencies
 
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.VersionInfo
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultVersionComparator
+import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionParser
 
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    def versionComparator = new DefaultVersionComparator()
+    private final  DefaultVersionComparator versionComparator = new DefaultVersionComparator()
+    private final VersionParser versionParser = new VersionParser()
 
     @Override
     void apply(Project project) {
-        if (!project.rootProject.hasProperty('nebulaInfoDependencies')) {
-            project.rootProject.ext.nebulaInfoDependencies = [:]
-        }
+        setInfoDependencies(project)
         def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
         def dependencies = [:]
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             project.configurations.all( { Configuration conf ->
-                conf.incoming.afterResolve {
+                conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
                     if (project.configurations.contains(conf)) {
-                        def resolvedDependencies = it.resolutionResult.allComponents.findAll {
+                        def resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
                             it.id instanceof ModuleComponentIdentifier
                         }*.moduleVersion
                                 .sort(true, { m1, m2 ->
@@ -46,10 +48,10 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
                                 return m1.group <=> m2.group ?: -1
                             if (m1.name != m2.name)
                                 return m1.name <=> m2.name // name is required
-                            versionComparator.compare(new VersionInfo(m1.version), new VersionInfo(m2.version))
+                            versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
                         })*.toString().join(',')
                         if (resolvedDependencies) {
-                            dependencies.put("Resolved-Dependencies-${it.name.capitalize()}", resolvedDependencies)
+                            dependencies.put("Resolved-Dependencies-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
                         }
                     }
                 }
@@ -59,6 +61,13 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             if (project == project.rootProject) {
                 manifestPlugin.addReport('resolved-dependencies', dependencyMap)
             }
+        }
+    }
+
+    @CompileDynamic
+    private void setInfoDependencies(Project project) {
+        if (!project.rootProject.hasProperty('nebulaInfoDependencies')) {
+            project.rootProject.ext.nebulaInfoDependencies = [:]
         }
     }
 }

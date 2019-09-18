@@ -55,7 +55,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
             void buildFinished(BuildResult buildResult) {
-                this.buildFinished.set(true)
+                buildFinished.set(true)
             }
         })
 
@@ -94,12 +94,12 @@ class InfoBrokerPlugin implements Plugin<Project> {
         manifestEntries = filteredManifestEntries
     }
 
-    def add(String key, Closure closure) {
+    ManifestEntry add(String key, Closure closure) {
         def entry = new ManifestEntry(key, closure)
         addEntry(entry)
     }
 
-    def add(String key, Object value) {
+    ManifestEntry add(String key, Object value) {
         def entry = new ManifestEntry(key, value)
         addEntry(entry)
     }
