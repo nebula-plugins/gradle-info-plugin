@@ -17,6 +17,7 @@
 package nebula.plugin.info.scm
 
 import org.gradle.api.Project
+import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions
 import org.tmatesoft.svn.core.wc.*
 
 class SvnScmProvider extends AbstractScmProvider {
@@ -28,36 +29,32 @@ class SvnScmProvider extends AbstractScmProvider {
     }
 
     private SVNWCClient getWorkingCopyClient() {
-        def options = SVNWCUtil.createDefaultOptions(true);
-        def clientManager = SVNClientManager.newInstance(options);
-        def client = clientManager.getWCClient()
-        return client
+        DefaultSVNOptions options = SVNWCUtil.createDefaultOptions(true);
+        SVNClientManager clientManager = SVNClientManager.newInstance(options);
+        return clientManager.getWCClient()
     }
 
     private SVNInfo getInfo(File projectDir) {
-        def info = getWorkingCopyClient().doInfo(projectDir, SVNRevision.WORKING)
-        return info
+        return getWorkingCopyClient().doInfo(projectDir, SVNRevision.WORKING)
     }
 
     @Override
-    def calculateModuleOrigin(File projectDir) {
-        def url = getInfo(projectDir).getURL().toString()
-        return url
+    String calculateModuleOrigin(File projectDir) {
+        return getInfo(projectDir).getURL().toString()
     }
 
     @Override
-    def calculateModuleSource(File projectDir) {
-        def svnDir = getInfo(projectDir).getWorkingCopyRoot()
-        def relative = projectDir.absolutePath - svnDir.parentFile.absolutePath
-        return relative
+    String calculateModuleSource(File projectDir) {
+        File svnDir = getInfo(projectDir).getWorkingCopyRoot()
+        return projectDir.absolutePath - svnDir.parentFile.absolutePath
     }
 
     @Override
     String calculateChange(File projectDir) {
-        def revision = System.getenv('SVN_REVISION') // From Jenkins
-        if (revision==null) {
+        String revision = System.getenv('SVN_REVISION') // From Jenkins
+        if (!revision) {
             def base = getInfo(projectDir).getRevision()
-            if (base==null) {
+            if (!base) {
                 return null
             }
             revision = base.getNumber()
@@ -66,7 +63,7 @@ class SvnScmProvider extends AbstractScmProvider {
     }
 
     @Override
-    def calculateBranch(File projectDir) {
+    String calculateBranch(File projectDir) {
         return null // unsupported in svn
     }
 }

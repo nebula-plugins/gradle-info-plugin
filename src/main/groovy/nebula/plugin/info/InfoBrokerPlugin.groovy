@@ -55,7 +55,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
             void buildFinished(BuildResult buildResult) {
-                this.buildFinished.set(true)
+                buildFinished.set(true)
             }
         })
 
@@ -94,17 +94,17 @@ class InfoBrokerPlugin implements Plugin<Project> {
         manifestEntries = filteredManifestEntries
     }
 
-    def add(String key, Closure closure) {
-        def entry = new ManifestEntry(key, closure)
+    ManifestEntry add(String key, Closure closure) {
+        ManifestEntry entry = new ManifestEntry(key, closure)
         addEntry(entry)
     }
 
-    def add(String key, Object value) {
-        def entry = new ManifestEntry(key, value)
+    ManifestEntry add(String key, Object value) {
+        ManifestEntry entry = new ManifestEntry(key, value)
         addEntry(entry)
     }
 
-    def addReport(String reportName, Object value) {
+    void addReport(String reportName, Object value) {
         if (project != project.rootProject) {
             throw new IllegalStateException('Build reports should only be used from the root project')
         }
@@ -118,7 +118,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private ManifestEntry addEntry(ManifestEntry entry) {
-        def existing = manifestEntries.find { it.name == entry.name }
+        ManifestEntry existing = manifestEntries.find { it.name == entry.name }
         if (existing) {
             resolve(existing)
             throw new IllegalStateException("A entry with the key ${entry.name} already exists, with the value \"${existing.value}\"")
@@ -190,14 +190,14 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     String buildManifestString() {
-        def attrs = buildManifest()
-        def manifestStr = attrs.collect { "${it.key}: ${it.value}"}.join('\n      ')
+        Map<String, String> attrs = buildManifest()
+        String manifestStr = attrs.collect { "${it.key}: ${it.value}"}.join('\n      ')
         return manifestStr
     }
 
     String buildString(String indent = '') {
-        def attrs = buildManifest()
-        def manifestStr = attrs.collect { "${indent}${it.key}: ${it.value}"}.join('\n')
+        Map<String, String> attrs = buildManifest()
+        String manifestStr = attrs.collect { "${indent}${it.key}: ${it.value}"}.join('\n')
         return manifestStr
     }
 
@@ -208,7 +208,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
      * @return String based value of entry
      */
     String buildEntry(String key) {
-        def entry = manifestEntries.find { it.name == key }
+        ManifestEntry entry = manifestEntries.find { it.name == key }
         if (!entry) throw new IllegalArgumentException("Unable to find $key")
 
         resolve(entry)
@@ -217,7 +217,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
     def watch(String key, Closure reaction) {
         // If we have the key already, we can process it now
-        def entry = manifestEntries.find { it.name == key }
+        ManifestEntry entry = manifestEntries.find { it.name == key }
         if (entry) {
             callWatcher(entry, reaction)
         } else {

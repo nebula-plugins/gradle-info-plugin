@@ -36,44 +36,15 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        def workspace = new File(System.getenv('WORKSPACE'))
+        File workspace = new File(System.getenv('WORKSPACE'))
         return calculateModuleSource(workspace, projectDir)
     }
+
     String calculateModuleSource(File workspace, File projectDir) {
         // TODO Don't hardcode depot
-        def relativePath = projectDir.getAbsolutePath() - (workspace.getAbsolutePath() + '/')
+        String relativePath = projectDir.getAbsolutePath() - (workspace.getAbsolutePath() + '/')
         return "//depot/${relativePath}"
-//        withPerforce(projectDir) { IServer server, IClient client ->
-//            def relativePath = projectDir.getAbsolutePath() - (workspace.getAbsolutePath() + '/')
-//            List<IFileSpec> specs = FileSpecBuilder.makeFileSpecList(relativePath)
-//            List<IFileSpec> mapped = client.where(specs)
-//            mapped.each { IFileSpec spec ->
-//                println spec.getClientPathString()
-//                println spec.getDepotPathString()
-//            }
-//        }
     }
-
-//    def scmBase() {
-//        // TOOD use p4java instead of command line call
-//        Process process = "p4 workspace -o".execute(null, project.rootDir)
-//        def output = process.text // Potential save for later
-//        def matcher = output =~ /Root:\s+(\S+)\n/
-//        if(matcher) {
-//            return matcher[0][1]
-//        }
-//
-//        return null
-//    }
-//    /**
-//     * macro.xml -> viewFromPath
-//     */
-//    def viewFromPath(File baseDir, String depot) {
-//        // TODO Previously used workspace, which then made a relative path from that location prepended with depot
-//        //      We always knew workspace because if it wasn't provided we could
-//        baseDir.absoluteFile
-//    }
-
 
     @Override
     String calculateModuleOrigin(File projectDir) {
@@ -87,14 +58,14 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @Override
-    def calculateBranch(File projectDir) {
+    String calculateBranch(File projectDir) {
         return null // unsupported in perforce
     }
 
     @PackageScope
     <T> T withPerforce(File projectDir, Closure<T> closure) {
         Map<String, String> defaults = perforceDefaults(projectDir)
-        def uri = getUrl(defaults)
+        String uri = getUrl(defaults)
         IServer server = ServerFactory.getServer(uri, null);
         server.connect()
         if (defaults.P4PASSWD) {
@@ -135,21 +106,21 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @PackageScope
-    def Map<String, String> perforceDefaults(File projectDir) {
+    Map<String, String> perforceDefaults(File projectDir) {
         // Set some default values then look for overrides
-        def defaults = [
+        Map<String, String> defaults = [
                 P4CLIENT: null,
                 P4USER: 'rolem',
                 P4PASSWD: '',
                 P4PORT: 'perforce:1666'
-        ]
+        ] as Map<String, String>
 
         // First look for P4CONFIG name
         findP4Config(projectDir) // Might be noop
         if (p4configFile) {
-            def props = new Properties()
+            Properties props = new Properties()
             props.load(new FileReader(p4configFile))
-            defaults = overrideFromMap(defaults, props)
+            defaults = overrideFromMap(defaults, props as Map<String, String>)
         }
 
         // Second user environment variables
@@ -159,8 +130,8 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @PackageScope
-    def Map<String, String> overrideFromMap(Map<String, String> orig, Map<String, String> override) {
-        def dest = [:]
+    Map<String, String> overrideFromMap(Map<String, String> orig, Map<String, String> override) {
+        Map<String, String> dest = [:]
         orig.keySet().each { String key ->
             dest[key] = override.keySet().contains(key) ? override[key] : orig[key]
         }

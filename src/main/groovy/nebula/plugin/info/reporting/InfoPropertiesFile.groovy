@@ -29,9 +29,9 @@ class InfoPropertiesFile extends ConventionTask {
 
     @Input
     Map<String, ?> getManifest() {
-        InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin)
+        InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
 
-        def entireMap = manifestPlugin.buildNonChangingManifest()
+        Map<String, String> entireMap = manifestPlugin.buildNonChangingManifest()
 
         return entireMap
     }
@@ -40,15 +40,15 @@ class InfoPropertiesFile extends ConventionTask {
     File propertiesFile
 
     @TaskAction
-    def writeOut() {
-        InfoBrokerPlugin basePlugin = project.plugins.getPlugin(InfoBrokerPlugin)
+    void writeOut() {
+        InfoBrokerPlugin basePlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
 
         // Gather all values, in contrast to buildNonChangingManifest
-        def attrs = basePlugin.buildManifest()
+        Map<String, String> attrs = basePlugin.buildManifest()
 
         logger.info("Writing manifest values to ${getPropertiesFile()}")
 
-        def manifestStr = attrs.collect { "${it.key}=${it.value}"}.join('\n')
+        String manifestStr = attrs.collect { "${it.key}=${it.value}"}.join('\n')
         getPropertiesFile().text = manifestStr
     }
 }

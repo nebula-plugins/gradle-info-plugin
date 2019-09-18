@@ -16,10 +16,12 @@
 
 package nebula.plugin.info.scm
 
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
@@ -37,18 +39,14 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         this.project = project
 
         // TODO Delay findProvider() as long as possible
-        providers = [new GitScmProvider(), new PerforceScmProvider(), new SvnScmProvider(), new UnknownScmProvider()]
+        providers = [new GitScmProvider(), new PerforceScmProvider(), new SvnScmProvider(), new UnknownScmProvider()] as List<ScmInfoProvider>
         selectedProvider = findProvider()
 
         extension = project.extensions.create('scminfo', ScmInfoExtension)
 
-        def extMapping = ((IConventionAware) extension).getConventionMapping()
-        extMapping.origin = { selectedProvider.calculateOrigin(project) }
-        extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
-        extMapping.change = { selectedProvider.calculateChange(project) }
-        extMapping.branch = { selectedProvider.calculateBranch(project) }
+        configureExtMapping()
 
-        project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
+        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add('Module-Source') { extension.source }
             manifestPlugin.add('Module-Origin') { extension.origin }
             manifestPlugin.add('Change') { extension.change }
@@ -56,8 +54,18 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         }
     }
 
+    @CompileDynamic
+    private void configureExtMapping() {
+        ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
+        extMapping.origin = { selectedProvider.calculateOrigin(project) }
+        extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
+        extMapping.change = { selectedProvider.calculateChange(project) }
+        extMapping.branch = { selectedProvider.calculateBranch(project) }
+
+    }
+
     ScmInfoProvider findProvider() {
-        def provider = providers.find { it.supports(project) }
+        ScmInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider
         } else {

@@ -29,7 +29,7 @@ abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegr
     }
 
     protected static String hostname() {
-        def currentOs = OperatingSystem.current()
+        OperatingSystem currentOs = OperatingSystem.current()
         if (currentOs.isWindows()) {
             try {
                 return Kernel32Util.getComputerName()
