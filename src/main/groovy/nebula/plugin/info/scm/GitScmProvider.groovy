@@ -21,8 +21,11 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
+    private Logger logger = LoggerFactory.getLogger(GitScmProvider)
 
     @Override
     boolean supports(Project project) {
@@ -38,7 +41,11 @@ class GitScmProvider extends AbstractScmProvider {
     String calculateModuleOrigin(File projectDir) {
         Repository repository = getRepository(projectDir)
         Config storedConfig = repository.getConfig()
-        return  storedConfig.getString('remote', 'origin', 'url')
+        String url = storedConfig.getString('remote', 'origin', 'url')
+        if (url?.startsWith("https://") || url?.startsWith("http://")) {
+            url = hideSensitiveInformation(url)
+        }
+        return  url
     }
 
     @Override
@@ -65,5 +72,17 @@ class GitScmProvider extends AbstractScmProvider {
     @Override
     String calculateBranch(File projectDir) {
         return getRepository(projectDir).branch
+    }
+
+    private String hideSensitiveInformation(String url) {
+        try {
+            String credentials = url.toURL().getUserInfo()
+            if (credentials) {
+                return url.replaceFirst(credentials, credentials.replaceFirst(/:.*/, ""))
+            }
+        } catch (Exception e) {
+            logger.warn("Unable to remove credentials from repository URL. {0}", e.getMessage())
+        }
+        return url
     }
 }
