@@ -19,6 +19,7 @@ import nebula.test.ProjectSpec
 import org.eclipse.jgit.api.Git
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
+import spock.lang.Issue
 
 class GitScmProviderLocalSpec extends ProjectSpec {
     @Rule TemporaryFolder temp
@@ -49,6 +50,39 @@ class GitScmProviderLocalSpec extends ProjectSpec {
 
         then:
         origin == 'https://github.com/Netflix/gradle-template.git'
+
+        when:
+        String branch = provider.calculateBranch(fakeProjectDir)
+
+        then:
+        branch == 'master'
+    }
+
+    @Issue("32")
+    def 'Strip password from Git repository URL'() {
+        setup:
+        def projectDir = temp.newFolder()
+        def repoUrl = 'https://github-token-user:my-token@github.com/Netflix/gradle-template.git'
+
+        Git.cloneRepository()
+                .setURI(repoUrl)
+                .setDirectory(projectDir)
+                .call();
+
+        def fakeProjectDir = new File(projectDir, 'gradle/wrapper')
+        fakeProjectDir.mkdirs()
+
+        when:
+        String mapped = provider.calculateModuleSource(fakeProjectDir)
+
+        then:
+        mapped == '/gradle/wrapper'
+
+        when:
+        String origin = provider.calculateModuleOrigin(fakeProjectDir)
+
+        then:
+        origin == 'https://github-token-user@github.com/Netflix/gradle-template.git'
 
         when:
         String branch = provider.calculateBranch(fakeProjectDir)
