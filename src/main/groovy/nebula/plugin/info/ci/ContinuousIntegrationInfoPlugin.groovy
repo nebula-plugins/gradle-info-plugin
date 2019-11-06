@@ -34,7 +34,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     void apply(Project project) {
         this.project = project
 
-        providers = [new DroneProvider(), new GitlabProvider(), new JenkinsProvider(), new TravisProvider(), new UnknownContinuousIntegrationProvider()] as List<ContinuousIntegrationInfoProvider>
+        providers = [new CircleCIProvider(), new DroneProvider(), new GitlabProvider(), new JenkinsProvider(), new TravisProvider(), new UnknownContinuousIntegrationProvider()] as List<ContinuousIntegrationInfoProvider>
         selectedProvider = findProvider()
 
         extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)
