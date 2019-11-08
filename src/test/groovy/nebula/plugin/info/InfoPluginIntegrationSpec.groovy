@@ -27,7 +27,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             
             repositories { jcenter() }
             dependencies {
-                compile 'com.google.guava:guava:18.0'
+                implementation 'com.google.guava:guava:18.0'
             }
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
 
@@ -65,14 +65,14 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         def common = addSubproject('common', '''\
             apply plugin: 'java'
             dependencies {
-                compile 'com.google.guava:guava:18.0'
+                implementation 'com.google.guava:guava:18.0'
             }
             '''.stripIndent())
         writeHelloWorld('nebula.common', common)
         def app = addSubproject('app', '''\
             apply plugin: 'java'
             dependencies {
-                compile 'com.google.guava:guava:19.0'
+                implementation 'com.google.guava:guava:19.0'
             }
             '''.stripIndent())
         writeHelloWorld('nebula.app', app)
