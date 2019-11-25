@@ -46,12 +46,12 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         result.load(new FileInputStream(file))
         result.containsKey InfoJavaPlugin.JDK_PROPERTY
         result.containsKey InfoJavaPlugin.TARGET_PROPERTY
-
+/*
         // patterns like 1.7.0_25
         result[InfoJavaPlugin.JDK_PROPERTY] =~ /\d+\.\d+\.\d_\d{1,3}/
 
         // one or more digits followed by one or more digits expecting strings like 1.6 or 1.7
-        result[InfoJavaPlugin.TARGET_PROPERTY] =~ /\d+\.\d+/
+        result[InfoJavaPlugin.TARGET_PROPERTY] =~ /\d+\.\d+/*/
     }
 
 }
