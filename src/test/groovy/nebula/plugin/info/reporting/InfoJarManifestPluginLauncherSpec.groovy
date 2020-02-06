@@ -27,7 +27,7 @@ import java.util.jar.Manifest
 
 class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
 
-    def 'jarManifest task is marked UP-TO-DATE if ran before successfully'() {
+    def 'jar task is marked UP-TO-DATE if ran before successfully and manifest changes are ignored'() {
         writeHelloWorld('nebula.test')
         buildFile << """
             ${applyPlugin(InfoBrokerPlugin)}
@@ -66,10 +66,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         def thirdResult = runTasksSuccessfully('jar')
 
         then:
-        !thirdResult.wasUpToDate(':jar')
-        Manifest manifestSnapshot = new JarFile(jarFile).manifest
-        Attributes attributesSnapshot = manifestSnapshot.mainAttributes
-        manifestKey(attributesSnapshot, 'Built-Status') == 'integration'
+        thirdResult.wasUpToDate(':jar')
     }
 
     def "Creates JAR file with populated manifest attributes by basic info plugin"() {
