@@ -19,6 +19,7 @@ package nebula.plugin.info.reporting
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.java.InfoJavaPlugin
 import nebula.test.ProjectSpec
+import org.gradle.api.JavaVersion
 import org.gradle.api.plugins.JavaPlugin
 
 class InfoPropertiesFilePluginSpec extends ProjectSpec {
@@ -46,12 +47,12 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         result.load(new FileInputStream(file))
         result.containsKey InfoJavaPlugin.JDK_PROPERTY
         result.containsKey InfoJavaPlugin.TARGET_PROPERTY
-/*
+
         // patterns like 1.7.0_25
-        result[InfoJavaPlugin.JDK_PROPERTY] =~ /\d+\.\d+\.\d_\d{1,3}/
+        result[InfoJavaPlugin.JDK_PROPERTY] == System.getProperty("java.version")
 
         // one or more digits followed by one or more digits expecting strings like 1.6 or 1.7
-        result[InfoJavaPlugin.TARGET_PROPERTY] =~ /\d+\.\d+/*/
+        result[InfoJavaPlugin.TARGET_PROPERTY] == JavaVersion.current().toString()
     }
 
 }
