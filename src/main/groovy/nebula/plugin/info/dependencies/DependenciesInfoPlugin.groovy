@@ -30,6 +30,7 @@ import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionP
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private final  DefaultVersionComparator versionComparator = new DefaultVersionComparator()
     private final VersionParser versionParser = new VersionParser()
+    private static final List<String> RESOLVABLE_WITH_DEPRECATION_CONF_SUFFIXES = ['compileOnly', 'compile', 'runtime']
 
     @Override
     void apply(Project project) {
@@ -38,20 +39,22 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         Map dependencies = [:]
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             project.configurations.all( { Configuration conf ->
-                conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
-                    if (project.configurations.contains(conf)) {
-                        String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
-                            it.id instanceof ModuleComponentIdentifier
-                        }*.moduleVersion
-                                .sort(true, { m1, m2 ->
-                            if (m1.group != m2.group)
-                                return m1.group <=> m2.group ?: -1
-                            if (m1.name != m2.name)
-                                return m1.name <=> m2.name // name is required
-                            versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
-                        })*.toString().join(',')
-                        if (resolvedDependencies) {
-                            dependencies.put("Resolved-Dependencies-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
+                if (canBeResolved(conf)) {
+                    conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
+                        if (project.configurations.contains(conf)) {
+                            String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
+                                it.id instanceof ModuleComponentIdentifier
+                            }*.moduleVersion
+                                    .sort(true, { m1, m2 ->
+                                        if (m1.group != m2.group)
+                                            return m1.group <=> m2.group ?: -1
+                                        if (m1.name != m2.name)
+                                            return m1.name <=> m2.name // name is required
+                                        versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
+                                    })*.toString().join(',')
+                            if (resolvedDependencies) {
+                                dependencies.put("Resolved-Dependencies-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
+                            }
                         }
                     }
                 }
@@ -62,6 +65,10 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
                 manifestPlugin.addReport('resolved-dependencies', dependencyMap)
             }
         }
+    }
+
+    private boolean canBeResolved(Configuration conf) {
+        conf.isCanBeResolved() && !RESOLVABLE_WITH_DEPRECATION_CONF_SUFFIXES.any { conf.name.toLowerCase().endsWith(it.toLowerCase()) }
     }
 
     @CompileDynamic

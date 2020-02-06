@@ -44,19 +44,22 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         project.apply plugin: DependenciesInfoPlugin
 
         def guava = project.dependencies.create('com.google.guava:guava:21.0')
+        def slf4j = project.dependencies.create('org.slf4j:slf4j-api:1.7.30')
 
         project.repositories.add(project.repositories.mavenCentral())
 
         def configurations = project.configurations
-        def config = configurations.compile
-        config.dependencies.add(guava)
+        def compileConfig = configurations.compile
+        compileConfig.dependencies.add(guava)
+        configurations.implementation.dependencies.add(slf4j)
 
         def detached = configurations.detachedConfiguration(guava)
         configurations.add(detached)
         configurations.remove(detached)
 
-        config.resolve()
+        compileConfig.resolve()
         detached.resolve()
+        configurations.compileClasspath.resolve()
 
         when:
         brokerPlugin.buildFinished.set(true)
