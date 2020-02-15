@@ -39,7 +39,7 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         manifestTask.getPropertiesFile().parentFile.mkdirs()
 
         when:
-        manifestTask.writeOut()
+        manifestTask.write()
 
         then:
         def result = new Properties()
