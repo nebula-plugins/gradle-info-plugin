@@ -48,11 +48,17 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     }
 
     private void processBuildscriptClasspath(Project project, Map dependencies) {
-        Configuration buildscriptClasspath = project.buildscript.configurations.getByName('classpath')
-        if (canBeResolved(buildscriptClasspath)) {
-            ResolvableDependencies resolvableDependencies = buildscriptClasspath.incoming
-            processIncomingDependencies(resolvableDependencies, 'Resolved-Buildscript-Dependencies', dependencies)
-        }
+        project.buildscript.configurations.all({ Configuration conf ->
+            if (canBeResolved(conf)) {
+                if(conf.getState() == Configuration.State.UNRESOLVED) {
+                    conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
+                        processIncomingDependencies(resolvableDependencies, 'Resolved-Buildscript-Dependencies', dependencies)
+                    }
+                } else {
+                    processIncomingDependencies(conf.incoming, 'Resolved-Buildscript-Dependencies', dependencies)
+                }
+            }
+        })
     }
 
     private void processProjectDependencies(Project project, Map dependencies) {
