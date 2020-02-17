@@ -48,4 +48,5 @@ class InfoBrokerPluginIntegrationSpec extends IntegrationSpec {
         result.standardOutput.contains(report)
     }
 
+
 }
