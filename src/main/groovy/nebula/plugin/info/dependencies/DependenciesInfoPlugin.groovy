@@ -28,7 +28,7 @@ import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultV
 import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionParser
 
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    private final  DefaultVersionComparator versionComparator = new DefaultVersionComparator()
+    private final DefaultVersionComparator versionComparator = new DefaultVersionComparator()
     private final VersionParser versionParser = new VersionParser()
     private static final List<String> RESOLVABLE_WITH_DEPRECATION_CONF_SUFFIXES = ['compileOnly', 'compile', 'runtime']
 
@@ -38,32 +38,49 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
         Map dependencies = [:]
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            project.configurations.all( { Configuration conf ->
-                if (canBeResolved(conf)) {
-                    conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
-                        if (project.configurations.contains(conf)) {
-                            String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
-                                it.id instanceof ModuleComponentIdentifier
-                            }*.moduleVersion
-                                    .sort(true, { m1, m2 ->
-                                        if (m1.group != m2.group)
-                                            return m1.group <=> m2.group ?: -1
-                                        if (m1.name != m2.name)
-                                            return m1.name <=> m2.name // name is required
-                                        versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
-                                    })*.toString().join(',')
-                            if (resolvedDependencies) {
-                                dependencies.put("Resolved-Dependencies-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
-                            }
-                        }
-                    }
-                }
-            })
-
+            processBuildscriptClasspath(project, dependencies)
+            processProjectDependencies(project, dependencies)
             dependencyMap["${project.name}-dependencies".toString()] = dependencies
             if (project == project.rootProject) {
                 manifestPlugin.addReport('resolved-dependencies', dependencyMap)
             }
+        }
+    }
+
+    private void processBuildscriptClasspath(Project project, Map dependencies) {
+        Configuration buildscriptClasspath = project.buildscript.configurations.getByName('classpath')
+        if (canBeResolved(buildscriptClasspath)) {
+            ResolvableDependencies resolvableDependencies = buildscriptClasspath.incoming
+            processIncomingDependencies(resolvableDependencies, 'Resolved-Buildscript-Dependencies', dependencies)
+        }
+    }
+
+    private void processProjectDependencies(Project project, Map dependencies) {
+        project.configurations.all({ Configuration conf ->
+            if (canBeResolved(conf)) {
+                conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
+                    if (project.configurations.contains(conf)) {
+                        processIncomingDependencies(resolvableDependencies, 'Resolved-Dependencies', dependencies)
+                    }
+                }
+            }
+        })
+    }
+    private void processIncomingDependencies(ResolvableDependencies resolvableDependencies, String prefix, Map dependencies) {
+        String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
+            it.id instanceof ModuleComponentIdentifier
+        }*.moduleVersion
+                .sort(true, { m1, m2 ->
+                    if (m1.group != m2.group) {
+                        return m1.group <=> m2.group ?: -1
+                    }
+                    if (m1.name != m2.name) {
+                        return m1.name <=> m2.name
+                    } // name is required
+                    versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
+                })*.toString().join(',')
+        if (resolvedDependencies) {
+            dependencies.put("$prefix-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
         }
     }
 
