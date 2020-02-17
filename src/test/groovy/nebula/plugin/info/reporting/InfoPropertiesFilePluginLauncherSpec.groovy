@@ -64,4 +64,49 @@ class InfoPropertiesFilePluginLauncherSpec extends IntegrationSpec {
         }
         return result
     }
+
+    def 'all jar tasks is marked UP-TO-DATE if ran before successfully and metadata changes are ignored'() {
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarPropertiesFilePlugin)}
+
+            apply plugin: 'java'
+            status = 'release'
+
+            task sourceJar(type: Jar) {
+                archiveAppendix = 'src'
+                from('src')
+            }
+        """.stripIndent()
+
+        when:
+        // Make sure we have some history already in place
+        runTasksSuccessfully('jar', 'sourceJar')
+        runTasksSuccessfully('clean')
+
+        def result = runTasks('jar', 'sourceJar')
+
+        then:
+        !result.wasUpToDate(':jar')
+        !result.wasUpToDate(':sourceJar')
+
+        when: 'Nothing has changed'
+        def secondResult = runTasksSuccessfully('jar', 'sourceJar')
+
+        then:
+        secondResult.wasUpToDate(':jar')
+        secondResult.wasUpToDate(':sourceJar')
+
+        when: 'A manifest field was changed'
+        buildFile << """
+        status = 'integration'
+        """.stripIndent()
+        def thirdResult = runTasksSuccessfully('jar', 'sourceJar')
+
+        then:
+        thirdResult.wasUpToDate(':jar')
+        thirdResult.wasUpToDate(':sourceJar')
+    }
 }
