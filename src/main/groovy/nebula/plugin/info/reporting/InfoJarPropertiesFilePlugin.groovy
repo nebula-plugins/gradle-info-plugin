@@ -16,6 +16,7 @@
 
 package nebula.plugin.info.reporting
 
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoReporterPlugin
 import org.gradle.api.Plugin
@@ -27,37 +28,41 @@ import org.gradle.api.tasks.bundling.Jar
 /**
  * Inject a properties file into the jar file will the info values, using the InfoPropertiesFilePlugin
  */
+@CompileDynamic
 class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
 
     void apply(Project project) {
-
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
             InfoPropertiesFilePlugin propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin) as InfoPropertiesFilePlugin
             InfoPropertiesFile manifestTask = propFilePlugin.getManifestTask()
 
-            project.tasks.withType(Jar) { Jar jarTask ->
-                //we cannot use the right module name because touching manifest task to early causes incorrect name computation
-                //temp.properties is renamed later when placed into jar
-                def taskName = jarTask.name.capitalize()
-                File propertiesFile = new File(project.buildDir, "properties_for_${taskName}/temp.properties")
-                Task prepareFile = project.tasks.create("createPropertiesFileFor${taskName}") { Task task ->
-                    task.outputs.file(propertiesFile)
-                    task.doLast {
-                        //Task action is intentionally creating empty file.
-                        propertiesFile.text = ""
+            //TODO: this should probably be using lazy API but needs some refactoring
+            project.afterEvaluate {
+                project.tasks.withType(Jar) { Jar jarTask ->
+                    //we cannot use the right module name because touching manifest task to early causes incorrect name computation
+                    //temp.properties is renamed later when placed into jar
+                    def taskName = jarTask.name.capitalize()
+                    File propertiesFile = new File(project.buildDir, "properties_for_${taskName}/temp.properties")
+                    Task prepareFile = project.tasks.create("createPropertiesFileFor${taskName}") { Task task ->
+                        task.outputs.file(propertiesFile)
+                        task.doLast {
+                            //Task action is intentionally creating empty file.
+                            propertiesFile.text = ""
+                        }
+                    }
+
+                    //we link the output file from the task to the spec to add it into jar, but the file is empty, it will
+                    //help to ignore changes in its content for caching
+                    jarTask.metaInf { CopySpec spec ->
+                        spec.from(prepareFile.outputs).rename("temp.properties", manifestTask.propertiesFile.name)
+                    }
+                    jarTask.doFirst {
+                        //when we are after all caching decisions we fill the file with all the data
+                        new PropertiesWriter().writeProperties(propertiesFile, project)
                     }
                 }
-
-                //we link the output file from the task to the spec to add it into jar, but the file is empty, it will
-                //help to ignore changes in its content for caching
-                jarTask.metaInf { CopySpec spec ->
-                    spec.from(prepareFile.outputs).rename("temp.properties", manifestTask.propertiesFile.name)
-                }
-                jarTask.doFirst {
-                    //when we are after all caching decisions we fill the file with all the data
-                    new PropertiesWriter().writeProperties(propertiesFile, project)
-                }
             }
+
         }
     }
 }

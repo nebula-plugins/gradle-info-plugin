@@ -246,7 +246,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         writeHelloWorld('com.nebula.test')
 
         when:
-        ExecutionResult result = runTasksSuccessfully('buildEnvironment')
+        ExecutionResult result = runTasksSuccessfully('assemble')
 
         then:
         result.success
