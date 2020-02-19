@@ -32,7 +32,7 @@ class InfoJarManifestPlugin implements Plugin<Project>, InfoReporterPlugin {
 
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             // Searching the Gradle code base shows that Archive Tasks are the primary consumers of project.version
-            project.tasks.withType(Jar) { Jar jarTask ->
+            project.tasks.withType(Jar).configureEach { Jar jarTask ->
                 jarTask.doFirst {
                     Map<String,String> attrs = manifestPlugin.buildManifest()
                     jarTask.manifest.attributes.putAll(attrs)
