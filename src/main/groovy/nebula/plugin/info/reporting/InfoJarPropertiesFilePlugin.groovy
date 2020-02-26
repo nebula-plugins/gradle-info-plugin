@@ -39,6 +39,9 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
             //TODO: this should probably be using lazy API but needs some refactoring
             project.afterEvaluate {
                 project.tasks.withType(Jar) { Jar jarTask ->
+                    //explicit dependency on original task to keep contract that `jar` task invocation will produce properties file
+                    //even this file is actually not bundled into jar
+                    jarTask.dependsOn(manifestTask)
                     //we cannot use the right module name because touching manifest task to early causes incorrect name computation
                     //temp.properties is renamed later when placed into jar
                     def taskName = jarTask.name.capitalize()
