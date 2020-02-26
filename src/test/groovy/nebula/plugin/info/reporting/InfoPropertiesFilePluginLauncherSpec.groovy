@@ -27,6 +27,8 @@ class InfoPropertiesFilePluginLauncherSpec extends IntegrationSpec {
         result = runTasks('jar')
 
         then:
+        File originalProperties = new File(projectDir, "build/manifest/${moduleName}.properties")
+        originalProperties.exists()
         File jarFile = new File(projectDir, "build/libs/${moduleName}.jar")
         jarFile.exists()
         Properties metadata = getPropertiesFromJar(jarFile)
