@@ -16,13 +16,18 @@
 package nebula.plugin.info.scm
 
 import org.junit.Rule
+import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class PerforceScmProviderSpec extends Specification {
     @Rule
     TemporaryFolder temp
+
     def provider = new PerforceScmProvider()
+
+    @Rule
+    public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
 
     def 'lookup settings'() {
         setup:
@@ -85,5 +90,47 @@ class PerforceScmProviderSpec extends Specification {
 
         then:
         result == 'p4java://port?userName=user'
+    }
+
+    def 'calculate module status'() {
+        setup:
+        def workspace = new File('/Users/jryan/Workspaces/jryan_uber')
+        def fakeProjectDir = new File("/Users/jryan/Workspaces/jryan_uber/Tools/nebula-boot")
+
+        environmentVariables.set("P4CONFIG", "test")
+        environmentVariables.set("WORKSPACE", workspace.path)
+
+
+        when:
+        String mapped = provider.calculateModuleSource(fakeProjectDir)
+
+        then:
+        mapped == '//depot/Tools/nebula-boot'
+
+        when:
+        String origin = provider.calculateModuleOrigin(fakeProjectDir)
+
+        then:
+        origin == 'p4java://perforce:1666?userName=rolem'
+    }
+
+    def 'calculate module status - WORKSPACE is null'() {
+        setup:
+        environmentVariables.set("P4CONFIG", "test")
+        environmentVariables.set("WORKSPACE", null)
+
+        def fakeProjectDir = new File("/Users/jryan/Workspaces/jryan_uber/Tools/nebula-boot")
+
+        when:
+        String mapped = provider.calculateModuleSource(fakeProjectDir)
+
+        then:
+        mapped == '//depot//Users/jryan/Workspaces/jryan_uber/Tools/nebula-boot'
+
+        when:
+        String origin = provider.calculateModuleOrigin(fakeProjectDir)
+
+        then:
+        origin == 'p4java://perforce:1666?userName=rolem'
     }
 }

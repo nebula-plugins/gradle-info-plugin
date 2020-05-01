@@ -42,7 +42,7 @@ dependencies {
     compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
     compile 'org.eclipse.jgit:org.eclipse.jgit:5.0.1.201806211838-r'
     compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
-    testCompile 'com.github.stefanbirkner:system-rules:1.18.0'
+    testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
 }
 
 test.exclude '**/*Local*'

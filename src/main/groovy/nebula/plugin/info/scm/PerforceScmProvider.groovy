@@ -21,10 +21,16 @@ import com.perforce.p4java.server.IServer
 import com.perforce.p4java.server.ServerFactory
 import groovy.transform.PackageScope
 import org.gradle.api.Project
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class PerforceScmProvider extends AbstractScmProvider {
 
     File p4configFile
+
+    private Logger logger = LoggerFactory.getLogger(PerforceScmProvider)
+
+    private static final String DEFAULT_WORKSPACE = '.'
 
     @Override
     boolean supports(Project project) {
@@ -36,7 +42,11 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        File workspace = new File(System.getenv('WORKSPACE'))
+        String workspacePath = System.getenv('WORKSPACE') ?: {
+            logger.info("WORKSPACE environment variable is not set. Using ${DEFAULT_WORKSPACE}")
+            DEFAULT_WORKSPACE
+        }.call()
+        File workspace = new File(workspacePath)
         return calculateModuleSource(workspace, projectDir)
     }
 
