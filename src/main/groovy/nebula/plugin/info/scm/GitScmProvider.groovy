@@ -21,11 +21,16 @@ import org.eclipse.jgit.lib.Constants
 import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Project
+import org.gradle.api.provider.ProviderFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
     private Logger logger = LoggerFactory.getLogger(GitScmProvider)
+
+    GitScmProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
 
     @Override
     boolean supports(Project project) {
@@ -57,13 +62,16 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        String hash = System.getenv('GIT_COMMIT') // From Jenkins
-        if (!hash) {
+        boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().present
+        String hash
+        if (!isHashPresent) {
             def head = getRepository(projectDir).resolve(Constants.HEAD)
             if (!head) {
                 return null
             }
             hash = head.name
+        } else {
+            hash = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().get()
         }
         String shortHash = hash?.substring(0,7)
         return shortHash

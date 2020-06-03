@@ -16,8 +16,15 @@
 package nebula.plugin.info.ci
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ProviderFactory
+
 
 class DroneProvider extends AbstractContinuousIntegrationProvider {
+
+    DroneProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
+
     @Override
     boolean supports(Project project) {
         getEnvironmentVariable('DRONE')

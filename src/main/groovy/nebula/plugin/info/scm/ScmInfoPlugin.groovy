@@ -25,6 +25,9 @@ import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
 import org.gradle.api.logging.Logger
 import org.gradle.api.logging.Logging
+import org.gradle.api.provider.ProviderFactory
+
+import javax.inject.Inject
 
 class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private static Logger logger = Logging.getLogger(ScmInfoPlugin)
@@ -34,12 +37,19 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     ScmInfoProvider selectedProvider
     ScmInfoExtension extension
 
+    private final ProviderFactory providerFactory
+
+    @Inject
+    ScmInfoPlugin(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory
+    }
+
     @Override
     void apply(Project project) {
         this.project = project
 
         // TODO Delay findProvider() as long as possible
-        providers = [new GitScmProvider(), new PerforceScmProvider(), new SvnScmProvider(), new UnknownScmProvider()] as List<ScmInfoProvider>
+        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new SvnScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
         selectedProvider = findProvider()
 
         extension = project.extensions.create('scminfo', ScmInfoExtension)

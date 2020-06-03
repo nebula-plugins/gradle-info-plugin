@@ -23,6 +23,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
+import org.gradle.api.provider.ProviderFactory
+
+import javax.inject.Inject
 
 class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     protected Project project
@@ -30,11 +33,18 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     ContinuousIntegrationInfoProvider selectedProvider
     ContinuousIntegrationInfoExtension extension
 
+    private final ProviderFactory providerFactory
+
+    @Inject
+    ContinuousIntegrationInfoPlugin(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory
+    }
+
     @Override
     void apply(Project project) {
         this.project = project
 
-        providers = [new CircleCIProvider(), new DroneProvider(), new GitlabProvider(), new JenkinsProvider(), new TravisProvider(), new UnknownContinuousIntegrationProvider()] as List<ContinuousIntegrationInfoProvider>
+        providers = [new CircleCIProvider(providerFactory), new DroneProvider(providerFactory), new GitlabProvider(providerFactory), new JenkinsProvider(providerFactory), new TravisProvider(providerFactory), new UnknownContinuousIntegrationProvider(providerFactory)] as List<ContinuousIntegrationInfoProvider>
         selectedProvider = findProvider()
 
         extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)

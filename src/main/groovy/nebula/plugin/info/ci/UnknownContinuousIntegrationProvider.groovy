@@ -17,9 +17,14 @@
 package nebula.plugin.info.ci
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ProviderFactory
 
 class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegrationProvider {
     public static final String LOCAL = 'LOCAL'
+
+    UnknownContinuousIntegrationProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
 
     @Override
     boolean supports(Project project) {

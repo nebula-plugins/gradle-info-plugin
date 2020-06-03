@@ -17,10 +17,21 @@
 package nebula.plugin.info.scm
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ProviderFactory
 
 
 abstract class AbstractScmProvider implements ScmInfoProvider {
     abstract calculateModuleSource(File projectDir)
+
+    private final ProviderFactory providerFactory
+
+    AbstractScmProvider(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory
+    }
+
+    protected ProviderFactory getProviderFactory() {
+        return this.providerFactory
+    }
 
     @Override
     String calculateSource(Project project) {
