@@ -153,6 +153,17 @@ contacts {
 
 The above will make sure the manifest contains a Module-Owner of mickey@disney.com.
 
-# TODO
-* Have release plugin contribute Label
-* Link to generated Javadoc
+
+Gradle and Java Compatibility
+=============================
+
+Built with OpenJDK8
+Tested with OpenJDK8 and OpenJDK11
+
+| Plugin Version | Gradle Version | Works |
+| :------------: | :------------: | :---: |
+| 7.x | 5.x - 6.0           | yes   |
+| 8.x | 6.1+            | yes   |
+
+
+
