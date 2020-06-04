@@ -42,7 +42,11 @@ class PerforceScmProvider extends AbstractScmProvider {
         // Pretty poor way to check, but Perforce leave no indication of where the current tree came from
         // Better to check git first, since it can make a more intelligent guess
         // TODO When we can make p4java optional, we'll add a classForName check here.
-        return (providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present &&  providerFactory.environmentVariable('P4CLIENT').forUseAtConfigurationTime().present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
+        try {
+            return (providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present &&  providerFactory.environmentVariable('P4CLIENT').forUseAtConfigurationTime().present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
+        } catch(Exception e) {
+            return false
+        }
     }
 
     @Override
