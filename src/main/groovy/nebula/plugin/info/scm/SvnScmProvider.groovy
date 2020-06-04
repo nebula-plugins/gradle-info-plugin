@@ -17,10 +17,15 @@
 package nebula.plugin.info.scm
 
 import org.gradle.api.Project
+import org.gradle.api.provider.ProviderFactory
 import org.tmatesoft.svn.core.internal.wc.DefaultSVNOptions
 import org.tmatesoft.svn.core.wc.*
 
 class SvnScmProvider extends AbstractScmProvider {
+
+    SvnScmProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
 
     @Override
     boolean supports(Project project) {
@@ -51,13 +56,16 @@ class SvnScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        String revision = System.getenv('SVN_REVISION') // From Jenkins
-        if (!revision) {
+        boolean isRevisionPresent = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().present
+        String revision
+        if (!isRevisionPresent) {
             def base = getInfo(projectDir).getRevision()
             if (!base) {
                 return null
             }
             revision = base.getNumber()
+        } else {
+            revision = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().get()
         }
         return revision
     }

@@ -18,14 +18,22 @@ package nebula.plugin.info.ci
 
 import com.sun.jna.platform.win32.Kernel32Util
 import groovy.util.logging.Log
+import org.gradle.api.provider.ProviderFactory
 import org.gradle.internal.os.OperatingSystem
 
 import java.util.logging.Level
 
 @Log
 abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegrationInfoProvider {
-    protected static String getEnvironmentVariable(String envKey) {
-        System.getenv(envKey)
+
+    private final ProviderFactory providerFactory
+
+    AbstractContinuousIntegrationProvider(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory
+    }
+
+    protected String getEnvironmentVariable(String envKey) {
+        return providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().present ? providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().get() : null
     }
 
     protected static String hostname() {

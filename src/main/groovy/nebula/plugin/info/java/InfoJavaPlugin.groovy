@@ -22,6 +22,9 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.provider.ProviderFactory
+
+import javax.inject.Inject
 
 /**
  * Collect Java relevant fields.
@@ -37,11 +40,22 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
     static final String SOURCE_PROPERTY = 'X-Compile-Source-JDK'
     static final String TARGET_PROPERTY = 'X-Compile-Target-JDK'
 
+    private final ProviderFactory providers
+
+    @Inject
+    InfoJavaPlugin(ProviderFactory providerFactory) {
+        this.providers = providerFactory
+    }
+
     void apply(Project project) {
         // This can't change, so we can commit it early
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin  manifestPlugin ->
-            manifestPlugin.add(CREATED_PROPERTY, "${System.getProperty('java.runtime.version')} (${System.getProperty('java.vm.vendor')})")
-            manifestPlugin.add(JDK_PROPERTY, System.getProperty('java.version'))
+            String javaRuntimeVersion = providers.systemProperty("java.runtime.version").forUseAtConfigurationTime().get()
+            String javaVmVendor = providers.systemProperty("java.vm.vendor").forUseAtConfigurationTime().get()
+            String javaVersion = providers.systemProperty("java.version").forUseAtConfigurationTime().get()
+
+            manifestPlugin.add(CREATED_PROPERTY, "$javaRuntimeVersion ($javaVmVendor)")
+            manifestPlugin.add(JDK_PROPERTY, javaVersion)
         }
 
         // After-evaluating, because we need to give user a chance to effect the extension
