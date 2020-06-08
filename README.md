@@ -99,8 +99,8 @@ info-ci Plugin (Collector)
 apply plugin: 'nebula.info-ci'
 ```
 
-Detects the current Continuous Integration environment and reports upon Job Name and Build Number. Currently only Jenkins
-is supported.
+Detects the current Continuous Integration environment and reports upon Job Name and Build Number.
+Currently supports CircleCI, Cirrus CI, Drone, GitLab CI, Travis CI, and Jenkins.
 
 info-dependencies Plugin (Collector)
 --------------
