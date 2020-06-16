@@ -48,6 +48,11 @@ class UnknownScmProvider extends AbstractScmProvider {
     }
 
     @Override
+    def calculateFullChange(File projectDir) {
+        return null
+    }
+
+    @Override
     String calculateBranch(File projectDir) {
         return null
     }

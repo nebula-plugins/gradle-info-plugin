@@ -60,6 +60,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add('Module-Source') { extension.source }
             manifestPlugin.add('Module-Origin') { extension.origin }
             manifestPlugin.add('Change') { extension.change }
+            manifestPlugin.add('Full-Change') { extension.fullChange }
             manifestPlugin.add('Branch') { extension.branch }
         }
     }
@@ -70,6 +71,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
         extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
         extMapping.change = { selectedProvider.calculateChange(project) }
+        extMapping.fullChange = { selectedProvider.calculateFullChange(project) }
         extMapping.branch = { selectedProvider.calculateBranch(project) }
 
     }

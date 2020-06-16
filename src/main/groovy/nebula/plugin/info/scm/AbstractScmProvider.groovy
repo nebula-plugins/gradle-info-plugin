@@ -70,6 +70,13 @@ abstract class AbstractScmProvider implements ScmInfoProvider {
     abstract calculateChange(File projectDir)
 
     @Override
+    String calculateFullChange(Project project) {
+        return calculateFullChange(project.projectDir)
+    }
+
+    abstract calculateFullChange(File projectDir)
+
+    @Override
     String calculateBranch(Project project) {
         return calculateBranch(project.projectDir)
     }

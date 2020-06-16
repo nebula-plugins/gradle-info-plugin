@@ -62,6 +62,11 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
+        return calculateFullChange(projectDir)?.substring(0,7)
+    }
+
+    @Override
+    String calculateFullChange(File projectDir) {
         boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().present
         String hash
         if (!isHashPresent) {
@@ -73,8 +78,7 @@ class GitScmProvider extends AbstractScmProvider {
         } else {
             hash = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().get()
         }
-        String shortHash = hash?.substring(0,7)
-        return shortHash
+        return hash
     }
 
     @Override
