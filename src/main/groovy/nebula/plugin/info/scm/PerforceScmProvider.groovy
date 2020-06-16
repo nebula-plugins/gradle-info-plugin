@@ -77,6 +77,11 @@ class PerforceScmProvider extends AbstractScmProvider {
     }
 
     @Override
+    def calculateFullChange(File projectDir) {
+        return calculateChange(projectDir)
+    }
+
+    @Override
     String calculateBranch(File projectDir) {
         return null // unsupported in perforce
     }

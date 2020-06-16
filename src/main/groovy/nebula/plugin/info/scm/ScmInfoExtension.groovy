@@ -20,5 +20,6 @@ class ScmInfoExtension {
     String origin
     String source
     String change
+    String fullChange
     String branch
 }

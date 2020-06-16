@@ -35,14 +35,17 @@ contacts {
 }
 
 dependencies {
-    compile gradleApi()
+    implementation gradleApi()
 
     // TODO, make these optional
-    compile 'com.perforce:p4java:2015.2.1365273'
-    compile 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
-    compile 'org.eclipse.jgit:org.eclipse.jgit:5.0.1.201806211838-r'
-    compile 'org.tmatesoft.svnkit:svnkit:1.8.12'
-    testCompile 'com.github.stefanbirkner:system-rules:1.19.0'
+    implementation 'com.perforce:p4java:2015.2.1365273'
+    implementation 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
+    implementation 'org.tmatesoft.svnkit:svnkit:1.8.12'
+    testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
+    testImplementation ('org.ajoberstar.grgit:grgit-core:4.0.2') {
+        exclude group: 'org.codehaus.groovy', module: 'groovy'
+    }
 }
 
 test.exclude '**/*Local*'

@@ -31,5 +31,6 @@ public interface ScmInfoProvider {
     String calculateSource(Project project);
     String calculateOrigin(Project project);
     String calculateChange(Project project);
+    String calculateFullChange(Project project);
     String calculateBranch(Project project);
 }
