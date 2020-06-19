@@ -31,7 +31,7 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         project.plugins.apply(InfoJavaPlugin)
         def infoPropertiesFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin)
         project.evaluate() // For Java plugin compatibility fields
-        InfoPropertiesFile manifestTask = infoPropertiesFilePlugin.getManifestTask()
+        InfoPropertiesFile manifestTask = infoPropertiesFilePlugin.getManifestTask().get()
 
         then:
         manifestTask.getPropertiesFile() == new File(projectDir, 'build/manifest/ensure-reporter-is-doing-work.properties')
