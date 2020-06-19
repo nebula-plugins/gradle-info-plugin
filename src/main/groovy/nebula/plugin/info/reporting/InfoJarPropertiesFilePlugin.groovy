@@ -23,6 +23,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 
 /**
@@ -34,35 +35,36 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
     void apply(Project project) {
         project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
             InfoPropertiesFilePlugin propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin) as InfoPropertiesFilePlugin
-            InfoPropertiesFile manifestTask = propFilePlugin.getManifestTask()
+            TaskProvider<InfoPropertiesFile> manifestTask = propFilePlugin.getManifestTask()
 
-            //TODO: this should probably be using lazy API but needs some refactoring
-            project.afterEvaluate {
-                project.tasks.withType(Jar) { Jar jarTask ->
-                    //explicit dependency on original task to keep contract that `jar` task invocation will produce properties file
-                    //even this file is actually not bundled into jar
-                    jarTask.dependsOn(manifestTask)
-                    //we cannot use the right module name because touching manifest task to early causes incorrect name computation
-                    //temp.properties is renamed later when placed into jar
-                    def taskName = jarTask.name.capitalize()
-                    File propertiesFile = new File(project.buildDir, "properties_for_${taskName}/temp.properties")
-                    Task prepareFile = project.tasks.create("createPropertiesFileFor${taskName}") { Task task ->
-                        task.outputs.file(propertiesFile)
-                        task.doLast {
-                            //Task action is intentionally creating empty file.
-                            propertiesFile.text = ""
-                        }
-                    }
+            //we cannot use the right module name because touching manifest task to early causes incorrect name computation
+            //temp.properties is renamed later when placed into jar
+            File propertiesFile = new File(project.buildDir, "properties_for_jar/temp.properties")
+            TaskProvider<Task> prepareFile = project.tasks.register("createPropertiesFileForJar") { Task task ->
+                task.outputs.file(propertiesFile)
+                task.doLast {
+                    //Task action is intentionally creating empty file.
+                    propertiesFile.text = ""
+                }
+            }
 
-                    //we link the output file from the task to the spec to add it into jar, but the file is empty, it will
-                    //help to ignore changes in its content for caching
-                    jarTask.metaInf { CopySpec spec ->
-                        spec.from(prepareFile.outputs).rename("temp.properties", manifestTask.propertiesFile.name)
-                    }
-                    jarTask.doFirst {
-                        //when we are after all caching decisions we fill the file with all the data
-                        new PropertiesWriter().writeProperties(propertiesFile, project)
-                    }
+            project.tasks.withType(Jar).configureEach { Jar jarTask ->
+                //explicit dependency on original task to keep contract that `jar` task invocation will produce properties file
+                //even this file is actually not bundled into jar
+                jarTask.dependsOn(manifestTask)
+
+                //we link the output file from the task to the spec to add it into jar, but the file is empty, it will
+                //help to ignore changes in its content for caching
+                jarTask.metaInf { CopySpec spec ->
+                    spec.from(prepareFile).rename("temp.properties", manifestTask.get().propertiesFile.name)
+                }
+                jarTask.doFirst {
+                    //when we are after all caching decisions we fill the file with all the data
+                    new PropertiesWriter().writeProperties(propertiesFile, project)
+                }
+                jarTask.doLast {
+                    //we need to cleanup file in case we got multiple jar tasks
+                    propertiesFile.text = ""
                 }
             }
 
