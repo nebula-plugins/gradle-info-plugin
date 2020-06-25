@@ -19,9 +19,6 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
 
 class TravisProvider extends AbstractContinuousIntegrationProvider {
-    TravisProvider(ProviderFactory providerFactory) {
-        super(providerFactory)
-    }
 
     @Override
     boolean supports(Project project) {

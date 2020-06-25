@@ -21,10 +21,6 @@ import org.gradle.api.provider.ProviderFactory
 
 class JenkinsProvider extends AbstractContinuousIntegrationProvider {
 
-    JenkinsProvider(ProviderFactory providerFactory) {
-        super(providerFactory)
-    }
-
     @Override
     boolean supports(Project project) {
         getEnvironmentVariable('BUILD_NUMBER') && getEnvironmentVariable('JOB_NAME')
