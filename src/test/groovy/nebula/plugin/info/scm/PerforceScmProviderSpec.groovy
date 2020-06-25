@@ -15,8 +15,6 @@
  */
 package nebula.plugin.info.scm
 
-import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.rules.TemporaryFolder
@@ -26,10 +24,7 @@ class PerforceScmProviderSpec extends Specification {
     @Rule
     TemporaryFolder temp
 
-    ProviderFactory providerFactoryMock = Mock(ProviderFactory)
-    Provider<String> providerStringMock = Mock(Provider)
-
-    def provider = new PerforceScmProvider(providerFactoryMock)
+    def provider = new PerforceScmProvider()
 
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
@@ -112,20 +107,11 @@ class PerforceScmProviderSpec extends Specification {
         then:
         mapped == '//depot/Tools/nebula-boot'
 
-        2 * providerFactoryMock.environmentVariable('WORKSPACE') >> providerStringMock
-        2 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
-        1 * providerStringMock.present >> true
-        1 * providerStringMock.get() >> workspace.path
-
         when:
         String origin = provider.calculateModuleOrigin(fakeProjectDir)
 
         then:
         origin == 'p4java://perforce:1666?userName=rolem'
-
-        1 * providerFactoryMock.environmentVariable('P4CONFIG') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
-        1 * providerStringMock.get() >> fakeProjectDir.path
     }
 
     def 'calculate module status - WORKSPACE is null'() {
@@ -141,19 +127,10 @@ class PerforceScmProviderSpec extends Specification {
         then:
         mapped == '//depot//Users/jryan/Workspaces/jryan_uber/Tools/nebula-boot'
 
-        1 * providerFactoryMock.environmentVariable('WORKSPACE') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
-        1 * providerStringMock.present >> false
-        0 * providerStringMock.get()
-
         when:
         String origin = provider.calculateModuleOrigin(fakeProjectDir)
 
         then:
         origin == 'p4java://perforce:1666?userName=rolem'
-
-        1 * providerFactoryMock.environmentVariable('P4CONFIG') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
-        1 * providerStringMock.get() >> fakeProjectDir.path
     }
 }

@@ -27,11 +27,6 @@ import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
     private Logger logger = LoggerFactory.getLogger(GitScmProvider)
-
-    GitScmProvider(ProviderFactory providerFactory) {
-        super(providerFactory)
-    }
-
     @Override
     boolean supports(Project project) {
         // TODO When we can make p4java optional, we'll add a classForName check here.
@@ -67,16 +62,13 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateFullChange(File projectDir) {
-        boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().present
-        String hash
-        if (!isHashPresent) {
+        String hash = System.getenv('GIT_COMMIT') // From Jenkins
+        if (!hash) {
             def head = getRepository(projectDir).resolve(Constants.HEAD)
             if (!head) {
                 return null
             }
             hash = head.name
-        } else {
-            hash = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().get()
         }
         return hash
     }

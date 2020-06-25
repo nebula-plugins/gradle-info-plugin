@@ -21,11 +21,11 @@ import com.perforce.p4java.server.IServer
 import com.perforce.p4java.server.ServerFactory
 import groovy.transform.PackageScope
 import org.gradle.api.Project
-import org.gradle.api.provider.ProviderFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class PerforceScmProvider extends AbstractScmProvider {
+
 
     File p4configFile
 
@@ -33,25 +33,20 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     private static final String DEFAULT_WORKSPACE = '.'
 
-    PerforceScmProvider(ProviderFactory providerFactory) {
-        super(providerFactory)
-    }
-
     @Override
     boolean supports(Project project) {
         // Pretty poor way to check, but Perforce leave no indication of where the current tree came from
         // Better to check git first, since it can make a more intelligent guess
         // TODO When we can make p4java optional, we'll add a classForName check here.
         try {
-            return (providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present &&  providerFactory.environmentVariable('P4CLIENT').forUseAtConfigurationTime().present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
-        } catch(Exception e) {
+            return (System.getenv('WORKSPACE') && System.getenv('P4CLIENT')) || findFile(project.projectDir, System.getenv('P4CONFIG'))     } catch(Exception e) {
             return false
         }
     }
 
     @Override
     String calculateModuleSource(File projectDir) {
-        String workspacePath = providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present ? providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().get() : {
+        String workspacePath = System.getenv('WORKSPACE') ?: {
             logger.info("WORKSPACE environment variable is not set. Using ${DEFAULT_WORKSPACE}")
             DEFAULT_WORKSPACE
         }.call()
@@ -73,7 +68,7 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        return  providerFactory.environmentVariable('P4_CHANGELIST').forUseAtConfigurationTime().get()
+        return System.getenv('P4_CHANGELIST')
     }
 
     @Override
@@ -165,7 +160,7 @@ class PerforceScmProvider extends AbstractScmProvider {
     @PackageScope
     void findP4Config(File starting) {
         if (p4configFile == null) {
-            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
+            p4configFile = findFile(starting, System.getenv('P4CONFIG'))
         }
     }
 }
