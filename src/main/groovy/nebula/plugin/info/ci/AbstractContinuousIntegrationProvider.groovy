@@ -26,8 +26,14 @@ import java.util.logging.Level
 @Log
 abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegrationInfoProvider {
 
+    private final ProviderFactory providerFactory
+
+    AbstractContinuousIntegrationProvider(ProviderFactory providerFactory) {
+        this.providerFactory = providerFactory
+    }
+
     protected String getEnvironmentVariable(String envKey) {
-        return System.getenv(envKey)
+        return providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().present ? providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().get() : null
     }
 
     protected static String hostname() {

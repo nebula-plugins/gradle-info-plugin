@@ -21,6 +21,10 @@ import org.gradle.api.provider.ProviderFactory
 
 class GitlabProvider extends AbstractContinuousIntegrationProvider {
 
+    GitlabProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
+
     @Override
     boolean supports(Project project) {
         getEnvironmentVariable('GITLAB_CI')

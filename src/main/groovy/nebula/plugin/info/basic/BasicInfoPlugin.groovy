@@ -57,6 +57,13 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     // Implementation-Vendor-Id: org.apache
     // X-Compile-Source-JDK: 1.3
     // X-Compile-Target-JDK: 1.2
+    private final ProviderFactory providers
+
+    @Inject
+    BasicInfoPlugin(ProviderFactory providerFactory) {
+        this.providers = providerFactory
+    }
+
     void apply(Project project) {
 
         // All fields are known upfront, so we pump these in immediately.
@@ -66,8 +73,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(IMPLEMENTATION_VERSION.toString()) { project.version }
             manifestPlugin.add('Built-Status') { project.status } // Could be promoted, so this is the actual status necessarily
 
-            manifestPlugin.add('Built-By', System.getProperty('user.name'))
-            manifestPlugin.add('Built-OS', System.getProperty('os.name'))
+            String builtBy = providers.systemProperty("user.name").forUseAtConfigurationTime().get()
+            String builtOs = providers.systemProperty("os.name").forUseAtConfigurationTime().get()
+            manifestPlugin.add('Built-By', builtBy)
+            manifestPlugin.add('Built-OS', builtOs)
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
             manifestPlugin.add('Build-Date', DATE_FORMATTER.format(new Date())).changing = true
