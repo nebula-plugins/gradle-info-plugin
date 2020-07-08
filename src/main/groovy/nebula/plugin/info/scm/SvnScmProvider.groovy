@@ -23,6 +23,10 @@ import org.tmatesoft.svn.core.wc.*
 
 class SvnScmProvider extends AbstractScmProvider {
 
+    SvnScmProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
+
     @Override
     boolean supports(Project project) {
         // TODO When we can make p4java optional, we'll add a classForName check here.
@@ -52,17 +56,19 @@ class SvnScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        String revision = System.getenv('SVN_REVISION') // From Jenkins
-        if (!revision) {
+        boolean isRevisionPresent = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().present
+        String revision
+        if (!isRevisionPresent) {
             def base = getInfo(projectDir).getRevision()
             if (!base) {
                 return null
             }
             revision = base.getNumber()
+        } else {
+            revision = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().get()
         }
         return revision
     }
-
 
     @Override
     def calculateFullChange(File projectDir) {

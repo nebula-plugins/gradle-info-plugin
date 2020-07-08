@@ -23,6 +23,10 @@ class UnknownScmProvider extends AbstractScmProvider {
 
     public static final String LOCAL = 'LOCAL'
 
+    UnknownScmProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
+
     @Override
     boolean supports(Project project) {
         return true

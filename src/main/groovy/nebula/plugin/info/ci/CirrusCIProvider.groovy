@@ -19,6 +19,9 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
 
 class CirrusCIProvider extends AbstractContinuousIntegrationProvider {
+    CirrusCIProvider(ProviderFactory providerFactory) {
+        super(providerFactory)
+    }
 
     @Override
     boolean supports(Project project) {
