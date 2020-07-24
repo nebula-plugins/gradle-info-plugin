@@ -22,9 +22,11 @@ import org.gradle.BuildResult
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.model.ObjectFactory
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
+import javax.inject.Inject
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
@@ -44,13 +46,20 @@ class InfoBrokerPlugin implements Plugin<Project> {
     private AtomicBoolean buildFinished = new AtomicBoolean(false)
     private Project project
 
+    private final ObjectFactory objectFactory
+
+    @Inject
+    InfoBrokerPlugin(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory
+    }
+
     void apply(Project project) {
         this.manifestEntries = new ArrayList<ManifestEntry>()
         this.reportEntries = new HashMap<>()
         this.watchers = [:].withDefault { [] }
         this.project = project
 
-        InfoBrokerPluginExtension extension = project.getExtensions().create('infoBroker', InfoBrokerPluginExtension)
+        InfoBrokerPluginExtension extension = project.getExtensions().create('infoBroker', InfoBrokerPluginExtension, objectFactory)
 
         project.rootProject.gradle.addBuildListener(new BuildAdapter() {
             @Override
@@ -69,17 +78,17 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void filterManifestEntries(InfoBrokerPluginExtension extension) {
-        if(extension.includedManifestProperties && extension.excludedManifestProperties) {
+        if(extension.includedManifestProperties.get() && extension.excludedManifestProperties.get()) {
             throw new GradleException("includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided")
-        } else if(extension.excludedManifestProperties) {
+        } else if(extension.excludedManifestProperties.get()) {
             removeExcludedProperties(extension)
-        } else if(extension.includedManifestProperties) {
+        } else if(extension.includedManifestProperties.get()) {
             filterOnlyIncludedProperties(extension)
         }
     }
 
     private void filterOnlyIncludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> includedProperties = extension.includedManifestProperties
+        List<String> includedProperties = extension.includedManifestProperties.get()
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             (entry.name in includedProperties)
         }
@@ -87,7 +96,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void removeExcludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> excludedProperties = extension.excludedManifestProperties
+        List<String> excludedProperties = extension.excludedManifestProperties.get()
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             !(entry.name in excludedProperties)
         }

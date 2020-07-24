@@ -246,6 +246,35 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         attributes.getValue('Implementation-Title') == "com.netflix#changes-to-group-and-version-after-project-evaluation-are-reflected;1.0"
     }
 
+    def "can create a JAR with ignoredManifestAttributesForNormalization and ignoredPropertiesForNormalization for MetaInfNormalization"() {
+        given:
+        writeHelloWorld('nebula.test')
+        buildFile << """
+            ${applyPlugin(InfoBrokerPlugin)}
+            ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarManifestPlugin)}
+
+            apply plugin: 'java'
+
+            version = '1.0'
+
+            infoBroker {
+                ignoredManifestAttributesForNormalization = ['Build-Date']
+                ignoredPropertiesForNormalization = ['app.version']
+            }
+        """.stripIndent()
+
+        when:
+        runTasksSuccessfully('jar')
+
+        then:
+        File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
+        jarFile.exists()
+        Manifest manifest = new JarFile(jarFile).manifest
+        Attributes attributes = manifest.mainAttributes
+        assertMainfestKeyExists(attributes, 'Build-Date')
+    }
+
     private void assertMainfestKeyExists(Attributes attributes, String key) {
         assert attributes.containsKey(new Attributes.Name(key))
     }

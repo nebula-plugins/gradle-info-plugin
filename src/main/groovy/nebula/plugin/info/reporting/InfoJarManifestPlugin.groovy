@@ -16,11 +16,16 @@
 
 package nebula.plugin.info.reporting
 
+import com.netflix.nebula.interop.GradleKt
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
+import nebula.plugin.info.InfoBrokerPluginExtension
 import nebula.plugin.info.InfoReporterPlugin
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.normalization.MetaInfNormalization
 
 /**
  * Inject manifest values. Does not participate in incremental builds as its own task, it proved too difficult
@@ -38,6 +43,39 @@ class InfoJarManifestPlugin implements Plugin<Project>, InfoReporterPlugin {
                     jarTask.manifest.attributes.putAll(attrs)
                 }
             }
+
+            project.afterEvaluate {
+                if(GradleKt.versionGreaterThan(project.gradle, "6.6-rc-1")) {
+                    configureMetaInfNormalization(project)
+                }
+            }
+
         }
+    }
+
+    @CompileDynamic
+    private void configureMetaInfNormalization(Project project) {
+        InfoBrokerPluginExtension extension = project.extensions.getByName('infoBroker') as InfoBrokerPluginExtension
+        project.normalization.runtimeClasspath.metaInf(new Action<MetaInfNormalization>() {
+            @Override
+            void execute(MetaInfNormalization metaInfNormalization) {
+                if(extension.ignoreManifestForNormalization.isPresent() && extension.ignoreManifestForNormalization.get()) {
+                    metaInfNormalization.ignoreManifest()
+                }
+                if(extension.ignoreNormalizationCompletely.isPresent() && extension.ignoreNormalizationCompletely.get()) {
+                    metaInfNormalization.ignoreCompletely()
+                }
+                if(extension.ignoredPropertiesForNormalization.isPresent()) {
+                    extension.ignoredPropertiesForNormalization.get().each { manifestProperty ->
+                        metaInfNormalization.ignoreProperty(manifestProperty)
+                    }
+                }
+                if(extension.ignoredManifestAttributesForNormalization.isPresent()) {
+                    extension.ignoredManifestAttributesForNormalization.get().each { manifestAttribute ->
+                        metaInfNormalization.ignoreAttribute(manifestAttribute)
+                    }
+                }
+            }
+        })
     }
 }
