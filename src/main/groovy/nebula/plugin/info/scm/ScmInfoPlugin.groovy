@@ -30,6 +30,13 @@ import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
 class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
+
+    static final String MODULE_SOURCE_PROPERTY = 'Module-Source'
+    static final String MODULE_ORIGIN_PROPERTY = 'Module-Origin'
+    static final String CHANGE_PROPERTY = 'Change'
+    static final String FULL_CHANGE_PROPERTY = 'Full-Change'
+    static final String BRANCH_PROPERTY = 'Branch'
+
     private static Logger logger = Logging.getLogger(ScmInfoPlugin)
 
     protected Project project
@@ -57,11 +64,11 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         configureExtMapping()
 
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            manifestPlugin.add('Module-Source') { extension.source }
-            manifestPlugin.add('Module-Origin') { extension.origin }
-            manifestPlugin.add('Change') { extension.change }
-            manifestPlugin.add('Full-Change') { extension.fullChange }
-            manifestPlugin.add('Branch') { extension.branch }
+            manifestPlugin.add(MODULE_SOURCE_PROPERTY) { extension.source }
+            manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { extension.origin }
+            manifestPlugin.add(CHANGE_PROPERTY) { extension.change }
+            manifestPlugin.add(FULL_CHANGE_PROPERTY) { extension.fullChange }
+            manifestPlugin.add(BRANCH_PROPERTY) { extension.branch }
         }
     }
 
