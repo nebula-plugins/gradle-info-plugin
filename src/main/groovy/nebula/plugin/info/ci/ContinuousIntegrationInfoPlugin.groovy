@@ -28,6 +28,12 @@ import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
 class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
+
+    static final BUILD_HOST_PROPERTY = 'Build-Host'
+    static final BUILD_JOB_PROPERTY = 'Build-Job'
+    static final BUILD_NUMBER_PROPERTY = 'Build-Number'
+    static final BUILD_ID_PROPERTY = 'Build-Id'
+
     protected Project project
     List<ContinuousIntegrationInfoProvider> providers
     ContinuousIntegrationInfoProvider selectedProvider

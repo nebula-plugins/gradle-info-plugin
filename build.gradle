@@ -39,6 +39,7 @@ dependencies {
 
     // TODO, make these optional
     implementation 'com.perforce:p4java:2015.2.1365273'
+    implementation 'com.netflix.nebula:nebula-gradle-interop:latest.release'
     implementation 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
     implementation 'org.tmatesoft.svnkit:svnkit:1.8.12'

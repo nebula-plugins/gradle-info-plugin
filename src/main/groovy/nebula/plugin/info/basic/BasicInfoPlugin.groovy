@@ -41,6 +41,11 @@ import static java.util.jar.Attributes.Name.*
  */
 class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat('yyyy-MM-dd_HH:mm:ss')
+    static final String BUILT_BY_PROPERTY = 'Built-By'
+    static final String BUILT_OS_PROPERTY = 'Built-OS'
+    static final String BUILD_DATE_PROPERTY = 'Build-Date'
+    static final String BUILD_STATUS_PROPERTY = 'Built-Status'
+    static final String GRADLE_VERSION_PROPERTY = 'Gradle-Version'
 
     // Sample from commons-lang, and hence via Maven
     // Manifest-Version: 1.0
@@ -71,18 +76,18 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(MANIFEST_VERSION.toString(), '1.0') // Java Standard
             manifestPlugin.add(IMPLEMENTATION_TITLE.toString()) { "${project.group}#${project.name};${project.version}" }.changing = true
             manifestPlugin.add(IMPLEMENTATION_VERSION.toString()) { project.version }
-            manifestPlugin.add('Built-Status') { project.status } // Could be promoted, so this is the actual status necessarily
+            manifestPlugin.add(BUILD_STATUS_PROPERTY) { project.status } // Could be promoted, so this is the actual status necessarily
 
             String builtBy = providers.systemProperty("user.name").forUseAtConfigurationTime().get()
             String builtOs = providers.systemProperty("os.name").forUseAtConfigurationTime().get()
-            manifestPlugin.add('Built-By', builtBy)
-            manifestPlugin.add('Built-OS', builtOs)
+            manifestPlugin.add(BUILT_BY_PROPERTY, builtBy)
+            manifestPlugin.add(BUILT_OS_PROPERTY, builtOs)
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
-            manifestPlugin.add('Build-Date', DATE_FORMATTER.format(new Date())).changing = true
+            manifestPlugin.add(BUILD_DATE_PROPERTY, DATE_FORMATTER.format(new Date())).changing = true
 
 
-            manifestPlugin.add('Gradle-Version', { project.gradle.gradleVersion })
+            manifestPlugin.add(GRADLE_VERSION_PROPERTY, { project.gradle.gradleVersion })
 
             // TODO Include hostname
         }
