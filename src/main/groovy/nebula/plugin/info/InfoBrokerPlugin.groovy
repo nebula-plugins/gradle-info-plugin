@@ -17,15 +17,11 @@
 package nebula.plugin.info
 
 import groovy.transform.Canonical
-import org.gradle.BuildAdapter
-import org.gradle.BuildResult
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-
-import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * Broker between Collectors and Reporters. Collectors report to this plugin about manifest values,
@@ -41,7 +37,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
     private List<ManifestEntry> manifestEntries
     private Map<String, Collection<Closure>> watchers
     private Map<String, Object> reportEntries
-    private AtomicBoolean buildFinished = new AtomicBoolean(false)
     private Project project
 
     void apply(Project project) {
@@ -51,14 +46,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
         this.project = project
 
         InfoBrokerPluginExtension extension = project.getExtensions().create('infoBroker', InfoBrokerPluginExtension)
-
-        project.rootProject.gradle.addBuildListener(new BuildAdapter() {
-            @Override
-            void buildFinished(BuildResult buildResult) {
-                buildFinished.set(true)
-            }
-        })
-
         project.afterEvaluate {
             filterManifestEntries(extension)
         }
@@ -145,10 +132,6 @@ class InfoBrokerPlugin implements Plugin<Project> {
     Map<String, Object> buildReports() {
         if (project != project.rootProject) {
             throw new IllegalStateException('Build reports should only be used from the root project')
-        }
-
-        if (!buildFinished.get()) {
-            throw new IllegalStateException('Cannot retrieve build reports before the build has finished')
         }
 
         return Collections.unmodifiableMap(reportEntries)

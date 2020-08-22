@@ -102,19 +102,6 @@ class InfoBrokerPluginSpec extends ProjectSpec {
         attrs3['MyKey'] == 'MyValue' // Still around
     }
 
-    def 'it throws an exception when build reports are requested prior to build end'() {
-        given:
-        project.apply plugin: InfoBrokerPlugin
-
-        when:
-        def infoBrokerPlugin = project.plugins.getPlugin(InfoBrokerPlugin)
-        infoBrokerPlugin.addReport('test', 'some value')
-        def reports = infoBrokerPlugin.buildReports()
-
-        then:
-        thrown IllegalStateException
-    }
-
     def 'can not add multiple values'() {
         when:
         InfoBrokerPlugin broker = project.plugins.apply(InfoBrokerPlugin)
