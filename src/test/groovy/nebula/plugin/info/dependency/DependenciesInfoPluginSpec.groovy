@@ -62,7 +62,6 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         configurations.compileClasspath.resolve()
 
         when:
-        brokerPlugin.buildFinished.set(true)
         def reports = brokerPlugin.buildReports()
 
         then:
