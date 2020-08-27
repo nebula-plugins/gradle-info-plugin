@@ -16,15 +16,19 @@
 
 package nebula.plugin.info.reporting
 
+import com.netflix.nebula.interop.GradleKt
 import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
+import nebula.plugin.info.InfoPlugin
 import nebula.plugin.info.InfoReporterPlugin
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
+import org.gradle.normalization.MetaInfNormalization
 
 /**
  * Inject a properties file into the jar file will the info values, using the InfoPropertiesFilePlugin
@@ -68,6 +72,20 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
                 }
             }
 
+            if (GradleKt.versionGreaterThan(project.gradle, "6.6-rc-1")) {
+                configureMetaInfNormalization(project)
+            }
         }
+    }
+
+    private static void configureMetaInfNormalization(Project project) {
+        project.normalization.runtimeClasspath.metaInf(new Action<MetaInfNormalization>() {
+            @Override
+            void execute(MetaInfNormalization metaInfNormalization) {
+                InfoPlugin.NORMALIZATION_IGNORED_PROPERTY_NAMES.each { attribute ->
+                    metaInfNormalization.ignoreProperty(attribute)
+                }
+            }
+        })
     }
 }

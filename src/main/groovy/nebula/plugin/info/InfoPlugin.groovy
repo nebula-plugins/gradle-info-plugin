@@ -33,6 +33,30 @@ import org.gradle.api.Project
  */
 class InfoPlugin implements Plugin<Project> {
 
+    public static final List<String> NORMALIZATION_IGNORED_PROPERTY_NAMES = [
+            'Module-Owner',
+            'Module-Email',
+            'Nebula-Version',
+            BasicInfoPlugin.BUILT_BY_PROPERTY,
+            BasicInfoPlugin.BUILT_OS_PROPERTY,
+            BasicInfoPlugin.BUILD_DATE_PROPERTY,
+            BasicInfoPlugin.GRADLE_VERSION_PROPERTY,
+            BasicInfoPlugin.BUILD_STATUS_PROPERTY,
+            InfoJavaPlugin.CREATED_PROPERTY,
+            InfoJavaPlugin.JDK_PROPERTY,
+            InfoJavaPlugin.SOURCE_PROPERTY,
+            InfoJavaPlugin.TARGET_PROPERTY,
+            ContinuousIntegrationInfoPlugin.BUILD_NUMBER_PROPERTY,
+            ContinuousIntegrationInfoPlugin.BUILD_HOST_PROPERTY,
+            ContinuousIntegrationInfoPlugin.BUILD_JOB_PROPERTY,
+            ContinuousIntegrationInfoPlugin.BUILD_ID_PROPERTY,
+            ScmInfoPlugin.MODULE_SOURCE_PROPERTY,
+            ScmInfoPlugin.MODULE_ORIGIN_PROPERTY,
+            ScmInfoPlugin.CHANGE_PROPERTY,
+            ScmInfoPlugin.FULL_CHANGE_PROPERTY,
+            ScmInfoPlugin.BRANCH_PROPERTY
+    ] as List<String>
+
     void apply(Project project) {
 
         // Broker
