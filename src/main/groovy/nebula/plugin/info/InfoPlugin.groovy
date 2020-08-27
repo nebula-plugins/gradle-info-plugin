@@ -34,9 +34,12 @@ import org.gradle.api.Project
 class InfoPlugin implements Plugin<Project> {
 
     public static final List<String> NORMALIZATION_IGNORED_PROPERTY_NAMES = [
+            'Implementation-Title',
+            'Implementation-Version',
             'Module-Owner',
             'Module-Email',
             'Nebula-Version',
+            BasicInfoPlugin.BUILD_STATUS_PROPERTY,
             BasicInfoPlugin.BUILT_BY_PROPERTY,
             BasicInfoPlugin.BUILT_OS_PROPERTY,
             BasicInfoPlugin.BUILD_DATE_PROPERTY,
