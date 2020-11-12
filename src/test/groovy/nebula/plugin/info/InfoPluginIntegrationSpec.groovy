@@ -15,6 +15,7 @@
  */
 package nebula.plugin.info
 
+import nebula.plugin.info.dependencies.DependenciesInfoPlugin
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
@@ -32,6 +33,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             }
 
             ${applyPlugin(InfoPlugin)}
+            ${applyPlugin(DependenciesInfoPlugin)}
             apply plugin: 'java'
             
             repositories { jcenter() }
@@ -62,6 +64,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         buildFile << """
             allprojects {
                 ${applyPlugin(InfoPlugin)}
+                ${applyPlugin(DependenciesInfoPlugin)}
             }
 
             subprojects {
@@ -111,6 +114,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
 
             allprojects {
                 ${applyPlugin(InfoPlugin)}
+                ${applyPlugin(DependenciesInfoPlugin)}
             }
 
             subprojects {
@@ -166,6 +170,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
 
             allprojects {
                 ${applyPlugin(InfoPlugin)}
+                ${applyPlugin(DependenciesInfoPlugin)}
             }
 
             subprojects {
