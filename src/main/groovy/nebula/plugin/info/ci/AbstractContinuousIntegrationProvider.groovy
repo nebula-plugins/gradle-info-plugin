@@ -41,16 +41,19 @@ abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegr
         if (currentOs.isWindows()) {
             try {
                 return Kernel32Util.getComputerName()
-            } catch (Throwable ignored) {
+            } catch (Throwable t) {
                 // with variations in Gradle versions and JVMs, this can sometimes break
-                log.log(Level.WARNING, "Unable to determine the host name on this Windows instance")
-                return 'localhost'
+                log.log(Level.WARNING, "Unable to determine the host name on this Windows instance", t)
             }
         } else if (currentOs.isUnix()) {
-            return POSIXUtil.getHostName()
+            try {
+                return POSIXUtil.getHostName()
+            } catch (Throwable t) {
+                log.log(Level.WARNING, "Unable to determine the host name", t)
+            }
         } else {
             log.log(Level.WARNING, "Unknown operating system $currentOs, could not detect hostname")
-            return 'localhost'
         }
+        return 'localhost'
     }
 }
