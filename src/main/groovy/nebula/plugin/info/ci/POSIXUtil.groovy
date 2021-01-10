@@ -19,16 +19,34 @@ package nebula.plugin.info.ci
 import com.sun.jna.LastErrorException
 import com.sun.jna.Library
 import com.sun.jna.Native
+import groovy.util.logging.Log
+import java.util.logging.Level
+
+@Log
 class POSIXUtil {
-    private static final C c = (C) Native.loadLibrary("c", C.class);
+    private static final C c
+    static {
+        try {
+            c = (C) Native.loadLibrary("c", C.class)
+        } catch (UnsatisfiedLinkError err) {
+            log.log(Level.WARNING, "Unable to load c library", err)
+            c = null
+        }
+    }
 
     private static interface C extends Library {
         int gethostname(byte[] name, int size_t) throws LastErrorException;
     }
 
     static String getHostName() {
-        byte[] hostname = new byte[256];
-        c.gethostname(hostname, hostname.length)
-        return Native.toString(hostname)
+        if (c != null) {
+            byte[] hostname = new byte[256]
+            c.gethostname(hostname, hostname.length)
+            return Native.toString(hostname)
+        }
+
+        log.log(Level.WARNING, "gethostname not available, falling back to calling hostname")
+        Process p = Runtime.getRuntime().exec("hostname")
+        return p.inputStream.withReader { it.text.trim() }
     }
 }
