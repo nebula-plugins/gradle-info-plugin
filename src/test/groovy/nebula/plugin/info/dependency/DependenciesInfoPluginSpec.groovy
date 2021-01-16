@@ -27,7 +27,7 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         project.apply plugin: 'java'
         def brokerPlugin = project.plugins.apply(InfoBrokerPlugin)
         project.apply plugin: DependenciesInfoPlugin
-        project.configurations.compile.resolve()
+        project.configurations.compileClasspath.resolve()
 
         when:
         def manifest = brokerPlugin.buildManifest()
@@ -49,15 +49,14 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         project.repositories.add(project.repositories.mavenCentral())
 
         def configurations = project.configurations
-        def compileConfig = configurations.compile
-        compileConfig.dependencies.add(guava)
-        configurations.implementation.dependencies.add(slf4j)
+        def implementationConfig = configurations.implementation
+        implementationConfig.dependencies.add(guava)
+        implementationConfig.dependencies.add(slf4j)
 
         def detached = configurations.detachedConfiguration(guava)
         configurations.add(detached)
         configurations.remove(detached)
-
-        compileConfig.resolve()
+        
         detached.resolve()
         configurations.compileClasspath.resolve()
 
