@@ -226,13 +226,17 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
                 }
               }
               dependencies {
-                classpath "org.jenkins-ci.tools:gradle-jpi-plugin:0.39.0-rc.3"
+                classpath "org.jenkins-ci.tools:gradle-jpi-plugin:0.41.0"
               }
             }
 
             ${applyPlugin(InfoPlugin)}
             apply plugin: 'java'
             apply plugin: "org.jenkins-ci.jpi"
+
+            jenkinsPlugin {
+                jenkinsVersion.set('2.249.3')
+            }
 
             repositories { jcenter() }
             dependencies {
