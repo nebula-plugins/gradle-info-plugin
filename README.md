@@ -11,7 +11,7 @@ Noninvasively collect information about the environment, and make information av
 ```
 buildscript {
     repositories { jcenter() }
-    dependencies { classpath 'com.netflix.nebula:gradle-info-plugin:3.+' }
+    dependencies {     classpath "com.netflix.nebula:gradle-info-plugin:9.2.0" }
 }
 ```
 
