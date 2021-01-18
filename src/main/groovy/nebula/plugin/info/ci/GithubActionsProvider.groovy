@@ -73,6 +73,6 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
 
     @Override
     String calculateBuildUrl(Project project) {
-        return "${getEnvironmentVariable('GITHUB_SERVER_URL')}/${getEnvironmentVariable('GITHUB_REPOSITORY')}/actions/runs/${getEnvironmentVariable('GITHUB_RUN_NUMBER')}"
+        return "${getEnvironmentVariable('GITHUB_SERVER_URL')}/${getEnvironmentVariable('GITHUB_REPOSITORY')}/actions/runs/${getEnvironmentVariable('GITHUB_RUN_ID')}"
     }
 }
