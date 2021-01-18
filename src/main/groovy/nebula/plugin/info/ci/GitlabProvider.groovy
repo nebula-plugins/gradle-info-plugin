@@ -41,6 +41,11 @@ class GitlabProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
+    String calculateBuildUrl(Project project) {
+        getEnvironmentVariable('CI_JOB_URL')
+    }
+
+    @Override
     String calculateHost(Project project) {
         return hostname()
     }

@@ -41,6 +41,11 @@ class JenkinsProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
+    String calculateBuildUrl(Project project) {
+        getEnvironmentVariable('BUILD_URL')
+    }
+
+    @Override
     String calculateHost(Project project) {
         getEnvironmentVariable('JENKINS_URL')
     }

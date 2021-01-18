@@ -46,6 +46,11 @@ class TitusProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
+    String calculateBuildUrl(Project project) {
+        return "${getEnvironmentVariable('NETFLIX_INSTANCE_ID')}/${getEnvironmentVariable('TITUS_JOB_ID')}"
+    }
+
+    @Override
     String calculateHost(Project project) {
         getEnvironmentVariable('NETFLIX_INSTANCE_ID')
     }

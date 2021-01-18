@@ -47,4 +47,9 @@ class CircleCIProvider extends AbstractContinuousIntegrationProvider {
     String calculateBuildId(Project project) {
         getEnvironmentVariable("CIRCLE_BUILD_NUM")
     }
+
+    @Override
+    String calculateBuildUrl(Project project) {
+        getEnvironmentVariable("CIRCLE_BUILD_URL")
+    }
 }

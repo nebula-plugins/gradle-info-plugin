@@ -49,4 +49,9 @@ class DroneProvider extends AbstractContinuousIntegrationProvider {
     String calculateBuildId(Project project) {
         getEnvironmentVariable("DRONE_BUILD_NUMBER")
     }
+
+    @Override
+    String calculateBuildUrl(Project project) {
+        return "http://${hostname()}/build/${getEnvironmentVariable("DRONE_BUILD_NUMBER")}"
+    }
 }

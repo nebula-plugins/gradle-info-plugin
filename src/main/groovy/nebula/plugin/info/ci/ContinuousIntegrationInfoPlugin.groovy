@@ -33,6 +33,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     static final BUILD_JOB_PROPERTY = 'Build-Job'
     static final BUILD_NUMBER_PROPERTY = 'Build-Number'
     static final BUILD_ID_PROPERTY = 'Build-Id'
+    static final BUILD_URL_PROPERTY = 'Build-Url'
 
     protected Project project
     List<ContinuousIntegrationInfoProvider> providers
@@ -62,6 +63,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
             manifestPlugin.add('Build-Job') { extension.job }
             manifestPlugin.add('Build-Number') { extension.buildNumber }
             manifestPlugin.add('Build-Id') { extension.buildId }
+            manifestPlugin.add('Build-Url') { extension.buildUrl }
         }
 
     }
@@ -73,6 +75,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
         extMapping.job = { selectedProvider.calculateJob(project) }
         extMapping.buildNumber = { selectedProvider.calculateBuildNumber(project) }
         extMapping.buildId = { selectedProvider.calculateBuildId(project) }
+        extMapping.buildUrl = { selectedProvider.calculateBuildUrl(project) }
     }
 
     ContinuousIntegrationInfoProvider findProvider() {

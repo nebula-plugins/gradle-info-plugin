@@ -32,4 +32,5 @@ public interface ContinuousIntegrationInfoProvider {
     String calculateJob(Project project);
     String calculateBuildNumber(Project project);
     String calculateBuildId(Project project);
+    String calculateBuildUrl(Project project);
 }

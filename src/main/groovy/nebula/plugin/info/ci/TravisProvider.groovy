@@ -47,4 +47,9 @@ class TravisProvider extends AbstractContinuousIntegrationProvider {
     String calculateBuildId(Project project) {
         getEnvironmentVariable("TRAVIS_BUILD_ID")
     }
+
+    @Override
+    String calculateBuildUrl(Project project) {
+        getEnvironmentVariable("TRAVIS_BUILD_WEB_URL")
+    }
 }

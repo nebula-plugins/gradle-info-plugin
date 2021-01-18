@@ -47,4 +47,9 @@ class CirrusCIProvider extends AbstractContinuousIntegrationProvider {
     String calculateBuildId(Project project) {
         getEnvironmentVariable("CIRRUS_BUILD_ID")
     }
+
+    @Override
+    String calculateBuildUrl(Project project) {
+        "${hostname()}/build/${getEnvironmentVariable("CIRRUS_BUILD_ID")}"
+    }
 }
