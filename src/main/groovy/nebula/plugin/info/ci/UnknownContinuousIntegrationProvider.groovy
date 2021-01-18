@@ -32,6 +32,11 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
     }
 
     @Override
+    String calculateBuildUrl(Project project) {
+        return "${hostname()}/${LOCAL}"
+    }
+
+    @Override
     String calculateBuildNumber(Project project) {
         return LOCAL
     }

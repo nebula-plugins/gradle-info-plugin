@@ -53,6 +53,7 @@ class InfoPlugin implements Plugin<Project> {
             ContinuousIntegrationInfoPlugin.BUILD_HOST_PROPERTY,
             ContinuousIntegrationInfoPlugin.BUILD_JOB_PROPERTY,
             ContinuousIntegrationInfoPlugin.BUILD_ID_PROPERTY,
+            ContinuousIntegrationInfoPlugin.BUILD_URL_PROPERTY,
             ScmInfoPlugin.MODULE_SOURCE_PROPERTY,
             ScmInfoPlugin.MODULE_ORIGIN_PROPERTY,
             ScmInfoPlugin.CHANGE_PROPERTY,

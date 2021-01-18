@@ -21,4 +21,5 @@ class ContinuousIntegrationInfoExtension {
     String job
     String buildNumber
     String buildId
+    String buildUrl
 }
