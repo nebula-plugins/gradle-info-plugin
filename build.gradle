@@ -43,6 +43,7 @@ dependencies {
     implementation 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
     implementation 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
     implementation 'org.tmatesoft.svnkit:svnkit:1.8.12'
+    implementation 'net.java.dev.jna:jna-platform:5.7.0'
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     testImplementation ('org.ajoberstar.grgit:grgit-core:4.0.2') {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
