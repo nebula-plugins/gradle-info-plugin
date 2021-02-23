@@ -15,7 +15,7 @@
  */
 
 buildscript {
-    repositories { jcenter() }
+    repositories { mavenCentral() }
     dependencies { classpath 'com.netflix.nebula:nebula-plugin-plugin:2.0.+' }
 }
 

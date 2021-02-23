@@ -34,7 +34,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             ${applyPlugin(InfoPlugin)}
             apply plugin: 'java'
             
-            repositories { jcenter() }
+            repositories { mavenCentral() }
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
@@ -65,7 +65,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             }
 
             subprojects {
-                repositories { jcenter() }
+                repositories { mavenCentral() }
             }
 
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
@@ -114,7 +114,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             }
 
             subprojects {
-                repositories { jcenter() }
+                repositories { mavenCentral() }
             }
 
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
@@ -169,7 +169,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             }
 
             subprojects {
-                repositories { jcenter() }
+                repositories { mavenCentral() }
             }
 
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
@@ -238,7 +238,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
                 jenkinsVersion.set('2.249.3')
             }
 
-            repositories { jcenter() }
+            repositories { mavenCentral() }
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
