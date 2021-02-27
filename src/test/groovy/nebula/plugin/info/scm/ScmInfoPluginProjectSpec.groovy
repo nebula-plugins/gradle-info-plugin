@@ -33,6 +33,6 @@ class ScmInfoPluginProjectSpec extends ProjectSpec {
         def extension = project.extensions.getByType(ScmInfoExtension)
         extension != null
         extension.source.startsWith('/build/nebulatest')
-        extension.origin.endsWith('plugin.git')
+        extension.origin.contains('plugin')
     }
 }

@@ -27,7 +27,7 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
 
     @Override
     boolean supports(Project project) {
-        getEnvironmentVariable('CI') && getEnvironmentVariable('GITHUB_ACTION')
+        getEnvironmentVariable('CI') && getEnvironmentVariable('GITHUB_ACTION')  && getEnvironmentVariable('GITHUB_RUN_ID')
     }
 
     /**
