@@ -1,19 +1,13 @@
 Gradle Info Plugin
 =====================
-![Support Status](https://img.shields.io/badge/nebula-supported-brightgreen.svg)
-[![Build Status](https://travis-ci.com/nebula-plugins/gradle-info-plugin.svg?branch=master)](https://travis-ci.com/nebula-plugins/gradle-info-plugin)
-[![Coverage Status](https://coveralls.io/repos/nebula-plugins/gradle-info-plugin/badge.svg?branch=master&service=github)](https://coveralls.io/github/nebula-plugins/gradle-info-plugin?branch=master)
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/nebula-plugins/gradle-info-plugin?utm_source=badgeutm_medium=badgeutm_campaign=pr-badge)
+![Support Status](https://img.shields.io/badge/nebula-active-green.svg)
+[![Gradle Plugin Portal](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/com.netflix.nebula/gradle-info-plugin/maven-metadata.xml.svg?label=gradlePluginPortal)](https://plugins.gradle.org/plugin/nebula.info)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.netflix.nebula/gradle-info-plugin/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/com.netflix.nebula/gradle-info-plugin)
+![CI](https://github.com/nebula-plugins/gradle-info-plugin/actions/workflows/ci.yml/badge.svg)
+![Publish](https://github.com/nebula-plugins/gradle-info-plugin/actions/workflows/publish.yml/badge.svg)
 [![Apache 2.0](https://img.shields.io/github/license/nebula-plugins/gradle-info-plugin.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 Noninvasively collect information about the environment, and make information available to other plugins in a statically typed way. When possible lazily calculate info.
-
-```
-buildscript {
-    repositories { mavenCentral() }
-    dependencies {     classpath "com.netflix.nebula:gradle-info-plugin:9.2.0" }
-}
-```
 
 The module is made of three types of plugins.
 * Collecting plugins, e.g. scm-info and ci-info. Both of those examples use specific implementations to detect the current
@@ -152,18 +146,6 @@ contacts {
 ```
 
 The above will make sure the manifest contains a Module-Owner of mickey@disney.com.
-
-
-Gradle and Java Compatibility
-=============================
-
-Built with OpenJDK8
-Tested with OpenJDK8 and OpenJDK11
-
-| Plugin Version | Gradle Version | Works |
-| :------------: | :------------: | :---: |
-| 7.x | 5.x - 6.0           | yes   |
-| 8.x | 6.1+            | yes   |
 
 
 
