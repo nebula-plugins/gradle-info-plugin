@@ -5,12 +5,14 @@ import nebula.plugin.info.reporting.InfoJarManifestPlugin
 import nebula.test.IntegrationSpec
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
+import spock.lang.IgnoreIf
 import spock.lang.Unroll
 
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
 
+@IgnoreIf({ System.getenv('TITUS_TASK_ID') })
 class ContinuousIntegrationInfoPluginSpec extends IntegrationSpec {
 
     @Rule
