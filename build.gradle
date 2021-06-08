@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '15.2.1'
+    id 'nebula.plugin-plugin' version '15.4.1'
 }
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
