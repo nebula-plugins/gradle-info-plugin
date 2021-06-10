@@ -68,7 +68,6 @@ class InfoPlugin implements Plugin<Project> {
 
         // Collectors
         project.plugins.apply(BasicInfoPlugin)
-        project.plugins.apply(DependenciesInfoPlugin)
         project.plugins.apply(ManifestOwnersPlugin)
         project.plugins.apply(ScmInfoPlugin)
         project.plugins.apply(ContinuousIntegrationInfoPlugin)
