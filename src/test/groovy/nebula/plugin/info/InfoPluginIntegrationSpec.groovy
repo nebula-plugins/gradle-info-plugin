@@ -255,6 +255,4 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         then:
         result.success
     }
-
-
 }
