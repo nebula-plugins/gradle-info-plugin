@@ -256,5 +256,48 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         result.success
     }
 
+    def 'it returns build reports at the end of the build - toolchains'() {
+        given:
+        buildFile << """
+            buildscript {
+                repositories {
+                   mavenCentral()
+                }    
+                dependencies {
+                    classpath "com.google.guava:guava:21.0"
+                }
+            }
+
+            ${applyPlugin(InfoPlugin)}
+            apply plugin: 'java'
+            
+            java {
+                toolchain {
+                    languageVersion = JavaLanguageVersion.of(16)
+                }
+            }
+
+            repositories { mavenCentral() }
+            dependencies {
+                implementation 'com.google.guava:guava:18.0'
+            }
+            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
+
+            gradle.buildFinished {
+                println broker.buildManifest()
+            }
+        """.stripIndent()
+
+        settingsFile << """
+            rootProject.name='buildscript-singlemodule-test' 
+        """
+        this.writeHelloWorld('com.nebula.test')
+
+        when:
+        ExecutionResult result = runTasksSuccessfully('assemble')
+
+        then:
+        result.standardOutput.contains('Build-Java-Version=16')
+    }
 
 }
