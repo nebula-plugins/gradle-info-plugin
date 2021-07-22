@@ -294,9 +294,10 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        ExecutionResult result = runTasksSuccessfully('assemble')
+        ExecutionResult result = runTasks('assemble')
 
         then:
+        println result.standardOutput
         result.standardOutput.contains('Build-Java-Version=16')
     }
 
