@@ -22,7 +22,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginConvention
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.jvm.toolchain.JavaLauncher
+import org.gradle.jvm.toolchain.JavaToolchainService
 
 import javax.inject.Inject
 
@@ -52,10 +56,8 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin  manifestPlugin ->
             String javaRuntimeVersion = providers.systemProperty("java.runtime.version").forUseAtConfigurationTime().get()
             String javaVmVendor = providers.systemProperty("java.vm.vendor").forUseAtConfigurationTime().get()
-            String javaVersion = providers.systemProperty("java.version").forUseAtConfigurationTime().get()
 
             manifestPlugin.add(CREATED_PROPERTY, "$javaRuntimeVersion ($javaVmVendor)")
-            manifestPlugin.add(JDK_PROPERTY, javaVersion)
         }
 
         // After-evaluating, because we need to give user a chance to effect the extension
@@ -66,8 +68,22 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
                 project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
                     manifestPlugin.add(TARGET_PROPERTY, { javaConvention.targetCompatibility } )
                     manifestPlugin.add(SOURCE_PROPERTY, { javaConvention.sourceCompatibility } )
+                    Provider<JavaLauncher> javaLauncher = getJavaLauncher(project)
+                    if(javaLauncher.isPresent()) {
+                        manifestPlugin.add(JDK_PROPERTY, javaLauncher.get().metadata.languageVersion.toString())
+                    } else {
+                        String javaVersionFromSystemProperty = providers.systemProperty("java.version").forUseAtConfigurationTime().get()
+                        manifestPlugin.add(JDK_PROPERTY, javaVersionFromSystemProperty)
+                    }
                 }
             }
         }
+    }
+
+    private Provider<JavaLauncher> getJavaLauncher(Project project) {
+        def toolchain = project.getExtensions().getByType(JavaPluginExtension.class).toolchain
+        JavaToolchainService service = project.getExtensions().getByType(JavaToolchainService.class)
+        Provider<JavaLauncher> launcher = service.launcherFor(toolchain)
+        return launcher
     }
 }
