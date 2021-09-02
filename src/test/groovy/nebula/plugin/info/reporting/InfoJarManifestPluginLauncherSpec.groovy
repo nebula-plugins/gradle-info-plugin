@@ -21,6 +21,7 @@ import nebula.plugin.info.basic.BasicInfoPlugin
 import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
+import java.time.OffsetDateTime
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
@@ -101,6 +102,8 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Build-Timezone')
         assertMainfestKeyExists(attributes, 'Gradle-Version')
         manifestKey(attributes, 'Build-Timezone') == TimeZone.default.getID()
+        //Make sure we have ISO-8601 date
+        OffsetDateTime.parse(manifestKey(attributes, 'Build-Date-UTC').toString())
     }
 
     def "Creates JAR file with populated manifest excluding properties in infoBroker configuration"() {
