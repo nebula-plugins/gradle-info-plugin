@@ -97,7 +97,9 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Built-By')
         assertMainfestKeyExists(attributes, 'Built-OS')
         assertMainfestKeyExists(attributes, 'Build-Date')
+        assertMainfestKeyExists(attributes, 'Build-Timezone')
         assertMainfestKeyExists(attributes, 'Gradle-Version')
+        manifestKey(attributes, 'Build-Timezone') == TimeZone.default.getID()
     }
 
     def "Creates JAR file with populated manifest excluding properties in infoBroker configuration"() {
