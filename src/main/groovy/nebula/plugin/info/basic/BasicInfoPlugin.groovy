@@ -23,7 +23,10 @@ import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
-import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 import static java.util.jar.Attributes.Name.*
 /**
@@ -40,10 +43,11 @@ import static java.util.jar.Attributes.Name.*
  * </ul>
  */
 class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat('yyyy-MM-dd_HH:mm:ss')
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern('yyyy-MM-dd_HH:mm:ss')
     static final String BUILT_BY_PROPERTY = 'Built-By'
     static final String BUILT_OS_PROPERTY = 'Built-OS'
     static final String BUILD_DATE_PROPERTY = 'Build-Date'
+    static final String BUILD_TIMEZONE_PROPERTY = 'Build-Timezone'
     static final String BUILD_STATUS_PROPERTY = 'Built-Status'
     static final String GRADLE_VERSION_PROPERTY = 'Gradle-Version'
 
@@ -83,9 +87,11 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(BUILT_BY_PROPERTY, builtBy)
             manifestPlugin.add(BUILT_OS_PROPERTY, builtOs)
 
-            // Makes list of attributes not idempotent, which can throw off "changed" checks
-            manifestPlugin.add(BUILD_DATE_PROPERTY, DATE_FORMATTER.format(new Date())).changing = true
+            manifestPlugin.add(BUILD_TIMEZONE_PROPERTY, TimeZone.default.getID())
 
+            // Makes list of attributes not idempotent, which can throw off "changed" checks
+            LocalDateTime datetime = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+            manifestPlugin.add(BUILD_DATE_PROPERTY, DATE_TIME_FORMATTER.format(datetime)).changing = true
 
             manifestPlugin.add(GRADLE_VERSION_PROPERTY, { project.gradle.gradleVersion })
 
