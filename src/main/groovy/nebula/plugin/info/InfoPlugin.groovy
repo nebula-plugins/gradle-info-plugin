@@ -43,6 +43,7 @@ class InfoPlugin implements Plugin<Project> {
             BasicInfoPlugin.BUILT_BY_PROPERTY,
             BasicInfoPlugin.BUILT_OS_PROPERTY,
             BasicInfoPlugin.BUILD_DATE_PROPERTY,
+            BasicInfoPlugin.BUILD_DATE_UTC_PROPERTY,
             BasicInfoPlugin.BUILD_TIMEZONE_PROPERTY,
             BasicInfoPlugin.GRADLE_VERSION_PROPERTY,
             BasicInfoPlugin.BUILD_STATUS_PROPERTY,

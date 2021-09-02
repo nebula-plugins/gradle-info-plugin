@@ -97,6 +97,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         assertMainfestKeyExists(attributes, 'Built-By')
         assertMainfestKeyExists(attributes, 'Built-OS')
         assertMainfestKeyExists(attributes, 'Build-Date')
+        assertMainfestKeyExists(attributes, 'Build-Date-UTC')
         assertMainfestKeyExists(attributes, 'Build-Timezone')
         assertMainfestKeyExists(attributes, 'Gradle-Version')
         manifestKey(attributes, 'Build-Timezone') == TimeZone.default.getID()

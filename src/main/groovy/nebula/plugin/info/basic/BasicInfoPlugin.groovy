@@ -47,6 +47,7 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     static final String BUILT_BY_PROPERTY = 'Built-By'
     static final String BUILT_OS_PROPERTY = 'Built-OS'
     static final String BUILD_DATE_PROPERTY = 'Build-Date'
+    static final String BUILD_DATE_UTC_PROPERTY = 'Build-Date-UTC'
     static final String BUILD_TIMEZONE_PROPERTY = 'Build-Timezone'
     static final String BUILD_STATUS_PROPERTY = 'Built-Status'
     static final String GRADLE_VERSION_PROPERTY = 'Gradle-Version'
@@ -90,7 +91,10 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(BUILD_TIMEZONE_PROPERTY, TimeZone.default.getID())
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
-            LocalDateTime datetime = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+            LocalDateTime datetimeUtc = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC)
+            manifestPlugin.add(BUILD_DATE_UTC_PROPERTY, DATE_TIME_FORMATTER.format(datetimeUtc)).changing = true
+
+            LocalDateTime datetime = LocalDateTime.now()
             manifestPlugin.add(BUILD_DATE_PROPERTY, DATE_TIME_FORMATTER.format(datetime)).changing = true
 
             manifestPlugin.add(GRADLE_VERSION_PROPERTY, { project.gradle.gradleVersion })
