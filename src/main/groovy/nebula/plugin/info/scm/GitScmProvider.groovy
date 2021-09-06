@@ -90,10 +90,10 @@ class GitScmProvider extends AbstractScmProvider {
         try {
             String credentials = url.toURL().getUserInfo()
             if (credentials) {
-                return url.replaceFirst(credentials, credentials.replaceFirst(/:.*/, ""))
+                return url.replaceFirst(Pattern.quote(credentials), credentials.replaceFirst(/:.*/, ""))
             }
         } catch (Exception e) {
-            logger.warn("Unable to remove credentials from repository URL. {0}", e.getMessage())
+            logger.warn("Unable to remove credentials from repository URL. {}", e.getMessage())
         }
         return url
     }
