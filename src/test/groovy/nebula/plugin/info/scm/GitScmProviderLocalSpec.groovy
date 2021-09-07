@@ -59,10 +59,10 @@ class GitScmProviderLocalSpec extends ProjectSpec {
     }
 
     @Issue("32")
-    def 'Strip password from Git repository URL'() {
+    def 'strip password from Git repository URL'() {
         setup:
         def projectDir = temp.newFolder()
-        def repoUrl = 'https://github-token-user:my-token@github.com/Netflix/gradle-template.git'
+        def repoUrl = 'https://x-token-auth:{dKkmJHindwdsaw23-dsaHds5-_jjUBF3-S%c9f}@github.com/Netflix/gradle-template.git'
 
         Git.cloneRepository()
                 .setURI(repoUrl)
@@ -82,7 +82,7 @@ class GitScmProviderLocalSpec extends ProjectSpec {
         String origin = provider.calculateModuleOrigin(fakeProjectDir)
 
         then:
-        origin == 'https://github-token-user@github.com/Netflix/gradle-template.git'
+        origin == 'https://x-token-auth@github.com/Netflix/gradle-template.git'
 
         when:
         String branch = provider.calculateBranch(fakeProjectDir)

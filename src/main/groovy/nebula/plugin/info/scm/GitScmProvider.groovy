@@ -46,11 +46,17 @@ class GitScmProvider extends AbstractScmProvider {
     String calculateModuleOrigin(File projectDir) {
         Repository repository = getRepository(projectDir)
         Config storedConfig = repository.getConfig()
-        String url = storedConfig.getString('remote', 'origin', 'url')
-        if (url?.startsWith("https://") || url?.startsWith("http://")) {
-            url = hideSensitiveInformation(url)
+        String remoteOriginUrl = storedConfig.getString('remote', 'origin', 'url')
+        try {
+            URL url = remoteOriginUrl.toURL()
+            if (url.getUserInfo()) {
+                def user = url.getUserInfo().split(":").first()
+                url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
+            }
+            return url.toExternalForm()
+        } catch (MalformedURLException ignore) {
+            return remoteOriginUrl
         }
-        return  url
     }
 
     @Override
@@ -62,7 +68,7 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        return calculateFullChange(projectDir)?.substring(0,7)
+        return calculateFullChange(projectDir)?.substring(0, 7)
     }
 
     @Override
@@ -84,17 +90,5 @@ class GitScmProvider extends AbstractScmProvider {
     @Override
     String calculateBranch(File projectDir) {
         return getRepository(projectDir).branch
-    }
-
-    private String hideSensitiveInformation(String url) {
-        try {
-            String credentials = url.toURL().getUserInfo()
-            if (credentials) {
-                return url.replaceFirst(credentials, credentials.replaceFirst(/:.*/, ""))
-            }
-        } catch (Exception e) {
-            logger.warn("Unable to remove credentials from repository URL. {0}", e.getMessage())
-        }
-        return url
     }
 }
