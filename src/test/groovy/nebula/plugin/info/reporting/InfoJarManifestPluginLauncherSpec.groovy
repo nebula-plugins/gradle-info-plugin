@@ -231,6 +231,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
         buildFile << """
             ${applyPlugin(InfoBrokerPlugin)}
             ${applyPlugin(BasicInfoPlugin)}
+            ${applyPlugin(InfoJarPropertiesFilePlugin)}
             ${applyPlugin(InfoJarManifestPlugin)}
 
             apply plugin: 'java'
