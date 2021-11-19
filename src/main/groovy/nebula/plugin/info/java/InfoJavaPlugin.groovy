@@ -21,7 +21,6 @@ import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
@@ -63,11 +62,11 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
         // After-evaluating, because we need to give user a chance to effect the extension
         project.afterEvaluate {
             project.plugins.withType(JavaBasePlugin) {
-                JavaPluginConvention javaConvention = project.getConvention().getPlugin(JavaPluginConvention)
+                JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
 
                 project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-                    manifestPlugin.add(TARGET_PROPERTY, { javaConvention.targetCompatibility } )
-                    manifestPlugin.add(SOURCE_PROPERTY, { javaConvention.sourceCompatibility } )
+                    manifestPlugin.add(TARGET_PROPERTY, { javaPluginExtension.targetCompatibility } )
+                    manifestPlugin.add(SOURCE_PROPERTY, { javaPluginExtension.sourceCompatibility } )
                     Provider<JavaLauncher> javaLauncher = getJavaLauncher(project)
                     if(javaLauncher.isPresent()) {
                         manifestPlugin.add(JDK_PROPERTY, javaLauncher.get().metadata.languageVersion.toString())

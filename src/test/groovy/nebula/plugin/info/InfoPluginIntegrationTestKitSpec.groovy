@@ -16,7 +16,9 @@
 package nebula.plugin.info
 
 import nebula.test.IntegrationTestKitSpec
+import spock.lang.Ignore
 
+@Ignore
 class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
     def 'it returns manifest reports at the end of the build - toolchains'() {
         given:
@@ -38,6 +40,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             java {
                 toolchain {
                     languageVersion = JavaLanguageVersion.of(16)
+                    vendor = JvmVendorSpec.ADOPTOPENJDK
                 }
             }
 
