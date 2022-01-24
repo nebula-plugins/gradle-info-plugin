@@ -37,7 +37,7 @@ dependencies {
     implementation 'com.perforce:p4java:2015.2.1365273'
     implementation 'com.netflix.nebula:nebula-gradle-interop:latest.release'
     implementation 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
-    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.7.0.202003110725-r'
+    implementation 'org.eclipse.jgit:org.eclipse.jgit:5.13.0.202109080827-r'
     implementation 'org.tmatesoft.svnkit:svnkit:1.8.12'
     implementation 'net.java.dev.jna:jna-platform:5.7.0'
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
