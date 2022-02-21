@@ -4,10 +4,10 @@ import nebula.plugin.info.InfoBrokerPlugin
 import org.gradle.api.Project
 
 class PropertiesWriter {
+    private PropertiesWriter() {
+    }
 
-    void writeProperties(File location, Project project) {
-        InfoBrokerPlugin basePlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
-
+    static void writeProperties(File location, InfoBrokerPlugin basePlugin) {
         // Gather all values, in contrast to buildNonChangingManifest
         Map<String, String> attrs = basePlugin.buildManifest()
 

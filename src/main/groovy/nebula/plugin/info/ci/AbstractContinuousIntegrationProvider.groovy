@@ -33,7 +33,7 @@ abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegr
     }
 
     protected String getEnvironmentVariable(String envKey) {
-        return providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().present ? providerFactory.environmentVariable(envKey).forUseAtConfigurationTime().get() : null
+        return providerFactory.environmentVariable(envKey).present ? providerFactory.environmentVariable(envKey).get() : null
     }
 
     protected static String hostname() {

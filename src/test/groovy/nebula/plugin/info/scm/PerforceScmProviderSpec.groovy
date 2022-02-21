@@ -113,7 +113,6 @@ class PerforceScmProviderSpec extends Specification {
         mapped == '//depot/Tools/nebula-boot'
 
         2 * providerFactoryMock.environmentVariable('WORKSPACE') >> providerStringMock
-        2 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
         1 * providerStringMock.present >> true
         1 * providerStringMock.get() >> workspace.path
 
@@ -124,7 +123,6 @@ class PerforceScmProviderSpec extends Specification {
         origin == 'p4java://perforce:1666?userName=rolem'
 
         1 * providerFactoryMock.environmentVariable('P4CONFIG') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
         1 * providerStringMock.get() >> fakeProjectDir.path
     }
 
@@ -142,7 +140,6 @@ class PerforceScmProviderSpec extends Specification {
         mapped == '//depot//Users/jryan/Workspaces/jryan_uber/Tools/nebula-boot'
 
         1 * providerFactoryMock.environmentVariable('WORKSPACE') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
         1 * providerStringMock.present >> false
         0 * providerStringMock.get()
 
@@ -153,7 +150,6 @@ class PerforceScmProviderSpec extends Specification {
         origin == 'p4java://perforce:1666?userName=rolem'
 
         1 * providerFactoryMock.environmentVariable('P4CONFIG') >> providerStringMock
-        1 * providerStringMock.forUseAtConfigurationTime() >> providerStringMock
         1 * providerStringMock.get() >> fakeProjectDir.path
     }
 }

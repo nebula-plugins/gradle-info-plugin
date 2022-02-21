@@ -31,24 +31,25 @@ import org.slf4j.LoggerFactory
  * TBD Make thread-safe
  */
 class InfoBrokerPlugin implements Plugin<Project> {
-
     private Logger logger = LoggerFactory.getLogger(InfoBrokerPlugin)
 
     private List<ManifestEntry> manifestEntries
     private Map<String, Collection<Closure>> watchers
     private Map<String, Object> reportEntries
-    private Project project
+
+    boolean isRootProject = false
 
     void apply(Project project) {
         this.manifestEntries = new ArrayList<ManifestEntry>()
         this.reportEntries = new HashMap<>()
         this.watchers = [:].withDefault { [] }
-        this.project = project
+        isRootProject = project == project.rootProject
 
         InfoBrokerPluginExtension extension = project.getExtensions().create('infoBroker', InfoBrokerPluginExtension)
         project.afterEvaluate {
             filterManifestEntries(extension)
         }
+
         // Leaving out for now. I find that the configure methods, when called this way, aren't being called.
         //project.getExtensions().add('manifest', container)
 
@@ -56,11 +57,11 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void filterManifestEntries(InfoBrokerPluginExtension extension) {
-        if(extension.includedManifestProperties && extension.excludedManifestProperties) {
+        if (extension.includedManifestProperties && extension.excludedManifestProperties) {
             throw new GradleException("includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided")
-        } else if(extension.excludedManifestProperties) {
+        } else if (extension.excludedManifestProperties) {
             removeExcludedProperties(extension)
-        } else if(extension.includedManifestProperties) {
+        } else if (extension.includedManifestProperties) {
             filterOnlyIncludedProperties(extension)
         }
     }
@@ -92,7 +93,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     void addReport(String reportName, Object value) {
-        if (project != project.rootProject) {
+        if (!isRootProject) {
             throw new IllegalStateException('Build reports should only be used from the root project')
         }
 
@@ -110,7 +111,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
             resolve(existing)
             throw new IllegalStateException("A entry with the key ${entry.name} already exists, with the value \"${existing.value}\"")
         }
-        manifestEntries.add( entry )
+        manifestEntries.add(entry)
         def specificWatchers = watchers[entry.name]
         specificWatchers.each {
             callWatcher(entry, it)
@@ -130,14 +131,14 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     Map<String, Object> buildReports() {
-        if (project != project.rootProject) {
+        if (!isRootProject) {
             throw new IllegalStateException('Build reports should only be used from the root project')
         }
 
         return Collections.unmodifiableMap(reportEntries)
     }
 
-    private Map<String,String> collectEntries(Collection<ManifestEntry> entries) {
+    private Map<String, String> collectEntries(Collection<ManifestEntry> entries) {
 
         // We can't validate via all() because multiple calls would leave the all's closure around
         (Map<String, String>) entries.collectEntries { ManifestEntry entry ->
@@ -174,13 +175,13 @@ class InfoBrokerPlugin implements Plugin<Project> {
 
     String buildManifestString() {
         Map<String, String> attrs = buildManifest()
-        String manifestStr = attrs.collect { "${it.key}: ${it.value}"}.join('\n      ')
+        String manifestStr = attrs.collect { "${it.key}: ${it.value}" }.join('\n      ')
         return manifestStr
     }
 
     String buildString(String indent = '') {
         Map<String, String> attrs = buildManifest()
-        String manifestStr = attrs.collect { "${indent}${it.key}: ${it.value}"}.join('\n')
+        String manifestStr = attrs.collect { "${indent}${it.key}: ${it.value}" }.join('\n')
         return manifestStr
     }
 

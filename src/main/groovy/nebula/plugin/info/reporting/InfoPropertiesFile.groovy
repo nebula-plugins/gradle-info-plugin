@@ -16,22 +16,32 @@
 
 package nebula.plugin.info.reporting
 
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
+import nebula.plugin.info.basic.BasicInfoPlugin
+import org.gradle.api.Project
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 
+import javax.inject.Inject
+
 /**
  * Simply writes out brokers values to a properties file.
  */
+@CompileDynamic
 class InfoPropertiesFile extends ConventionTask {
+    private InfoBrokerPlugin infoBrokerPlugin
+
+    @Inject
+    InfoPropertiesFile(Project project) {
+        infoBrokerPlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
+    }
 
     @Input
     Map<String, ?> getManifest() {
-        InfoBrokerPlugin manifestPlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
-
-        Map<String, String> entireMap = manifestPlugin.buildNonChangingManifest()
+        Map<String, String> entireMap = infoBrokerPlugin.buildNonChangingManifest()
 
         return entireMap
     }
@@ -41,6 +51,6 @@ class InfoPropertiesFile extends ConventionTask {
 
     @TaskAction
     void write() {
-        new PropertiesWriter().writeProperties(getPropertiesFile(), project)
+        PropertiesWriter.writeProperties(getPropertiesFile(), infoBrokerPlugin)
     }
 }

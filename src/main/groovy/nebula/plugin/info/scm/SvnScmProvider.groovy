@@ -56,7 +56,7 @@ class SvnScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        boolean isRevisionPresent = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().present
+        boolean isRevisionPresent = providerFactory.environmentVariable('SVN_REVISION').present
         String revision
         if (!isRevisionPresent) {
             def base = getInfo(projectDir).getRevision()
@@ -65,7 +65,7 @@ class SvnScmProvider extends AbstractScmProvider {
             }
             revision = base.getNumber()
         } else {
-            revision = providerFactory.environmentVariable('SVN_REVISION').forUseAtConfigurationTime().get()
+            revision = providerFactory.environmentVariable('SVN_REVISION').get()
         }
         return revision
     }

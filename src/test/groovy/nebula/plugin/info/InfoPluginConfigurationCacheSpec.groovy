@@ -15,10 +15,11 @@ class InfoPluginConfigurationCacheSpec extends IntegrationTestKitSpec {
 
 
         when:
-        runTasks('--configuration-cache', 'compileJava', '-s')
-        def result = runTasks('--configuration-cache', 'compileJava', '-s')
+        runTasks('--configuration-cache', 'jar', '-s')
+        def result = runTasks('--configuration-cache', 'jar', '-s')
 
         then:
         result.output.contains('Reusing configuration cache')
     }
+
 }
