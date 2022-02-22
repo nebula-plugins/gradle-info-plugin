@@ -30,19 +30,14 @@ import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
 class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-
     static final String MODULE_SOURCE_PROPERTY = 'Module-Source'
     static final String MODULE_ORIGIN_PROPERTY = 'Module-Origin'
     static final String CHANGE_PROPERTY = 'Change'
     static final String FULL_CHANGE_PROPERTY = 'Full-Change'
     static final String BRANCH_PROPERTY = 'Branch'
 
-    private static Logger logger = Logging.getLogger(ScmInfoPlugin)
-
-    protected Project project
     List<ScmInfoProvider> providers
     ScmInfoProvider selectedProvider
-    ScmInfoExtension extension
 
     private final ProviderFactory providerFactory
 
@@ -53,15 +48,13 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     @Override
     void apply(Project project) {
-        this.project = project
-
         // TODO Delay findProvider() as long as possible
         providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new SvnScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
-        selectedProvider = findProvider()
+        selectedProvider = findProvider(project)
 
-        extension = project.extensions.create('scminfo', ScmInfoExtension)
+        ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
 
-        configureExtMapping()
+        configureExtMapping(project, extension)
 
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add(MODULE_SOURCE_PROPERTY) { extension.source }
@@ -73,17 +66,16 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     }
 
     @CompileDynamic
-    private void configureExtMapping() {
+    private void configureExtMapping(Project project, ScmInfoExtension extension) {
         ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
         extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
         extMapping.change = { selectedProvider.calculateChange(project) }
         extMapping.fullChange = { selectedProvider.calculateFullChange(project) }
         extMapping.branch = { selectedProvider.calculateBranch(project) }
-
     }
 
-    ScmInfoProvider findProvider() {
+    ScmInfoProvider findProvider(Project project) {
         ScmInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider

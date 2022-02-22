@@ -52,9 +52,9 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     void apply(Project project) {
         // This can't change, so we can commit it early
-        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin  manifestPlugin ->
-            String javaRuntimeVersion = providers.systemProperty("java.runtime.version").forUseAtConfigurationTime().get()
-            String javaVmVendor = providers.systemProperty("java.vm.vendor").forUseAtConfigurationTime().get()
+        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
+            String javaRuntimeVersion = providers.systemProperty("java.runtime.version").get()
+            String javaVmVendor = providers.systemProperty("java.vm.vendor").get()
 
             manifestPlugin.add(CREATED_PROPERTY, "$javaRuntimeVersion ($javaVmVendor)")
         }
@@ -62,16 +62,15 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
         // After-evaluating, because we need to give user a chance to effect the extension
         project.afterEvaluate {
             project.plugins.withType(JavaBasePlugin) {
-                JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
-
                 project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-                    manifestPlugin.add(TARGET_PROPERTY, { javaPluginExtension.targetCompatibility } )
-                    manifestPlugin.add(SOURCE_PROPERTY, { javaPluginExtension.sourceCompatibility } )
+                    JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
+                    manifestPlugin.add(TARGET_PROPERTY, javaPluginExtension.targetCompatibility)
+                    manifestPlugin.add(SOURCE_PROPERTY, javaPluginExtension.sourceCompatibility)
                     Provider<JavaLauncher> javaLauncher = getJavaLauncher(project)
-                    if(javaLauncher.isPresent()) {
+                    if (javaLauncher.isPresent()) {
                         manifestPlugin.add(JDK_PROPERTY, javaLauncher.get().metadata.languageVersion.toString())
                     } else {
-                        String javaVersionFromSystemProperty = providers.systemProperty("java.version").forUseAtConfigurationTime().get()
+                        String javaVersionFromSystemProperty = providers.systemProperty("java.version").get()
                         manifestPlugin.add(JDK_PROPERTY, javaVersionFromSystemProperty)
                     }
                 }

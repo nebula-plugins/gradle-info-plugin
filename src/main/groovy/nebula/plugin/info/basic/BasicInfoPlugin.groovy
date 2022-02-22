@@ -24,11 +24,11 @@ import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.atomic.AtomicReference
 
 import static java.util.jar.Attributes.Name.*
+
 /**
  * Simple provider, for common fields, like build status. Current values:
  *
@@ -77,16 +77,37 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     }
 
     void apply(Project project) {
-
         // All fields are known upfront, so we pump these in immediately.
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add(MANIFEST_VERSION.toString(), '1.0') // Java Standard
-            manifestPlugin.add(IMPLEMENTATION_TITLE.toString()) { "${project.group}#${project.name};${project.version}" }.changing = true
-            manifestPlugin.add(IMPLEMENTATION_VERSION.toString()) { project.version }
-            manifestPlugin.add(BUILD_STATUS_PROPERTY) { project.status } // Could be promoted, so this is the actual status necessarily
 
-            String builtBy = providers.systemProperty("user.name").forUseAtConfigurationTime().get()
-            String builtOs = providers.systemProperty("os.name").forUseAtConfigurationTime().get()
+            def projectName = project.name
+            AtomicReference<Object> projectGroup = new AtomicReference<>()
+            AtomicReference<Object> projectVersion = new AtomicReference<>()
+            AtomicReference<Object> projectStatus = new AtomicReference<>()
+
+            projectGroup.set(project.group)
+            projectVersion.set(project.version)
+            projectStatus.set(project.status)
+
+            project.afterEvaluate {
+                projectGroup.set(project.group)
+                projectVersion.set(project.version)
+                projectStatus.set(project.status)
+            }
+
+            project.gradle.taskGraph.whenReady {
+                projectGroup.set(project.group)
+                projectVersion.set(project.version)
+                projectStatus.set(project.status)
+            }
+
+            manifestPlugin.add(IMPLEMENTATION_TITLE.toString(), { "${projectGroup.get()}#${projectName};${projectVersion.get()}" })
+            manifestPlugin.add(IMPLEMENTATION_VERSION.toString(), { projectVersion.get() })
+            manifestPlugin.add(BUILD_STATUS_PROPERTY, { projectStatus.get() }) // Could be promoted, so this is the actual status necessarily
+
+            String builtBy = providers.systemProperty("user.name").get()
+            String builtOs = providers.systemProperty("os.name").get()
             manifestPlugin.add(BUILT_BY_PROPERTY, builtBy)
             manifestPlugin.add(BUILT_OS_PROPERTY, builtOs)
 
@@ -94,14 +115,13 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
             // Makes list of attributes not idempotent, which can throw off "changed" checks
             Instant now = Instant.now()
-            manifestPlugin.add(BUILD_DATE_UTC_PROPERTY,now.toString()).changing = true
+            manifestPlugin.add(BUILD_DATE_UTC_PROPERTY, now.toString()).changing = true
 
             manifestPlugin.add(BUILD_DATE_PROPERTY, DATE_TIME_FORMATTER.format(now.atZone(TimeZone.default.toZoneId()))).changing = true
 
-            manifestPlugin.add(GRADLE_VERSION_PROPERTY, { project.gradle.gradleVersion })
+            manifestPlugin.add(GRADLE_VERSION_PROPERTY, project.gradle.gradleVersion)
 
             // TODO Include hostname
         }
     }
-
 }

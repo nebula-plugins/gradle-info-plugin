@@ -226,6 +226,7 @@ class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
     }
 
     def "changes to group and version after project evaluation are reflected"() {
+        fork = false
         given:
         writeHelloWorld('nebula.test')
         buildFile << """

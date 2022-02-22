@@ -35,10 +35,8 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     static final BUILD_ID_PROPERTY = 'Build-Id'
     static final BUILD_URL_PROPERTY = 'Build-Url'
 
-    protected Project project
     List<ContinuousIntegrationInfoProvider> providers
     ContinuousIntegrationInfoProvider selectedProvider
-    ContinuousIntegrationInfoExtension extension
 
     private final ProviderFactory providerFactory
 
@@ -49,14 +47,12 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
 
     @Override
     void apply(Project project) {
-        this.project = project
-
         providers = [new JenkinsProvider(providerFactory), new TitusProvider(providerFactory), new CircleCIProvider(providerFactory), new CirrusCIProvider(providerFactory), new DroneProvider(providerFactory), new GithubActionsProvider(providerFactory), new GitlabProvider(providerFactory),  new TravisProvider(providerFactory), new UnknownContinuousIntegrationProvider(providerFactory)] as List<ContinuousIntegrationInfoProvider>
-        selectedProvider = findProvider()
+        selectedProvider = findProvider(project)
 
-        extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)
+        ContinuousIntegrationInfoExtension extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)
 
-        configureExtMapping()
+        configureExtMapping(project, extension)
 
         project.plugins.withType(InfoBrokerPlugin) {  InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add('Build-Host') { extension.host }
@@ -65,11 +61,10 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
             manifestPlugin.add('Build-Id') { extension.buildId }
             manifestPlugin.add('Build-Url') { extension.buildUrl }
         }
-
     }
 
     @CompileDynamic
-    private void configureExtMapping() {
+    private void configureExtMapping(Project project, ContinuousIntegrationInfoExtension extension) {
         ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
         extMapping.host = { selectedProvider.calculateHost(project) }
         extMapping.job = { selectedProvider.calculateJob(project) }
@@ -78,7 +73,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
         extMapping.buildUrl = { selectedProvider.calculateBuildUrl(project) }
     }
 
-    ContinuousIntegrationInfoProvider findProvider() {
+    ContinuousIntegrationInfoProvider findProvider(Project project) {
         ContinuousIntegrationInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider

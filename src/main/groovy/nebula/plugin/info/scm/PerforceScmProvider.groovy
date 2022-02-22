@@ -43,7 +43,7 @@ class PerforceScmProvider extends AbstractScmProvider {
         // Better to check git first, since it can make a more intelligent guess
         // TODO When we can make p4java optional, we'll add a classForName check here.
         try {
-            return (providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present &&  providerFactory.environmentVariable('P4CLIENT').forUseAtConfigurationTime().present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
+            return (providerFactory.environmentVariable('WORKSPACE').present &&  providerFactory.environmentVariable('P4CLIENT').present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').get())
         } catch(Exception e) {
             return false
         }
@@ -51,7 +51,7 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        String workspacePath = providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().present ? providerFactory.environmentVariable('WORKSPACE').forUseAtConfigurationTime().get() : {
+        String workspacePath = providerFactory.environmentVariable('WORKSPACE').present ? providerFactory.environmentVariable('WORKSPACE').get() : {
             logger.info("WORKSPACE environment variable is not set. Using ${DEFAULT_WORKSPACE}")
             DEFAULT_WORKSPACE
         }.call()
@@ -73,7 +73,7 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        return  providerFactory.environmentVariable('P4_CHANGELIST').forUseAtConfigurationTime().get()
+        return  providerFactory.environmentVariable('P4_CHANGELIST').get()
     }
 
     @Override
@@ -165,7 +165,7 @@ class PerforceScmProvider extends AbstractScmProvider {
     @PackageScope
     void findP4Config(File starting) {
         if (p4configFile == null) {
-            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').forUseAtConfigurationTime().get())
+            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').get())
         }
     }
 }

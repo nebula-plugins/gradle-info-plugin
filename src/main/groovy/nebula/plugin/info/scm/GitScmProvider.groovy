@@ -26,8 +26,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
-    private Logger logger = LoggerFactory.getLogger(GitScmProvider)
-
     GitScmProvider(ProviderFactory providerFactory) {
         super(providerFactory)
     }
@@ -73,7 +71,7 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateFullChange(File projectDir) {
-        boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().present
+        boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').present
         String hash
         if (!isHashPresent) {
             def head = getRepository(projectDir).resolve(Constants.HEAD)
@@ -82,7 +80,7 @@ class GitScmProvider extends AbstractScmProvider {
             }
             hash = head.name
         } else {
-            hash = providerFactory.environmentVariable('GIT_COMMIT').forUseAtConfigurationTime().get()
+            hash = providerFactory.environmentVariable('GIT_COMMIT').get()
         }
         return hash
     }
