@@ -18,7 +18,7 @@ package nebula.plugin.info.basic
 import nebula.plugin.contacts.BaseContactsPlugin
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.test.PluginProjectSpec
-import org.junit.Ignore
+import spock.lang.Ignore
 
 class ManifestOwnersPluginSpec extends PluginProjectSpec {
     @Override
