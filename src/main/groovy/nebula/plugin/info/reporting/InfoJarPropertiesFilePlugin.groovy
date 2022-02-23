@@ -21,12 +21,10 @@ import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoPlugin
 import nebula.plugin.info.InfoReporterPlugin
-import nebula.plugin.info.basic.BasicInfoPlugin
 import org.gradle.api.Action
 import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.CopySpec
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.JavaBasePlugin
@@ -36,23 +34,14 @@ import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.normalization.MetaInfNormalization
 
-import javax.inject.Inject
-
 /**
  * Inject a properties file into the jar file will the info values, using the InfoPropertiesFilePlugin
  */
 @CompileDynamic
 class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
-    private InfoBrokerPlugin infoBrokerPlugin
-
-    @Inject
-    InfoJarPropertiesFilePlugin(Project project) {
-        infoBrokerPlugin = project.plugins.getPlugin(InfoBrokerPlugin) as InfoBrokerPlugin
-    }
-
     void apply(Project project) {
         project.plugins.withType(JavaBasePlugin) {
-            project.plugins.withType(InfoBrokerPlugin) { manifestPlugin ->
+            project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
                 InfoPropertiesFilePlugin propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin) as InfoPropertiesFilePlugin
                 TaskProvider<InfoPropertiesFile> manifestTask = propFilePlugin.getManifestTask()
 
@@ -75,7 +64,7 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
 
                     jarTask.doFirst {
                         //when we are after all caching decisions we fill the file with all the data
-                        PropertiesWriter.writeProperties(propertiesFile, infoBrokerPlugin)
+                        PropertiesWriter.writeProperties(propertiesFile, manifestPlugin)
                     }
                     jarTask.doLast {
                         //we need to cleanup file in case we got multiple jar tasks

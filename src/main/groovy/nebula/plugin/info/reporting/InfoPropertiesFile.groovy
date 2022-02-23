@@ -18,7 +18,6 @@ package nebula.plugin.info.reporting
 
 import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
-import nebula.plugin.info.basic.BasicInfoPlugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.Input

@@ -32,7 +32,6 @@ class InfoPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
     TaskProvider<InfoPropertiesFile> manifestTask
 
     void apply(Project project) {
-
         project.plugins.withType(InfoBrokerPlugin) {  InfoBrokerPlugin basePlugin ->
 
             manifestTask = project.tasks.register('writeManifestProperties', InfoPropertiesFile) { task ->
