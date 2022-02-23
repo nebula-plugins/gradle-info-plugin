@@ -39,13 +39,17 @@ class ManifestOwnersPlugin implements Plugin<Project> {
         project.plugins.withType(BaseContactsPlugin) { BaseContactsPlugin contactsPlugin ->
             // React to Info Plugin
             project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin basePlugin ->
+                project.afterEvaluate {
+                    def ownerContacts = contactsPlugin.getContacts(OWNER_ROLE)
+                    def notifyContacts = contactsPlugin.getContacts(NOTIFY_ROLE)
 
-                basePlugin.add('Module-Owner') {
-                    contactsPlugin.getContacts(OWNER_ROLE).collect { it.email }.join(',')
-                }
+                    basePlugin.add('Module-Owner') {
+                        ownerContacts.collect { it.email }.join(',')
+                    }
 
-                basePlugin.add('Module-Email') {
-                    contactsPlugin.getContacts(NOTIFY_ROLE).collect { it.email }.join(',')
+                    basePlugin.add('Module-Email') {
+                        notifyContacts.collect { it.email }.join(',')
+                    }
                 }
             }
         }
