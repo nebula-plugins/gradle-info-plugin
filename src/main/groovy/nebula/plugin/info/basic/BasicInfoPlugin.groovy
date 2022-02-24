@@ -82,24 +82,18 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(MANIFEST_VERSION.toString(), '1.0') // Java Standard
 
             def projectName = project.name
-            AtomicReference<Object> projectGroup = new AtomicReference<>()
-            AtomicReference<Object> projectVersion = new AtomicReference<>()
-            AtomicReference<Object> projectStatus = new AtomicReference<>()
+            AtomicReference<String> projectGroup = new AtomicReference<>()
+            AtomicReference<String> projectVersion = new AtomicReference<>()
+            AtomicReference<String> projectStatus = new AtomicReference<>()
 
-            projectGroup.set(project.group)
-            projectVersion.set(project.version)
-            projectStatus.set(project.status)
+            setProjectFields(project, projectGroup, projectVersion, projectStatus)
 
             project.afterEvaluate {
-                projectGroup.set(project.group)
-                projectVersion.set(project.version)
-                projectStatus.set(project.status)
+                setProjectFields(project, projectGroup, projectVersion, projectStatus)
             }
 
             project.gradle.taskGraph.whenReady {
-                projectGroup.set(project.group)
-                projectVersion.set(project.version)
-                projectStatus.set(project.status)
+                setProjectFields(project, projectGroup, projectVersion, projectStatus)
             }
 
             manifestPlugin.add(IMPLEMENTATION_TITLE.toString(), { "${projectGroup.get()}#${projectName};${projectVersion.get()}" })
@@ -123,5 +117,11 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
             // TODO Include hostname
         }
+    }
+
+    private static void setProjectFields(Project project, AtomicReference<String> projectGroup, AtomicReference<String> projectVersion, AtomicReference<String> projectStatus) {
+        projectGroup.set(project.group.toString())
+        projectVersion.set(project.version.toString())
+        projectStatus.set(project.status.toString())
     }
 }
