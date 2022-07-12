@@ -76,7 +76,7 @@ class InfoBrokerPluginSpec extends ProjectSpec {
         noExceptionThrown() // We have to allow this because the raw call will do an add before configuring, validation is done in buildManifest
     }
 
-    def 'build manifest without resolve entries'() {
+    def 'build manifest with resolve entries'() {
         when:
         project.version = '1.0.0-SNAPSHOT'
         project.apply plugin: InfoBrokerPlugin
