@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'nebula.plugin-plugin' version '16.3.0'
+    id 'nebula.plugin-plugin' version '17.0.0'
 }
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
@@ -49,66 +49,70 @@ dependencies {
 test.exclude '**/*Local*'
 
 pluginBundle {
+    tags = ['nebula', 'info']
+}
+
+gradlePlugin {
     plugins {
         info {
             id = 'nebula.info'
             displayName = 'Gradle Info plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.InfoPlugin'
         }
         infoBasic {
             id = 'nebula.info-basic'
             displayName = 'Gradle Info Basic plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.BasicInfoPlugin'
         }
         infoDependencies {
             id = 'nebula.info-dependencies'
             displayName = 'Gradle Info Dependencies plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.dependencies.DependenciesInfoPlugin'
         }
         infoBroker {
             id = 'nebula.info-broker'
             displayName = 'Gradle Info Broker plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.InfoBrokerPlugin'
         }
         infoCI {
             id = 'nebula.info-ci'
             displayName = 'Gradle Info CI plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.ci.ContinuousIntegrationInfoPlugin'
         }
         infoJAR {
             id = 'nebula.info-jar'
             displayName = 'Gradle Info JAR plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.reporting.InfoJarManifestPlugin'
         }
         infoJava {
             id = 'nebula.info-java'
             displayName = 'Gradle Info Java plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.java.InfoJavaPlugin'
         }
         infoOwners {
             id = 'nebula.info-owners'
             displayName = 'Gradle Info Owners plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.basic.ManifestOwnersPlugin'
         }
         infoProps {
             id = 'nebula.info-props'
             displayName = 'Gradle Info Properties plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.reporting.InfoPropertiesFilePlugin'
         }
         infoScm {
             id = 'nebula.info-scm'
             displayName = 'Gradle Info SCM plugin'
             description = project.description
-            tags = ['nebula', 'info']
+            implementationClass= 'nebula.plugin.info.scm.ScmInfoPlugin'
         }
     }
 }
