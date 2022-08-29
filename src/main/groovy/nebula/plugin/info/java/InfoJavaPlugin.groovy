@@ -88,7 +88,10 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
     @CompileDynamic
     private static JavaCompatibility findSourceAndTargetCompatibility(Project project) {
         JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
-        SourceSet mainSourceSet = javaPluginExtension.sourceSets.main
+        SourceSet mainSourceSet = javaPluginExtension.sourceSets.findByName("main")
+        if(!mainSourceSet) {
+            return new JavaCompatibility(javaPluginExtension.sourceCompatibility.toString(), javaPluginExtension.targetCompatibility.toString())
+        }
         List<String> compileTaskNames = supportedLanguages.collect { mainSourceSet.getCompileTaskName(it)}
         Set<AbstractCompile> compileTasks = project.tasks.withType(AbstractCompile).findAll {
             it.name in compileTaskNames
