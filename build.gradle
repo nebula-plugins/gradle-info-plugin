@@ -64,7 +64,7 @@ gradlePlugin {
             id = 'nebula.info-basic'
             displayName = 'Gradle Info Basic plugin'
             description = project.description
-            implementationClass= 'nebula.plugin.info.BasicInfoPlugin'
+            implementationClass= 'nebula.plugin.info.basic.BasicInfoPlugin'
         }
         infoDependencies {
             id = 'nebula.info-dependencies'
