@@ -16,6 +16,8 @@
 
 package nebula.plugin.info.java
 
+import groovy.transform.Canonical
+import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
@@ -24,6 +26,8 @@ import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.compile.AbstractCompile
 import org.gradle.jvm.toolchain.JavaLauncher
 import org.gradle.jvm.toolchain.JavaToolchainService
 
@@ -45,6 +49,8 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     private final ProviderFactory providers
 
+    private static final List<String> supportedLanguages = ['java', 'groovy', 'scala', 'kotlin']
+
     @Inject
     InfoJavaPlugin(ProviderFactory providerFactory) {
         this.providers = providerFactory
@@ -63,9 +69,10 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
         project.afterEvaluate {
             project.plugins.withType(JavaBasePlugin) {
                 project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-                    JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
-                    manifestPlugin.add(TARGET_PROPERTY, javaPluginExtension.targetCompatibility)
-                    manifestPlugin.add(SOURCE_PROPERTY, javaPluginExtension.sourceCompatibility)
+                    JavaCompatibility sourceAndTargetCompatibility = findSourceAndTargetCompatibility(project)
+                    manifestPlugin.add(TARGET_PROPERTY, sourceAndTargetCompatibility.targetCompatibility)
+                    manifestPlugin.add(SOURCE_PROPERTY, sourceAndTargetCompatibility.sourceCompatibility)
+
                     Provider<JavaLauncher> javaLauncher = getJavaLauncher(project)
                     if (javaLauncher.isPresent()) {
                         manifestPlugin.add(JDK_PROPERTY, javaLauncher.get().metadata.languageVersion.toString())
@@ -76,6 +83,31 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
                 }
             }
         }
+    }
+
+    @CompileDynamic
+    private static JavaCompatibility findSourceAndTargetCompatibility(Project project) {
+        JavaPluginExtension javaPluginExtension = project.extensions.getByType(JavaPluginExtension)
+        SourceSet mainSourceSet = javaPluginExtension.sourceSets.main
+        List<String> compileTaskNames = supportedLanguages.collect { mainSourceSet.getCompileTaskName(it)}
+        Set<AbstractCompile> compileTasks = project.tasks.withType(AbstractCompile).findAll {
+            it.name in compileTaskNames
+        }
+
+        if(!compileTasks) {
+            return JavaCompatibility.UNKNOWN
+        }
+
+        return new JavaCompatibility(
+               compileTasks.sourceCompatibility.sort().last(), compileTasks.targetCompatibility.sort().last()
+        )
+    }
+
+    @Canonical
+    private static class JavaCompatibility {
+        String sourceCompatibility
+        String targetCompatibility
+        static UNKNOWN = new JavaCompatibility("unknown", "unknown")
     }
 
     private Provider<JavaLauncher> getJavaLauncher(Project project) {
