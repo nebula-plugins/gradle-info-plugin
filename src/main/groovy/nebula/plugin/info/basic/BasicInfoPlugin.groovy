@@ -46,13 +46,13 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern('yyyy-MM-dd_HH:mm:ss')
     private static final DateTimeFormatter DATE_TIME_ISO_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
 
-    static final String BUILT_BY_PROPERTY = 'Built-By'
-    static final String BUILT_OS_PROPERTY = 'Built-OS'
-    static final String BUILD_DATE_PROPERTY = 'Build-Date'
-    static final String BUILD_DATE_UTC_PROPERTY = 'Build-Date-UTC'
-    static final String BUILD_TIMEZONE_PROPERTY = 'Build-Timezone'
-    static final String BUILD_STATUS_PROPERTY = 'Built-Status'
-    static final String GRADLE_VERSION_PROPERTY = 'Gradle-Version'
+    public static final String BUILT_BY_PROPERTY = 'Built-By'
+    public static final String BUILT_OS_PROPERTY = 'Built-OS'
+    public static final String BUILD_DATE_PROPERTY = 'Build-Date'
+    public static final String BUILD_DATE_UTC_PROPERTY = 'Build-Date-UTC'
+    public static final String BUILD_TIMEZONE_PROPERTY = 'Build-Timezone'
+    public static final String BUILD_STATUS_PROPERTY = 'Built-Status'
+    public static final String GRADLE_VERSION_PROPERTY = 'Gradle-Version'
 
     // Sample from commons-lang, and hence via Maven
     // Manifest-Version: 1.0
