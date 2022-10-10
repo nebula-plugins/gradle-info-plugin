@@ -20,7 +20,7 @@ Both the Collectors and Reporters know about the broker.
 info Plugin
 --------------
 ```
-apply plugin: 'nebula.info'
+apply plugin: 'com.netflix.nebula.info'
 ```
 
 *Uber plugin that applies all other plugins. Since each one is relatively safe to run, this is the recommended plugin to
@@ -29,7 +29,7 @@ apply.*
 info-broker Plugin (Broker)
 ---------------
 ```
-apply plugin: 'nebula.info-broker'
+apply plugin: 'com.netflix.nebula.info-broker'
 ```
 
 This would leave an empty broker around for other plugins to play with.
@@ -37,7 +37,7 @@ This would leave an empty broker around for other plugins to play with.
 info-jar Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'nebula.info-jar'
+apply plugin: 'com.netflix.nebula.info-jar'
 
 // optionally configure MANIFEST.MF entries
 infoBroker {
@@ -53,7 +53,7 @@ Pumps all values from the broker into the manifest of all jar's being built.
 info-props Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'nebula.info-props'
+apply plugin: 'com.netflix.nebula.info-props'
 ```
 
 Creates a property files with broker's values, defaults to "manifest/${baseConvention.archivesBaseName}.properties". Uses
@@ -62,7 +62,7 @@ InfoPropertiesFile task to create file.
 info-jar-props Plugin (Reporter)
 ---------------
 ```
-apply plugin: 'nebula.info-jar-props'
+apply plugin: 'com.netflix.nebula.info-jar-props'
 ```
 
 Leverages info-props to create a file, which this plugin then puts into the META-INF of all jars.
@@ -80,7 +80,7 @@ info-java Plugin (Collector)
 --------------
 
 ```
-apply plugin: 'nebula.info-java'
+apply plugin: 'com.netflix.nebula.info-java'
 ```
 
 Reports on the version of Java being used, and compatibility version if the Java plugin is being used.
@@ -89,7 +89,7 @@ info-ci Plugin (Collector)
 --------------
 
 ```
-apply plugin: 'nebula.info-ci'
+apply plugin: 'com.netflix.nebula.info-ci'
 ```
 
 Detects the current Continuous Integration environment and reports upon Job Name and Build Number.
@@ -98,7 +98,7 @@ Currently supports CircleCI, Cirrus CI, Drone, GitLab CI, Travis CI, and Jenkins
 info-dependencies Plugin (Collector)
 --------------
 ```
-apply plugin: 'nebula.info-dependencies'
+apply plugin: 'com.netflix.nebula.info-dependencies'
 ```
 
 Reports on selected binary module versions (including transitives) of configurations that are resolved.
@@ -106,7 +106,7 @@ Reports on selected binary module versions (including transitives) of configurat
 info-scm Plugin (Collector)
 --------------
 ```
-apply plugin: 'nebula.info-scm'
+apply plugin: 'com.netflix.nebula.info-scm'
 ```
 
 Detects the current source control being used and reports upon the repository and where in the source the project is.
@@ -128,7 +128,7 @@ buildscript {
 info-owners (Collector)
 --------------
 ```
-apply plugin: 'nebula.info-owners'
+apply plugin: 'com.netflix.nebula.info-owners'
 ```
 
 Collects "owners" and "notify" users and inject them as 'Module-Owner' and 'Module-Email', respectively. The values come
