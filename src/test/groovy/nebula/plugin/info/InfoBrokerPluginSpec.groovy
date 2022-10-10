@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 class InfoBrokerPluginSpec extends ProjectSpec {
     def 'apply plugin'() {
         when:
-        project.apply plugin: 'nebula.info-broker'
+        project.apply plugin: 'com.netflix.nebula.info-broker'
 
         then:
         noExceptionThrown()
@@ -37,7 +37,7 @@ class InfoBrokerPluginSpec extends ProjectSpec {
     @Ignore("Not valid until we add manifest as an extension")
     def 'extension can be extended in different ways'() {
         when:
-        project.apply plugin: 'nebula.info-broker'
+        project.apply plugin: 'com.netflix.nebula.info-broker'
         def basePlugin = project.plugins.getPlugin(InfoBrokerPlugin)
         project.manifest {
             MyKey { value = 'MyValue' }

@@ -32,7 +32,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
 
             plugins {
                 id 'java'
-                id 'nebula.info'
+                id 'com.netflix.nebula.info'
             }
             
              java {
@@ -81,7 +81,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
 
             plugins {
                 id 'java'
-                id 'nebula.info'
+                id 'com.netflix.nebula.info'
             }
             
             java {
@@ -137,7 +137,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
 
             plugins {
                 id 'java'
-                id 'nebula.info'
+                id 'com.netflix.nebula.info'
             }
             
             java {
@@ -194,7 +194,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
 
             plugins {
                 id 'groovy'
-                id 'nebula.info'
+                id 'com.netflix.nebula.info'
             }
             
             java {
@@ -256,7 +256,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             plugins {
                 id 'java'
                 id 'scala'
-                id 'nebula.info'
+                id 'com.netflix.nebula.info'
             }
             
             java {

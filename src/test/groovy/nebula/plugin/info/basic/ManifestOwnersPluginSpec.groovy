@@ -23,7 +23,7 @@ import spock.lang.Ignore
 class ManifestOwnersPluginSpec extends PluginProjectSpec {
     @Override
     String getPluginName() {
-        'nebula.info-owners'
+        'com.netflix.nebula.info-owners'
     }
 
     @Ignore('this now depends on project evaluation, ignore for now')

@@ -69,6 +69,6 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
 
     @Override
     String getPluginName() {
-        'nebula.info-dependencies'
+        'com.netflix.nebula.info-dependencies'
     }
 }

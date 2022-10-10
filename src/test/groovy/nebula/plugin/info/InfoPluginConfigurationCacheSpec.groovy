@@ -7,7 +7,7 @@ class InfoPluginConfigurationCacheSpec extends IntegrationTestKitSpec {
     def 'plugin applies with configuration cache'() {
         buildFile << """
         plugins {
-            id 'nebula.info'
+            id 'com.netflix.nebula.info'
             id 'java'
         }
         """
