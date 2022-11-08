@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'com.netflix.nebula.plugin-plugin' version '19.0.1'
+    id 'com.netflix.nebula.plugin-plugin' version '19.0.2'
 }
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
@@ -41,7 +41,7 @@ dependencies {
     implementation 'org.tmatesoft.svnkit:svnkit:1.8.12'
     implementation 'net.java.dev.jna:jna-platform:5.7.0'
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
-    testImplementation ('org.ajoberstar.grgit:grgit-core:4.0.2') {
+    testImplementation ('org.ajoberstar.grgit:grgit-core:4.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
     }
 }
