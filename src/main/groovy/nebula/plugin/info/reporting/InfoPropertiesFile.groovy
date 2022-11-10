@@ -23,6 +23,7 @@ import org.gradle.api.internal.ConventionTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
 
 import javax.inject.Inject
 
@@ -30,6 +31,7 @@ import javax.inject.Inject
  * Simply writes out brokers values to a properties file.
  */
 @CompileDynamic
+@DisableCachingByDefault
 class InfoPropertiesFile extends ConventionTask {
     private InfoBrokerPlugin infoBrokerPlugin
 

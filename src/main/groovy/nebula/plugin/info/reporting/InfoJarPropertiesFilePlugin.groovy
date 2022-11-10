@@ -33,6 +33,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.normalization.MetaInfNormalization
+import org.gradle.work.DisableCachingByDefault
 
 /**
  * Inject a properties file into the jar file will the info values, using the InfoPropertiesFilePlugin
@@ -80,6 +81,7 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
 
     }
 
+    @DisableCachingByDefault
     abstract static class CreateEmptyPropertiesFile extends DefaultTask {
         @OutputFile
         abstract RegularFileProperty getOutputFile()
