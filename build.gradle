@@ -16,7 +16,7 @@
 
 
 plugins {
-    id 'com.netflix.nebula.plugin-plugin' version '19.0.2'
+    id 'com.netflix.nebula.plugin-plugin' version '20.0.0'
 }
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
@@ -48,10 +48,6 @@ dependencies {
 
 test.exclude '**/*Local*'
 
-pluginBundle {
-    tags = ['nebula', 'info']
-}
-
 gradlePlugin {
     plugins {
         info {
@@ -59,60 +55,70 @@ gradlePlugin {
             displayName = 'Gradle Info plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.InfoPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoBasic {
             id = 'com.netflix.nebula.info-basic'
             displayName = 'Gradle Info Basic plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.basic.BasicInfoPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoDependencies {
             id = 'com.netflix.nebula.info-dependencies'
             displayName = 'Gradle Info Dependencies plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.dependencies.DependenciesInfoPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoBroker {
             id = 'com.netflix.nebula.info-broker'
             displayName = 'Gradle Info Broker plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.InfoBrokerPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoCI {
             id = 'com.netflix.nebula.info-ci'
             displayName = 'Gradle Info CI plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.ci.ContinuousIntegrationInfoPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoJAR {
             id = 'com.netflix.nebula.info-jar'
             displayName = 'Gradle Info JAR plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.reporting.InfoJarManifestPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoJava {
             id = 'com.netflix.nebula.info-java'
             displayName = 'Gradle Info Java plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.java.InfoJavaPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoOwners {
             id = 'com.netflix.nebula.info-owners'
             displayName = 'Gradle Info Owners plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.basic.ManifestOwnersPlugin'
+            tags.set(['nebula', 'info'])
         }
         infoProps {
             id = 'com.netflix.nebula.info-props'
             displayName = 'Gradle Info Properties plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.reporting.InfoPropertiesFilePlugin'
+            tags.set(['nebula', 'info'])
         }
         infoScm {
             id = 'com.netflix.nebula.info-scm'
             displayName = 'Gradle Info SCM plugin'
             description = project.description
             implementationClass= 'nebula.plugin.info.scm.ScmInfoPlugin'
+            tags.set(['nebula', 'info'])
         }
     }
 }
