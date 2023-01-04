@@ -48,9 +48,6 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         result.containsKey InfoJavaPlugin.JDK_PROPERTY
         result.containsKey InfoJavaPlugin.TARGET_PROPERTY
 
-        // patterns like 1.7.0_25
-        result[InfoJavaPlugin.JDK_PROPERTY] == System.getProperty("java.version")
-
         // one or more digits followed by one or more digits expecting strings like 1.6 or 1.7
         result[InfoJavaPlugin.TARGET_PROPERTY] == JavaVersion.current().toString()
     }

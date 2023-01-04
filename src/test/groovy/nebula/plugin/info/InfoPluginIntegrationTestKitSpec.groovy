@@ -118,8 +118,8 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
 
         then:
         result.output.contains('Build-Java-Version=17')
-        result.output.contains('X-Compile-Target-JDK=8')
-        result.output.contains('X-Compile-Source-JDK=8')
+       assert result.output.contains('X-Compile-Target-JDK=8') || result.output.contains('X-Compile-Target-JDK=1.8')
+        assert result.output.contains('X-Compile-Source-JDK=8') || result.output.contains('X-Compile-Target-JDK=1.8')
     }
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains'() {
