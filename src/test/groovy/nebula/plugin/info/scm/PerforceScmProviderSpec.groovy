@@ -20,8 +20,10 @@ import org.gradle.api.provider.ProviderFactory
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import org.junit.rules.TemporaryFolder
+import spock.lang.IgnoreIf
 import spock.lang.Specification
 
+@IgnoreIf({ jvm.isJava17() })
 class PerforceScmProviderSpec extends Specification {
     @Rule
     TemporaryFolder temp

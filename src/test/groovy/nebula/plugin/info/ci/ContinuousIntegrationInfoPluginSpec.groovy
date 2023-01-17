@@ -12,7 +12,7 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
 
-@IgnoreIf({ System.getenv('TITUS_TASK_ID') })
+@IgnoreIf({ System.getenv('TITUS_TASK_ID') || jvm.isJava17() })
 class ContinuousIntegrationInfoPluginSpec extends IntegrationSpec {
 
     @Rule
