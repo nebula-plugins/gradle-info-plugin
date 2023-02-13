@@ -10,4 +10,12 @@ gradleEnterprise {
     }
 }
 
-rootProject.name='gradle-info-plugin' 
+rootProject.name='gradle-info-plugin'
+
+gradleEnterprise {
+    buildScan {
+        tag "something 1"
+        tag "something 1"
+        tag "something 1"
+    }
+}
