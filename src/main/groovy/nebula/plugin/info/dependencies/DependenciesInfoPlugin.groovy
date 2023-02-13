@@ -18,6 +18,7 @@ package nebula.plugin.info.dependencies
 import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
@@ -38,27 +39,12 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
         Map dependencies = [:]
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            processBuildscriptClasspath(project, dependencies)
             processProjectDependencies(project, dependencies)
             dependencyMap["${project.name}-dependencies".toString()] = dependencies
             if (project == project.rootProject) {
                 manifestPlugin.addReport('resolved-dependencies', dependencyMap)
             }
         }
-    }
-
-    private void processBuildscriptClasspath(Project project, Map dependencies) {
-        project.buildscript.configurations.all({ Configuration conf ->
-            if (canBeResolved(conf)) {
-                if(conf.getState() == Configuration.State.UNRESOLVED) {
-                    conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
-                        processIncomingDependencies(resolvableDependencies, 'Resolved-Buildscript-Dependencies', dependencies)
-                    }
-                } else {
-                    processIncomingDependencies(conf.incoming, 'Resolved-Buildscript-Dependencies', dependencies)
-                }
-            }
-        })
     }
 
     private void processProjectDependencies(Project project, Map dependencies) {
