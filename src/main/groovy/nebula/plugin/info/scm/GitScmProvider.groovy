@@ -22,8 +22,14 @@ import org.eclipse.jgit.lib.Repository
 import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
+import org.gradle.internal.nativeintegration.NativeIntegrationException
+import org.gradle.internal.nativeintegration.ProcessEnvironment
+import org.gradle.internal.nativeintegration.ReflectiveEnvironment
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import java.lang.reflect.Field
+import java.lang.reflect.Method
 
 class GitScmProvider extends AbstractScmProvider {
     GitScmProvider(ProviderFactory providerFactory) {
@@ -37,23 +43,44 @@ class GitScmProvider extends AbstractScmProvider {
     }
 
     private Repository getRepository(File projectDir) {
-        new RepositoryBuilder().findGitDir(projectDir).build();
+        new RepositoryBuilder().findGitDir(projectDir).build()
     }
 
     @Override
     String calculateModuleOrigin(File projectDir) {
-        Repository repository = getRepository(projectDir)
-        Config storedConfig = repository.getConfig()
-        String remoteOriginUrl = storedConfig.getString('remote', 'origin', 'url')
+        String noSystem = providerFactory.environmentVariable("GIT_CONFIG_NOSYSTEM").getOrElse(null)
+        ReflectiveEnvironment reflectiveEnvironment = new ReflectiveEnvironment()
         try {
-            URL url = remoteOriginUrl.toURL()
-            if (url.getUserInfo()) {
-                def user = url.getUserInfo().split(":").first()
-                url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
+            try {
+                reflectiveEnvironment.setenv("GIT_CONFIG_NOSYSTEM", "true")
+            } catch(NativeIntegrationException ignore) {
+                //ignore on platforms that dont support env setting
+                //this will break configuration cache but not hurt anything
             }
-            return url.toExternalForm()
-        } catch (MalformedURLException ignore) {
-            return remoteOriginUrl
+            Repository repository = getRepository(projectDir)
+            Config storedConfig = repository.getConfig()
+            String remoteOriginUrl = storedConfig.getString('remote', 'origin', 'url')
+            try {
+                URL url = remoteOriginUrl.toURL()
+                if (url.getUserInfo()) {
+                    def user = url.getUserInfo().split(":").first()
+                    url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
+                }
+                return url.toExternalForm()
+            } catch (MalformedURLException ignore) {
+                return remoteOriginUrl
+            }
+        } finally {
+            try {
+                if(noSystem == null) {
+                    reflectiveEnvironment.unsetenv("GIT_CONFIG_NOSYSTEM");
+                } else {
+                    reflectiveEnvironment.setenv("GIT_CONFIG_NOSYSTEM", noSystem)
+                }
+            } catch(NativeIntegrationException ignore) {
+                //ignore on platforms that dont support env setting
+                //this will break configuration cache but not hurt anything
+            }
         }
     }
 
