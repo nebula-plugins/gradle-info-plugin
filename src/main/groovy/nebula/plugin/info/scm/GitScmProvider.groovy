@@ -16,14 +16,8 @@
 
 package nebula.plugin.info.scm
 
-import org.eclipse.jgit.lib.Config
-import org.eclipse.jgit.lib.Constants
-import org.eclipse.jgit.lib.Repository
-import org.eclipse.jgit.lib.RepositoryBuilder
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
     GitScmProvider(ProviderFactory providerFactory) {
@@ -32,19 +26,12 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     boolean supports(Project project) {
-        // TODO When we can make p4java optional, we'll add a classForName check here.
         return findFile(project.projectDir, '.git') != null
-    }
-
-    private Repository getRepository(File projectDir) {
-        new RepositoryBuilder().findGitDir(projectDir).build();
     }
 
     @Override
     String calculateModuleOrigin(File projectDir) {
-        Repository repository = getRepository(projectDir)
-        Config storedConfig = repository.getConfig()
-        String remoteOriginUrl = storedConfig.getString('remote', 'origin', 'url')
+        def remoteOriginUrl = executeGitCommand("git", "config", "--get", "remote.origin.url")
         try {
             URL url = remoteOriginUrl.toURL()
             if (url.getUserInfo()) {
@@ -59,9 +46,8 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        Repository repository = getRepository(projectDir)
-        File gitDir = repository.directory
-        return projectDir.absolutePath - gitDir.parentFile.absolutePath
+        String gitWorkDir = executeGitCommand("git", "rev-parse", "--show-toplevel")
+        return projectDir.absolutePath - new File(gitWorkDir).absolutePath
     }
 
     @Override
@@ -74,11 +60,7 @@ class GitScmProvider extends AbstractScmProvider {
         boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').present
         String hash
         if (!isHashPresent) {
-            def head = getRepository(projectDir).resolve(Constants.HEAD)
-            if (!head) {
-                return null
-            }
-            hash = head.name
+            hash = executeGitCommand("git", "rev-parse", "HEAD")
         } else {
             hash = providerFactory.environmentVariable('GIT_COMMIT').get()
         }
@@ -87,6 +69,12 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateBranch(File projectDir) {
-        return getRepository(projectDir).branch
+        return executeGitCommand("git", "rev-parse", "--abbrev-ref", "HEAD")
+    }
+
+    private String executeGitCommand(Object... args) {
+        providerFactory.exec {
+            it.commandLine(args)
+        }.standardOutput.asText.get().replaceAll("\n", "").trim()
     }
 }
