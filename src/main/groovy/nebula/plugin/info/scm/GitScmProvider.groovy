@@ -18,8 +18,12 @@ package nebula.plugin.info.scm
 
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
+    private Logger logger = LoggerFactory.getLogger(GitScmProvider
+    )
     GitScmProvider(ProviderFactory providerFactory) {
         super(providerFactory)
     }
@@ -73,8 +77,13 @@ class GitScmProvider extends AbstractScmProvider {
     }
 
     private String executeGitCommand(Object... args) {
-        providerFactory.exec {
-            it.commandLine(args)
-        }.standardOutput.asText.get().replaceAll("\n", "").trim()
+        try {
+            providerFactory.exec {
+                it.commandLine(args)
+            }.standardOutput.asText.get().replaceAll("\n", "").trim()
+        } catch (Exception e) {
+            logger.error("Could not execute Git command: ${args.join(' ')}", e)
+            return null
+        }
     }
 }
