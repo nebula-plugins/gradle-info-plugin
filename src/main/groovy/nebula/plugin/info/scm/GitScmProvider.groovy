@@ -78,11 +78,17 @@ class GitScmProvider extends AbstractScmProvider {
 
     private String executeGitCommand(Object... args) {
         try {
-            providerFactory.exec {
+            def execOutput = providerFactory.exec {
                 it.commandLine(args)
-            }.standardOutput.asText.get().replaceAll("\n", "").trim()
+                it.ignoreExitValue = true
+            }
+            if(execOutput.result.isPresent() && execOutput.result.get().exitValue != 0) {
+                logger.error("Could not execute Git command: ${args.join(' ')} | Reason: ${execOutput.standardError.asText.get()}")
+                return null
+            }
+            return execOutput.standardOutput.asText.get().replaceAll("\n", "").trim()
         } catch (Exception e) {
-            logger.error("Could not execute Git command: ${args.join(' ')}", e)
+            logger.error("Could not execute Git command: ${args.join(' ')}")
             return null
         }
     }
