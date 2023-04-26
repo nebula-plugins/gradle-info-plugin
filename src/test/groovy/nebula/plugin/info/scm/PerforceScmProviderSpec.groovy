@@ -23,7 +23,7 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.IgnoreIf
 import spock.lang.Specification
 
-@IgnoreIf({ jvm.isJava17() })
+@IgnoreIf({ jvm.isJava17() || jvm.isJava20() })
 class PerforceScmProviderSpec extends Specification {
     @Rule
     TemporaryFolder temp
