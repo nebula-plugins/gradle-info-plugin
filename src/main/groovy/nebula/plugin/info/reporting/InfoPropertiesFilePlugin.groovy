@@ -21,7 +21,7 @@ import nebula.plugin.info.InfoReporterPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePlugin
-import org.gradle.api.plugins.BasePluginConvention
+import org.gradle.api.plugins.BasePluginExtension
 import org.gradle.api.tasks.TaskProvider
 
 /**
@@ -40,8 +40,8 @@ class InfoPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
                     // timing is improtant here, this should be running after the BasePlugin is applied if it's going
                     // to be applied.
                     if (project.plugins.hasPlugin(BasePlugin)) {
-                        BasePluginConvention baseConvention = project.getConvention().getPlugin(BasePluginConvention)
-                        new File(project.buildDir, "manifest/${baseConvention.archivesBaseName}.properties")
+                        BasePluginExtension baseExtension = project.extensions.getByType(BasePluginExtension)
+                        new File(project.buildDir, "manifest/${baseExtension.archivesName.get()}.properties")
                     } else {
                         new File(project.buildDir, "manifest/info.properties")
                     }
