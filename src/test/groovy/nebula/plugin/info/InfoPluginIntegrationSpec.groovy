@@ -99,6 +99,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
     
     def 'works with jenkins jpi plugin'() {
         given:
+        System.setProperty("ignoreDeprecations", 'true')
         buildFile << """
             buildscript {
               repositories {
@@ -107,7 +108,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
                 }
               }
               dependencies {
-                classpath "org.jenkins-ci.tools:gradle-jpi-plugin:0.43.0"
+                classpath "org.jenkins-ci.tools:gradle-jpi-plugin:0.49.0"
               }
             }
 
