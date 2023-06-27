@@ -51,6 +51,9 @@ class GitScmProvider extends AbstractScmProvider {
     @Override
     String calculateModuleSource(File projectDir) {
         String gitWorkDir = executeGitCommand("git", "rev-parse", "--show-toplevel")
+        if(!gitWorkDir) {
+            return projectDir.absolutePath
+        }
         return projectDir.absolutePath - new File(gitWorkDir).absolutePath
     }
 
