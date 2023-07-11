@@ -32,20 +32,16 @@ class InfoPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
     TaskProvider<InfoPropertiesFile> manifestTask
 
     void apply(Project project) {
-        project.plugins.withType(InfoBrokerPlugin) {  InfoBrokerPlugin basePlugin ->
+        project.plugins.withType(InfoBrokerPlugin).configureEach {  InfoBrokerPlugin basePlugin ->
 
             manifestTask = project.tasks.register('writeManifestProperties', InfoPropertiesFile) { task ->
-                task.conventionMapping.map('propertiesFile') {
-                    // A little clunky, because there is no way to say, "If there's no convention, run this". E.g.
-                    // timing is improtant here, this should be running after the BasePlugin is applied if it's going
-                    // to be applied.
-                    if (project.plugins.hasPlugin(BasePlugin)) {
-                        BasePluginExtension baseExtension = project.extensions.getByType(BasePluginExtension)
-                        new File(project.buildDir, "manifest/${baseExtension.archivesName.get()}.properties")
-                    } else {
-                        new File(project.buildDir, "manifest/info.properties")
-                    }
+                if (project.plugins.hasPlugin(BasePlugin)) {
+                    BasePluginExtension baseExtension = project.extensions.getByType(BasePluginExtension)
+                    task.propertiesFile.set(project.layout.buildDirectory.file("manifest/${baseExtension.archivesName.get()}.properties"))
+                } else {
+                    task.propertiesFile.set(project.layout.buildDirectory.file("manifest/info.properties"))
                 }
+
             }
         }
     }

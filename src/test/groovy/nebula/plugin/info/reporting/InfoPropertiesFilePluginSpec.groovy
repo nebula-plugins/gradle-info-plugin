@@ -34,16 +34,16 @@ class InfoPropertiesFilePluginSpec extends ProjectSpec {
         InfoPropertiesFile manifestTask = infoPropertiesFilePlugin.getManifestTask().get()
 
         then:
-        manifestTask.getPropertiesFile() == new File(projectDir, 'build/manifest/ensure-reporter-is-doing-work.properties')
+        manifestTask.getPropertiesFile().getAsFile().get() == new File(projectDir, 'build/manifest/ensure-reporter-is-doing-work.properties')
         // Gradle would have done this for us.
-        manifestTask.getPropertiesFile().parentFile.mkdirs()
+        manifestTask.getPropertiesFile().getAsFile().get().parentFile.mkdirs()
 
         when:
         manifestTask.write()
 
         then:
         def result = new Properties()
-        def file = manifestTask.getPropertiesFile()
+        def file = manifestTask.getPropertiesFile().getAsFile().get()
         result.load(new FileInputStream(file))
         result.containsKey InfoJavaPlugin.JDK_PROPERTY
         result.containsKey InfoJavaPlugin.TARGET_PROPERTY

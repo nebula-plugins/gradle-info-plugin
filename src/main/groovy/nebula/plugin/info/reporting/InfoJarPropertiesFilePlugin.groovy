@@ -26,8 +26,10 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.file.CopySpec
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
@@ -46,7 +48,7 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
                 InfoPropertiesFilePlugin propFilePlugin = project.plugins.apply(InfoPropertiesFilePlugin) as InfoPropertiesFilePlugin
                 TaskProvider<InfoPropertiesFile> manifestTask = propFilePlugin.getManifestTask()
 
-                File propertiesFile = new File(project.buildDir, "properties_for_jar/${manifestTask.get().propertiesFile.name}")
+                Provider<RegularFile> propertiesFile = project.layout.buildDirectory.file("properties_for_jar/${manifestTask.get().propertiesFile.get().asFile.name}")
 
                 TaskProvider<CreateEmptyPropertiesFile> prepareFile = project.tasks.register("createPropertiesFileForJar", CreateEmptyPropertiesFile) { CreateEmptyPropertiesFile task ->
                     task.outputFile.set(propertiesFile)
@@ -65,11 +67,11 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
 
                     jarTask.doFirst {
                         //when we are after all caching decisions we fill the file with all the data
-                        PropertiesWriter.writeProperties(propertiesFile, manifestPlugin)
+                        PropertiesWriter.writeProperties(propertiesFile.get().asFile, manifestPlugin)
                     }
                     jarTask.doLast {
                         //we need to cleanup file in case we got multiple jar tasks
-                        propertiesFile.text = ""
+                        propertiesFile.get().asFile.text = ""
                     }
                 }
 
