@@ -15,10 +15,9 @@
  */
 package nebula.plugin.info
 
-import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
-class InfoPluginIntegrationSpec extends IntegrationSpec {
+class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
     def 'it returns build reports at the end of the build'() {
         given:
         buildFile << """
@@ -49,6 +48,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             rootProject.name='buildscript-singlemodule-test' 
         """
         this.writeHelloWorld('com.nebula.test')
+        new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
         ExecutionResult result = runTasksSuccessfully('assemble')
@@ -88,6 +88,7 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             }
             '''.stripIndent())
         writeHelloWorld('nebula.app', app)
+        new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
         ExecutionResult result = runTasksSuccessfully('build')
@@ -130,6 +131,8 @@ class InfoPluginIntegrationSpec extends IntegrationSpec {
             rootProject.name='test-jenkins-jpi' 
         """
         writeHelloWorld('com.nebula.test')
+        // JPI plugin might not be configuration cache compatible yet
+        new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
         ExecutionResult result = runTasksSuccessfully('assemble')

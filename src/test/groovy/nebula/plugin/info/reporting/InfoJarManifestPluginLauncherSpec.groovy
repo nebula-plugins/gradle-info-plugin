@@ -16,6 +16,7 @@
 
 package nebula.plugin.info.reporting
 
+import nebula.plugin.info.BaseIntegrationSpec
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.basic.BasicInfoPlugin
 import nebula.test.IntegrationSpec
@@ -26,7 +27,7 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
 
-class InfoJarManifestPluginLauncherSpec extends IntegrationSpec {
+class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
 
     def 'jar task is marked UP-TO-DATE if ran before successfully and manifest changes are ignored'() {
         writeHelloWorld('nebula.test')

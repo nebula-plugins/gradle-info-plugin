@@ -16,10 +16,9 @@
 
 package nebula.plugin.info
 
-import nebula.test.IntegrationSpec
 import nebula.test.functional.ExecutionResult
 
-class InfoBrokerPluginIntegrationSpec extends IntegrationSpec {
+class InfoBrokerPluginIntegrationSpec extends BaseIntegrationSpec {
 
     def 'it returns build reports at the end of the build'() {
         given:
@@ -40,6 +39,7 @@ class InfoBrokerPluginIntegrationSpec extends IntegrationSpec {
             }
 
         """.stripIndent()
+        new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
         ExecutionResult result = runTasksSuccessfully('createReport')

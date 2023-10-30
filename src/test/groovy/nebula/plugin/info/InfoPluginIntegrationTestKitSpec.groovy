@@ -15,9 +15,7 @@
  */
 package nebula.plugin.info
 
-import nebula.test.IntegrationTestKitSpec
-
-class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
+class InfoPluginIntegrationTestKitSpec extends BaseIntegrationTestKitSpec {
     def 'it returns manifest reports at the end of the build - toolchains'() {
         given:
         buildFile << """
@@ -45,11 +43,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
-            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
 
-            gradle.buildFinished {
-                println broker.buildManifest()
-            }
         """.stripIndent()
 
         settingsFile << """
@@ -58,11 +52,11 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        def result = runTasks('assemble')
+        def result = runTasks('assemble', 'writeManifestProperties')
 
         then:
-        println result.output
-        result.output.contains('Build-Java-Version=17')
+        def manifest = new File(projectDir, 'build/manifest/buildscript-singlemodule-test.properties')
+        manifest.text.contains('Build-Java-Version=17')
     }
 
     def 'reports proper jdk version when configuring toolchain in compile task'() {
@@ -99,11 +93,6 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
-            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
-
-            gradle.buildFinished {
-                println broker.buildManifest()
-            }
         """.stripIndent()
 
         settingsFile << """
@@ -112,12 +101,13 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        def result = runTasks('assemble')
+        def result = runTasks('assemble', 'writeManifestProperties')
 
         then:
-        result.output.contains('Build-Java-Version=17')
-       assert result.output.contains('X-Compile-Target-JDK=8') || result.output.contains('X-Compile-Target-JDK=1.8')
-        assert result.output.contains('X-Compile-Source-JDK=8') || result.output.contains('X-Compile-Target-JDK=1.8')
+        def manifest = new File(projectDir, 'build/manifest/buildscript-singlemodule-test.properties')
+        manifest.text.contains('Build-Java-Version=17')
+        assert manifest.text.contains('X-Compile-Target-JDK=8') || manifest.text.contains('X-Compile-Target-JDK=1.8')
+        assert manifest.text.contains('X-Compile-Source-JDK=8') || manifest.text.contains('X-Compile-Target-JDK=1.8')
     }
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains'() {
@@ -155,11 +145,7 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
-            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
-
-            gradle.buildFinished {
-                println broker.buildManifest()
-            }
+        
         """.stripIndent()
 
         settingsFile << """
@@ -168,12 +154,13 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        def result = runTasks('assemble')
+        def result = runTasks('assemble', 'writeManifestProperties')
 
         then:
-        result.output.contains('Build-Java-Version=17')
-        result.output.contains('X-Compile-Target-JDK=1.8')
-        result.output.contains('X-Compile-Source-JDK=1.8')
+        def manifest = new File(projectDir, 'build/manifest/buildscript-singlemodule-test.properties')
+        manifest.text.contains('Build-Java-Version=17')
+        manifest.text.contains('X-Compile-Target-JDK=1.8')
+        manifest.text.contains('X-Compile-Source-JDK=1.8')
     }
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains (multi language)'() {
@@ -215,11 +202,6 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
-            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
-
-            gradle.buildFinished {
-                println broker.buildManifest()
-            }
         """.stripIndent()
 
         settingsFile << """
@@ -228,12 +210,13 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        def result = runTasks('assemble')
+        def result = runTasks('assemble', 'writeManifestProperties')
 
         then:
-        result.output.contains('Build-Java-Version=17')
-        result.output.contains('X-Compile-Target-JDK=11')
-        result.output.contains('X-Compile-Source-JDK=11')
+        def manifest = new File(projectDir, 'build/manifest/buildscript-singlemodule-test.properties')
+        manifest.text.contains('Build-Java-Version=17')
+        manifest.text.contains('X-Compile-Target-JDK=11')
+        manifest.text.contains('X-Compile-Source-JDK=11')
     }
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains (scala support)'() {
@@ -276,11 +259,6 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
             dependencies {
                 implementation 'com.google.guava:guava:18.0'
             }
-            def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
-
-            gradle.buildFinished {
-                println broker.buildManifest()
-            }
         """.stripIndent()
 
         settingsFile << """
@@ -289,12 +267,13 @@ class InfoPluginIntegrationTestKitSpec extends IntegrationTestKitSpec {
         this.writeHelloWorld('com.nebula.test')
 
         when:
-        def result = runTasks('assemble')
+        def result = runTasks('assemble', 'writeManifestProperties')
 
         then:
-        result.output.contains('Build-Java-Version=17')
-        result.output.contains('X-Compile-Target-JDK=11')
-        result.output.contains('X-Compile-Source-JDK=11')
+        def manifest = new File(projectDir, 'build/manifest/buildscript-singlemodule-test.properties')
+        manifest.text.contains('Build-Java-Version=17')
+        manifest.text.contains('X-Compile-Target-JDK=11')
+        manifest.text.contains('X-Compile-Source-JDK=11')
     }
 
 }

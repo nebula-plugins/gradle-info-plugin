@@ -1,5 +1,6 @@
 package nebula.plugin.info.reporting
 
+import nebula.plugin.info.BaseIntegrationSpec
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.basic.BasicInfoPlugin
 import nebula.test.IntegrationSpec
@@ -7,7 +8,7 @@ import nebula.test.IntegrationSpec
 import java.util.jar.JarFile
 
 
-class InfoPropertiesFilePluginLauncherSpec extends IntegrationSpec {
+class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
     def 'jar task is marked UP-TO-DATE if ran before successfully and metadata changes are ignored'() {
         writeHelloWorld('nebula.test')
         buildFile << """

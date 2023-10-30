@@ -1,5 +1,6 @@
 package nebula.plugin.info.ci
 
+import nebula.plugin.info.BaseIntegrationSpec
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.reporting.InfoJarManifestPlugin
 import nebula.test.IntegrationSpec
@@ -13,7 +14,7 @@ import java.util.jar.JarFile
 import java.util.jar.Manifest
 
 @IgnoreIf({ System.getenv('TITUS_TASK_ID') || jvm.isJava21() || jvm.isJava17() })
-class ContinuousIntegrationInfoPluginSpec extends IntegrationSpec {
+class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationSpec {
 
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()

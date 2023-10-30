@@ -39,6 +39,8 @@ abstract class GitSetupLauncherSpec extends IntegrationSpec {
         '''.stripIndent()
 
         initializeBuildGradleSettingsGradle()
+        // Enable configuration cache :)
+        new File(projectDir, 'gradle.properties') << '''org.gradle.configuration-cache=true'''.stripIndent()
 
         git.add(patterns: ['build.gradle', 'settings.gradle', '.gitignore'])
         git.commit(message: 'Setup')
