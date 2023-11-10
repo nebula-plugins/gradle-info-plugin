@@ -15,9 +15,8 @@
  */
 package nebula.plugin.info
 
-import nebula.test.functional.ExecutionResult
 
-class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
+class InfoPluginIntegrationSpec extends BaseIntegrationTestKitSpec {
     def 'it returns build reports at the end of the build'() {
         given:
         buildFile << """
@@ -30,8 +29,10 @@ class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
                 }
             }
 
-            ${applyPlugin(InfoPlugin)}
-            apply plugin: 'java'
+            plugins {
+                id 'com.netflix.nebula.info'
+                id 'java'
+            }
             
             repositories { mavenCentral() }
             dependencies {
@@ -51,17 +52,20 @@ class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
         new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully('assemble')
+        def result = runTasks('assemble')
 
         then:
-        result.standardOutput.contains('{buildscript-singlemodule-test-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}}')
+        result.output.contains('{buildscript-singlemodule-test-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}}')
     }
 
     def 'it returns build reports at the end of multiproject build'() {
         given:
         buildFile << """
+            plugins {
+                id 'com.netflix.nebula.info'
+            }
             allprojects {
-                ${applyPlugin(InfoPlugin)}
+                apply plugin: 'com.netflix.nebula.info'
             }
 
             subprojects {
@@ -91,32 +95,23 @@ class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
         new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully('build')
+        def result = runTasks('build')
 
         then:
-        result.standardOutput.contains('common-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}')
-        result.standardOutput.contains('app-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:19.0}')
+        result.output.contains('common-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:18.0}')
+        result.output.contains('app-dependencies={Resolved-Dependencies-CompileClasspath=com.google.guava:guava:19.0}')
     }
     
     def 'works with jenkins jpi plugin'() {
         given:
         System.setProperty("ignoreDeprecations", 'true')
         buildFile << """
-            buildscript {
-              repositories {
-                maven {
-                  url "https://plugins.gradle.org/m2/"
-                }
-              }
-              dependencies {
-                classpath "org.jenkins-ci.tools:gradle-jpi-plugin:0.49.0"
-              }
+            plugins {
+                id 'com.netflix.nebula.info'
+                id 'java'
+                id "org.jenkins-ci.jpi" version "0.50.0-rc.3"
             }
-
-            ${applyPlugin(InfoPlugin)}
-            apply plugin: 'java'
-            apply plugin: "org.jenkins-ci.jpi"
-
+           
             jenkinsPlugin {
                 jenkinsVersion.set('2.249.3')
             }
@@ -134,10 +129,7 @@ class InfoPluginIntegrationSpec extends BaseIntegrationSpec {
         // JPI plugin might not be configuration cache compatible yet
         new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
-        when:
-        ExecutionResult result = runTasksSuccessfully('assemble')
-
-        then:
-        result.success
+        expect:
+        runTasks('assemble')
     }
 }

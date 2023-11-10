@@ -61,7 +61,6 @@ class InfoPluginIntegrationTestKitSpec extends BaseIntegrationTestKitSpec {
 
     def 'reports proper jdk version when configuring toolchain in compile task'() {
         given:
-        debug = true
         buildFile << """
             buildscript {
                 repositories {
@@ -112,7 +111,6 @@ class InfoPluginIntegrationTestKitSpec extends BaseIntegrationTestKitSpec {
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains'() {
         given:
-        debug = true
         buildFile << """
             buildscript {
                 repositories {
@@ -165,7 +163,6 @@ class InfoPluginIntegrationTestKitSpec extends BaseIntegrationTestKitSpec {
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains (multi language)'() {
         given:
-        debug = true
         buildFile << """
             buildscript {
                 repositories {
@@ -221,7 +218,6 @@ class InfoPluginIntegrationTestKitSpec extends BaseIntegrationTestKitSpec {
 
     def 'reports proper jdk version when configuring target/source compatibility in compile task + toolchains (scala support)'() {
         given:
-        debug = true
         buildFile << """
             buildscript {
                 repositories {

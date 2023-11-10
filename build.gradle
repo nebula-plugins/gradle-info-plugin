@@ -91,6 +91,13 @@ gradlePlugin {
             implementationClass= 'nebula.plugin.info.reporting.InfoJarManifestPlugin'
             tags.set(['nebula', 'info'])
         }
+        infoJARProperties {
+            id = 'com.netflix.nebula.info-jar-properties'
+            displayName = 'Gradle Info JAR properties plugin'
+            description = project.description
+            implementationClass= 'nebula.plugin.info.reporting.InfoJarPropertiesFilePlugin'
+            tags.set(['nebula', 'info'])
+        }
         infoJava {
             id = 'com.netflix.nebula.info-java'
             displayName = 'Gradle Info Java plugin'

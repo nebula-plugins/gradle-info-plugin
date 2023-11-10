@@ -18,13 +18,15 @@ package nebula.plugin.info
 
 import nebula.test.functional.ExecutionResult
 
-class InfoBrokerPluginIntegrationSpec extends BaseIntegrationSpec {
+class InfoBrokerPluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     def 'it returns build reports at the end of the build'() {
         given:
         def report = 'This string may only be retrieved after the build has finished'
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+            }
 
             def broker = project.plugins.getPlugin(${InfoBrokerPlugin.name})
             
@@ -42,10 +44,10 @@ class InfoBrokerPluginIntegrationSpec extends BaseIntegrationSpec {
         new File(projectDir, 'gradle.properties').text = '''org.gradle.configuration-cache=false'''.stripIndent()
 
         when:
-        ExecutionResult result = runTasksSuccessfully('createReport')
+        def result = runTasks('createReport')
 
         then:
-        result.standardOutput.contains(report)
+        result.output.contains(report)
     }
 
 

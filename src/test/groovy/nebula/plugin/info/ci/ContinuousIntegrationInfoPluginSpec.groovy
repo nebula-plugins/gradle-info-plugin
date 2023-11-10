@@ -1,9 +1,6 @@
 package nebula.plugin.info.ci
 
-import nebula.plugin.info.BaseIntegrationSpec
-import nebula.plugin.info.InfoBrokerPlugin
-import nebula.plugin.info.reporting.InfoJarManifestPlugin
-import nebula.test.IntegrationSpec
+import nebula.plugin.info.BaseIntegrationTestKitSpec
 import org.junit.Rule
 import org.junit.contrib.java.lang.system.EnvironmentVariables
 import spock.lang.IgnoreIf
@@ -14,7 +11,7 @@ import java.util.jar.JarFile
 import java.util.jar.Manifest
 
 @IgnoreIf({ System.getenv('TITUS_TASK_ID') || jvm.isJava21() || jvm.isJava17() })
-class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationSpec {
+class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationTestKitSpec {
 
     @Rule
     public final EnvironmentVariables environmentVariables = new EnvironmentVariables()
@@ -28,9 +25,11 @@ class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationSpec {
 
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(ContinuousIntegrationInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-ci'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -38,7 +37,7 @@ class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")

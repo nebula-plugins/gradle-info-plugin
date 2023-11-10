@@ -1,20 +1,20 @@
 package nebula.plugin.info.reporting
 
-import nebula.plugin.info.BaseIntegrationSpec
-import nebula.plugin.info.InfoBrokerPlugin
-import nebula.plugin.info.basic.BasicInfoPlugin
-import nebula.test.IntegrationSpec
+import nebula.plugin.info.BaseIntegrationTestKitSpec
+import org.gradle.testkit.runner.TaskOutcome
 
 import java.util.jar.JarFile
 
 
-class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
+class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationTestKitSpec {
     def 'jar task is marked UP-TO-DATE if ran before successfully and metadata changes are ignored'() {
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarPropertiesFilePlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar-properties'
+            }
 
             apply plugin: 'java'
             status = 'release'
@@ -22,8 +22,8 @@ class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
 
         when:
         // Make sure we have some history already in place
-        def result = runTasksSuccessfully('jar')
-        runTasksSuccessfully('clean')
+        def result = runTasks('jar')
+        runTasks('clean')
 
         result = runTasks('jar')
 
@@ -34,19 +34,19 @@ class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
         jarFile.exists()
         Properties metadata = getPropertiesFromJar(jarFile)
         metadata['Built-Status'] == 'release'
-        !result.wasUpToDate(':jar')
+        result.task(':jar').outcome != TaskOutcome.UP_TO_DATE
 
         when: 'Nothing has changed'
-        def secondResult = runTasksSuccessfully('jar')
+        def secondResult = runTasks('jar')
 
         then:
-        secondResult.wasUpToDate(':jar')
+        secondResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
 
         when: 'A manifest field was changed'
         buildFile << """
         status = 'integration'
         """.stripIndent()
-        def thirdResult = runTasksSuccessfully('jar')
+        def thirdResult = runTasks('jar')
 
         then:
         File reusedJar = new File(projectDir, "build/libs/${moduleName}.jar")
@@ -54,7 +54,7 @@ class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
         Properties staleMetadata = getPropertiesFromJar(reusedJar)
         //metadata change is ignored and cache is reused
         staleMetadata['Built-Status'] == 'release'
-        thirdResult.wasUpToDate(':jar')
+        thirdResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
     }
 
     Properties getPropertiesFromJar(File jar) {
@@ -71,9 +71,11 @@ class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
     def 'all jar tasks is marked UP-TO-DATE if ran before successfully and metadata changes are ignored'() {
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarPropertiesFilePlugin)}
+              plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar-properties'
+            }
 
             apply plugin: 'java'
             status = 'release'
@@ -86,30 +88,30 @@ class InfoPropertiesFilePluginLauncherSpec extends BaseIntegrationSpec {
 
         when:
         // Make sure we have some history already in place
-        runTasksSuccessfully('jar', 'sourceJar')
-        runTasksSuccessfully('clean')
+        runTasks('jar', 'sourceJar')
+        runTasks('clean')
 
         def result = runTasks('jar', 'sourceJar')
 
         then:
-        !result.wasUpToDate(':jar')
-        !result.wasUpToDate(':sourceJar')
+        result.task(':jar').outcome != TaskOutcome.UP_TO_DATE
+        result.task(':sourceJar').outcome != TaskOutcome.UP_TO_DATE
 
         when: 'Nothing has changed'
-        def secondResult = runTasksSuccessfully('jar', 'sourceJar')
+        def secondResult = runTasks('jar', 'sourceJar')
 
         then:
-        secondResult.wasUpToDate(':jar')
-        secondResult.wasUpToDate(':sourceJar')
+        secondResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
+        secondResult.task(':sourceJar').outcome == TaskOutcome.UP_TO_DATE
 
         when: 'A manifest field was changed'
         buildFile << """
         status = 'integration'
         """.stripIndent()
-        def thirdResult = runTasksSuccessfully('jar', 'sourceJar')
+        def thirdResult = runTasks('jar', 'sourceJar')
 
         then:
-        thirdResult.wasUpToDate(':jar')
-        thirdResult.wasUpToDate(':sourceJar')
+        thirdResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
+        thirdResult.task(':sourceJar').outcome == TaskOutcome.UP_TO_DATE
     }
 }

@@ -16,25 +16,24 @@
 
 package nebula.plugin.info.reporting
 
-import nebula.plugin.info.BaseIntegrationSpec
-import nebula.plugin.info.InfoBrokerPlugin
-import nebula.plugin.info.basic.BasicInfoPlugin
-import nebula.test.IntegrationSpec
-import nebula.test.functional.ExecutionResult
+import nebula.plugin.info.BaseIntegrationTestKitSpec
+import org.gradle.testkit.runner.TaskOutcome
 
 import java.time.OffsetDateTime
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
 
-class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
+class InfoJarManifestPluginLauncherSpec extends BaseIntegrationTestKitSpec {
 
     def 'jar task is marked UP-TO-DATE if ran before successfully and manifest changes are ignored'() {
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
             status = 'release'
@@ -42,42 +41,44 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
 
         when:
         // Make sure we have some history already in place
-        runTasksSuccessfully('jar')
-        runTasksSuccessfully('clean')
+        runTasks('jar')
+        runTasks('clean')
 
-        def result = runTasksSuccessfully('jar')
+        def result = runTasks('jar')
         File jarFile = new File(projectDir, "build/libs/${moduleName}.jar")
 
         then:
         jarFile.exists()
-        !result.wasUpToDate(':jar')
+        result.task(':jar').outcome != TaskOutcome.UP_TO_DATE
         Manifest manifest = new JarFile(jarFile).manifest
         Attributes attributes = manifest.mainAttributes
         manifestKey(attributes, 'Built-Status') == 'release'
 
         when: 'Nothing has changed'
-        def secondResult = runTasksSuccessfully('jar')
+        def secondResult = runTasks('jar')
 
         then:
-        secondResult.wasUpToDate(':jar')
+        secondResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
 
         when: 'A manifest field was changed'
         buildFile << """
         status = 'integration'
         """.stripIndent()
-        def thirdResult = runTasksSuccessfully('jar')
+        def thirdResult = runTasks('jar')
 
         then:
-        thirdResult.wasUpToDate(':jar')
+        secondResult.task(':jar').outcome == TaskOutcome.UP_TO_DATE
     }
 
     def "Creates JAR file with populated manifest attributes by basic info plugin"() {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -85,7 +86,7 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
@@ -111,9 +112,11 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+           plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -125,7 +128,7 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
@@ -146,9 +149,11 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+           plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -160,7 +165,7 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
@@ -179,9 +184,11 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+           plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -194,10 +201,10 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        ExecutionResult executionResult = runTasksWithFailure('jar')
+        def executionResult = runTasksAndFail('jar')
 
         then:
-        executionResult.standardError.contains('includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided')
+        executionResult.output.contains('includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided')
     }
 
 
@@ -205,9 +212,11 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+           plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
 
             apply plugin: 'java'
 
@@ -216,7 +225,7 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
@@ -230,10 +239,12 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         given:
         writeHelloWorld('nebula.test')
         buildFile << """
-            ${applyPlugin(InfoBrokerPlugin)}
-            ${applyPlugin(BasicInfoPlugin)}
-            ${applyPlugin(InfoJarPropertiesFilePlugin)}
-            ${applyPlugin(InfoJarManifestPlugin)}
+            plugins {
+                id 'com.netflix.nebula.info-broker'
+                id 'com.netflix.nebula.info-basic'
+                id 'com.netflix.nebula.info-jar'
+            }
+        
 
             apply plugin: 'java'
 
@@ -244,7 +255,7 @@ class InfoJarManifestPluginLauncherSpec extends BaseIntegrationSpec {
         """.stripIndent()
 
         when:
-        runTasksSuccessfully('jar')
+        runTasks('jar')
 
         then:
         File jarFile = new File(projectDir, "build/libs/${moduleName}-1.0.jar")
