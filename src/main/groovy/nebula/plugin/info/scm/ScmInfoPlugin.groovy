@@ -49,7 +49,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     @Override
     void apply(Project project) {
         // TODO Delay findProvider() as long as possible
-        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new SvnScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
+        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
         selectedProvider = findProvider(project)
 
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
