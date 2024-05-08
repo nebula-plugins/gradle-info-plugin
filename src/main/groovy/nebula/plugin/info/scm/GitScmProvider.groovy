@@ -16,6 +16,7 @@
 
 package nebula.plugin.info.scm
 
+import groovy.transform.Memoized
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
 import org.slf4j.Logger
@@ -33,6 +34,7 @@ class GitScmProvider extends AbstractScmProvider {
         return findFile(project.projectDir, '.git') != null
     }
 
+    @Memoized
     @Override
     String calculateModuleOrigin(File projectDir) {
         def remoteOriginUrl = executeGitCommand("git", "config", "--get", "remote.origin.url")
