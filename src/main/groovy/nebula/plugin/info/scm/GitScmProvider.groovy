@@ -44,7 +44,8 @@ class GitScmProvider extends AbstractScmProvider {
                 def user = url.getUserInfo().split(":").first()
                 url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
             }
-            return url.toExternalForm()
+            String urlAsExternalForm = url.toExternalForm()
+            return urlAsExternalForm.endsWith('.git') ? url.toExternalForm() : urlAsExternalForm + ".git"
         } catch (MalformedURLException ignore) {
             return remoteOriginUrl
         }
