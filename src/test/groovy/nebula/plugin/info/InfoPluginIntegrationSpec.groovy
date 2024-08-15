@@ -19,6 +19,7 @@ package nebula.plugin.info
 class InfoPluginIntegrationSpec extends BaseIntegrationTestKitSpec {
     def 'it returns build reports at the end of the build'() {
         given:
+        System.setProperty("ignoreDeprecations", 'true')
         buildFile << """
             buildscript {
                 repositories {
@@ -60,6 +61,7 @@ class InfoPluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     def 'it returns build reports at the end of multiproject build'() {
         given:
+        System.setProperty("ignoreDeprecations", 'true')
         buildFile << """
             plugins {
                 id 'com.netflix.nebula.info'

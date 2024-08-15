@@ -22,6 +22,7 @@ class InfoBrokerPluginIntegrationSpec extends BaseIntegrationTestKitSpec {
 
     def 'it returns build reports at the end of the build'() {
         given:
+        System.setProperty("ignoreDeprecations", 'true')
         def report = 'This string may only be retrieved after the build has finished'
         buildFile << """
             plugins {
