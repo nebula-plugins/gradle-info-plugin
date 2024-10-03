@@ -22,6 +22,7 @@ class GitScmProviderLauncherSpec extends GitSetupLauncherSpec {
             }
   
         """.stripIndent()
+        System.setProperty('ignoreDeprecations', 'true')
     }
 
     def 'when building and Git is present, we should get a full-change attribute'() {
