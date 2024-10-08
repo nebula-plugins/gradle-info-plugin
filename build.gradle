@@ -30,19 +30,6 @@ contacts {
     }
 }
 
-repositories {
-    exclusiveContent {
-        forRepository {
-            maven {
-                url "https://netflixoss.jfrog.io/artifactory/gradle-plugins"
-            }
-        }
-        filter {
-            includeGroup "com.netflix.nebula"
-        }
-    }
-}
-
 dependencies {
     implementation gradleApi()
 
