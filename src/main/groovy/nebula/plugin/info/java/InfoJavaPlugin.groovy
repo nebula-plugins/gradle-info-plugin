@@ -41,11 +41,11 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
     // Apache Commons has a standard convention for these variables
     // http://commons.apache.org/releases/prepare.html
 
-    static final String CREATED_PROPERTY = 'Created-By' // E.g. Created-By: 1.5.0_13-119 (Apple Inc.)
-    static final String JDK_PROPERTY = 'Build-Java-Version'
+    public static final String CREATED_PROPERTY = 'Created-By' // E.g. Created-By: 1.5.0_13-119 (Apple Inc.)
+    public static final String JDK_PROPERTY = 'Build-Java-Version'
 
-    static final String SOURCE_PROPERTY = 'X-Compile-Source-JDK'
-    static final String TARGET_PROPERTY = 'X-Compile-Target-JDK'
+    public static final String SOURCE_PROPERTY = 'X-Compile-Source-JDK'
+    public static final String TARGET_PROPERTY = 'X-Compile-Target-JDK'
 
     private final ProviderFactory providers
 

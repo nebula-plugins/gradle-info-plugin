@@ -29,11 +29,11 @@ import javax.inject.Inject
 
 class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
-    static final BUILD_HOST_PROPERTY = 'Build-Host'
-    static final BUILD_JOB_PROPERTY = 'Build-Job'
-    static final BUILD_NUMBER_PROPERTY = 'Build-Number'
-    static final BUILD_ID_PROPERTY = 'Build-Id'
-    static final BUILD_URL_PROPERTY = 'Build-Url'
+    public static final BUILD_HOST_PROPERTY = 'Build-Host'
+    public static final BUILD_JOB_PROPERTY = 'Build-Job'
+    public static final BUILD_NUMBER_PROPERTY = 'Build-Number'
+    public static final BUILD_ID_PROPERTY = 'Build-Id'
+    public static final BUILD_URL_PROPERTY = 'Build-Url'
 
     List<ContinuousIntegrationInfoProvider> providers
     ContinuousIntegrationInfoProvider selectedProvider
