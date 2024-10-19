@@ -76,6 +76,22 @@ class InfoBrokerPluginSpec extends ProjectSpec {
         noExceptionThrown() // We have to allow this because the raw call will do an add before configuring, validation is done in buildManifest
     }
 
+    def 'build manifest with resolve entries'() {
+        when:
+        project.version = '1.0.0-SNAPSHOT'
+        project.apply plugin: InfoBrokerPlugin
+        project.apply plugin: BasicInfoPlugin
+        def basePlugin = project.plugins.getPlugin(InfoBrokerPlugin)
+
+        then:
+
+        def attrs = basePlugin.buildManifest(manifestEntry -> 'Implementation-Version' == manifestEntry.name)
+        def attrs2 = basePlugin.buildManifest()
+
+        attrs['Implementation-Title'] == null
+        attrs2['Implementation-Title'] != null
+    }
+
     def 'build manifest'() {
         when:
         project.apply plugin: InfoBrokerPlugin
