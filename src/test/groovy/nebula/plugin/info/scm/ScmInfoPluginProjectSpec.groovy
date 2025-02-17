@@ -35,4 +35,33 @@ class ScmInfoPluginProjectSpec extends ProjectSpec {
         extension.source.startsWith('/build/nebulatest')
         extension.origin.contains('plugin')
     }
+
+
+    def 'apply plugin multi project'() {
+        when:
+        project.apply plugin: 'com.netflix.nebula.info-scm'
+        def subprojectA = addSubproject("a")
+        def subprojectB = addSubproject("b")
+        subprojectA.apply plugin: 'com.netflix.nebula.info-scm'
+        subprojectB.apply plugin: 'com.netflix.nebula.info-scm'
+
+        then:
+        def pluginSubProjectA = subprojectA.plugins.getPlugin(ScmInfoPlugin)
+        pluginSubProjectA != null
+        pluginSubProjectA.selectedProvider instanceof GitScmProvider
+
+        def pluginSubProjectB = subprojectB.plugins.getPlugin(ScmInfoPlugin)
+        pluginSubProjectB != null
+        pluginSubProjectB.selectedProvider instanceof GitScmProvider
+
+        def extensionSubProjectA = subprojectA.extensions.getByType(ScmInfoExtension)
+        extensionSubProjectA != null
+        extensionSubProjectA.source.startsWith('/build/nebulatest')
+        extensionSubProjectA.origin.contains('plugin')
+
+        def extensionSubProjectB = subprojectB.extensions.getByType(ScmInfoExtension)
+        extensionSubProjectB != null
+        extensionSubProjectB.source.startsWith('/build/nebulatest')
+        extensionSubProjectB.origin.contains('plugin')
+    }
 }

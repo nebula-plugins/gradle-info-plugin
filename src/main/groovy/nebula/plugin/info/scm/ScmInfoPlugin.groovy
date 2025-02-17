@@ -23,8 +23,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.ConventionMapping
 import org.gradle.api.internal.IConventionAware
-import org.gradle.api.logging.Logger
-import org.gradle.api.logging.Logging
 import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
@@ -48,25 +46,63 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     @Override
     void apply(Project project) {
-        // TODO Delay findProvider() as long as possible
-        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
-        selectedProvider = findProvider(project)
-
-        ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
-
-        configureExtMapping(project, extension)
-
-        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            manifestPlugin.add(MODULE_SOURCE_PROPERTY) { extension.source }
-            manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { extension.origin }
-            manifestPlugin.add(CHANGE_PROPERTY) { extension.change }
-            manifestPlugin.add(FULL_CHANGE_PROPERTY) { extension.fullChange }
-            manifestPlugin.add(BRANCH_PROPERTY) { extension.branch }
+        configureProviders(project)
+        if(project.rootProject == project) {
+            configureWithScmProvider(project)
+        } else if(project.rootProject != project) {
+            handleSubProject(project)
         }
     }
 
+    /**
+     * Creates a list of providers for support SCMs and selects based on current repository
+     * If a subproject applies the plugin and root project is already applied, we re-use the provider detection
+     * @param project
+     */
+    private void configureProviders(Project project) {
+        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
+        selectedProvider = findProvider(project)
+    }
+
+    /**
+     * Configures a subproject scm provider
+     * We re-use existing information if the root project already applied to avoid calculating SCM information for each project
+     * in a multi-module setup
+     * @param project
+     */
+    private void handleSubProject(Project project) {
+        ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
+        if(!scmInfoRootProjectExtension) {
+            configureWithScmProvider(project)
+        } else {
+            configureWithoutScmProvider(project, scmInfoRootProjectExtension)
+        }
+    }
+
+    /**
+     * Configures ScmInfoExtension using selected provider
+     * @param project
+     */
+    private void configureWithScmProvider(Project project) {
+        ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
+        project.logger.debug("Project $project.name SCM information is being collected from provider ${selectedProvider.class.name}")
+        configureExtMappingWithScmProvider(project, extension)
+        configureInfoBrokerManifest(project, extension)
+    }
+
+    /**
+     * Configures ScmInfoExtension using existing rootProject configuration
+     * @param project
+     */
+    private void configureWithoutScmProvider(Project project, ScmInfoExtension scmInfoRootProjectExtension) {
+        ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
+        project.logger.debug("Project $project.name SCM information is being collected from rootProject extension")
+        configureExtMappingWithoutScmProvider(project, extension, scmInfoRootProjectExtension)
+        configureInfoBrokerManifest(project, extension)
+    }
+
     @CompileDynamic
-    private void configureExtMapping(Project project, ScmInfoExtension extension) {
+    private void configureExtMappingWithScmProvider(Project project, ScmInfoExtension extension) {
         ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
         extMapping.origin = { selectedProvider.calculateOrigin(project) }
         extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
@@ -75,7 +111,43 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         extMapping.branch = { selectedProvider.calculateBranch(project) }
     }
 
+    @CompileDynamic
+    private void configureExtMappingWithoutScmProvider(Project project, ScmInfoExtension extension, ScmInfoExtension scmInfoRootProjectExtension) {
+        ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
+        extMapping.origin = { scmInfoRootProjectExtension.origin }
+        extMapping.source = { scmInfoRootProjectExtension.source }
+        extMapping.change = { scmInfoRootProjectExtension.change }
+        extMapping.fullChange = { scmInfoRootProjectExtension.fullChange }
+        extMapping.branch = { scmInfoRootProjectExtension.branch }
+    }
+
+    /**
+     * Adds scm information to info broker manifest to be used for publications
+     * @param project
+     * @param scmInfoExtension
+     */
+    private void configureInfoBrokerManifest(Project project, ScmInfoExtension scmInfoExtension ) {
+        project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
+            manifestPlugin.add(MODULE_SOURCE_PROPERTY) { scmInfoExtension.source }
+            manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { scmInfoExtension.origin }
+            manifestPlugin.add(CHANGE_PROPERTY) { scmInfoExtension.change }
+            manifestPlugin.add(FULL_CHANGE_PROPERTY) { scmInfoExtension.fullChange }
+            manifestPlugin.add(BRANCH_PROPERTY) { scmInfoExtension.branch }
+        }
+    }
+
+    /**
+     * Returns a SCM provider based on project setup
+     * If we find an existing config in the root project, we re-use the provider to avoid calculating this multiple times
+     * @param project
+     * @return
+     */
     ScmInfoProvider findProvider(Project project) {
+        ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
+        if(scmInfoRootProjectExtension) {
+            return project.rootProject.plugins.findPlugin(ScmInfoPlugin).selectedProvider
+        }
+
         ScmInfoProvider provider = providers.find { it.supports(project) }
         if (provider) {
             return provider
