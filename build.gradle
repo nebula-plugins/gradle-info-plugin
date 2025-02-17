@@ -37,7 +37,7 @@ dependencies {
     implementation 'com.perforce:p4java:2015.2.1365273'
     implementation 'com.netflix.nebula:nebula-gradle-interop:latest.release'
     implementation 'com.netflix.nebula:gradle-contacts-plugin:latest.release'
-    implementation 'net.java.dev.jna:jna-platform:5.15.0'
+    implementation 'net.java.dev.jna:jna-platform:5.16.0'
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     testImplementation ('org.ajoberstar.grgit:grgit-core:4.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
