@@ -28,11 +28,11 @@ import org.gradle.api.provider.ProviderFactory
 import javax.inject.Inject
 
 class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    static final String MODULE_SOURCE_PROPERTY = 'Module-Source'
-    static final String MODULE_ORIGIN_PROPERTY = 'Module-Origin'
-    static final String CHANGE_PROPERTY = 'Change'
-    static final String FULL_CHANGE_PROPERTY = 'Full-Change'
-    static final String BRANCH_PROPERTY = 'Branch'
+    public static final String MODULE_SOURCE_PROPERTY = 'Module-Source'
+    public static final String MODULE_ORIGIN_PROPERTY = 'Module-Origin'
+    public static final String CHANGE_PROPERTY = 'Change'
+    public static final String FULL_CHANGE_PROPERTY = 'Full-Change'
+    public static final String BRANCH_PROPERTY = 'Branch'
 
     List<ScmInfoProvider> providers
     ScmInfoProvider selectedProvider
