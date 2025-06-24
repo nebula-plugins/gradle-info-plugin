@@ -54,10 +54,12 @@ class DependenciesInfoPluginSpec extends PluginProjectSpec {
         implementationConfig.dependencies.add(slf4j)
 
         def detached = configurations.detachedConfiguration(guava)
-        configurations.add(detached)
-        configurations.remove(detached)
+        def tempConfig = configurations.create('tempConfig')
+        tempConfig.dependencies.add(guava)
+        configurations.remove(tempConfig)
         
         detached.resolve()
+        tempConfig.resolve()
         configurations.compileClasspath.resolve()
 
         when:
