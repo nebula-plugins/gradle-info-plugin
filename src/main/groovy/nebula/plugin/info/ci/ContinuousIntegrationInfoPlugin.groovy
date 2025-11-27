@@ -16,13 +16,10 @@
 
 package nebula.plugin.info.ci
 
-import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
-import org.gradle.api.internal.IConventionAware
 import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
@@ -55,22 +52,20 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
         configureExtMapping(project, extension)
 
         project.plugins.withType(InfoBrokerPlugin) {  InfoBrokerPlugin manifestPlugin ->
-            manifestPlugin.add('Build-Host') { extension.host }
-            manifestPlugin.add('Build-Job') { extension.job }
-            manifestPlugin.add('Build-Number') { extension.buildNumber }
-            manifestPlugin.add('Build-Id') { extension.buildId }
-            manifestPlugin.add('Build-Url') { extension.buildUrl }
+            manifestPlugin.add('Build-Host') { extension.host.getOrNull() }
+            manifestPlugin.add('Build-Job') { extension.job.getOrNull() }
+            manifestPlugin.add('Build-Number') { extension.buildNumber.getOrNull() }
+            manifestPlugin.add('Build-Id') { extension.buildId.getOrNull() }
+            manifestPlugin.add('Build-Url') { extension.buildUrl.getOrNull() }
         }
     }
 
-    @CompileDynamic
     private void configureExtMapping(Project project, ContinuousIntegrationInfoExtension extension) {
-        ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
-        extMapping.host = { selectedProvider.calculateHost(project) }
-        extMapping.job = { selectedProvider.calculateJob(project) }
-        extMapping.buildNumber = { selectedProvider.calculateBuildNumber(project) }
-        extMapping.buildId = { selectedProvider.calculateBuildId(project) }
-        extMapping.buildUrl = { selectedProvider.calculateBuildUrl(project) }
+        extension.host.convention(providerFactory.provider { selectedProvider.calculateHost(project) })
+        extension.job.convention(providerFactory.provider { selectedProvider.calculateJob(project) })
+        extension.buildNumber.convention(providerFactory.provider { selectedProvider.calculateBuildNumber(project) })
+        extension.buildId.convention(providerFactory.provider { selectedProvider.calculateBuildId(project) })
+        extension.buildUrl.convention(providerFactory.provider { selectedProvider.calculateBuildUrl(project) })
     }
 
     ContinuousIntegrationInfoProvider findProvider(Project project) {

@@ -67,12 +67,9 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateFullChange(File projectDir) {
-        boolean isHashPresent = providerFactory.environmentVariable('GIT_COMMIT').present
-        String hash
-        if (!isHashPresent) {
+        String hash = providerFactory.environmentVariable('GIT_COMMIT').getOrElse(null)
+        if (!hash) {
             hash = executeGitCommand("git", "rev-parse", "HEAD")
-        } else {
-            hash = providerFactory.environmentVariable('GIT_COMMIT').get()
         }
         return hash
     }

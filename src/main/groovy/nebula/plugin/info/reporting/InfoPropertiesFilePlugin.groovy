@@ -37,7 +37,9 @@ class InfoPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin {
             manifestTask = project.tasks.register('writeManifestProperties', InfoPropertiesFile) { task ->
                 if (project.plugins.hasPlugin(BasePlugin)) {
                     BasePluginExtension baseExtension = project.extensions.getByType(BasePluginExtension)
-                    task.propertiesFile.set(project.layout.buildDirectory.file("manifest/${baseExtension.archivesName.get()}.properties"))
+                    task.propertiesFile.set(project.layout.buildDirectory.file(
+                        baseExtension.archivesName.map { name -> "manifest/${name}.properties" }
+                    ))
                 } else {
                     task.propertiesFile.set(project.layout.buildDirectory.file("manifest/info.properties"))
                 }

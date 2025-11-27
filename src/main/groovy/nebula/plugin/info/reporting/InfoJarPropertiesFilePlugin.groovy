@@ -67,7 +67,8 @@ class InfoJarPropertiesFilePlugin implements Plugin<Project>, InfoReporterPlugin
 
                     jarTask.doFirst {
                         //when we are after all caching decisions we fill the file with all the data
-                        PropertiesWriter.writeProperties(propertiesFile.get().asFile, manifestPlugin)
+                        File propFile = propertiesFile.get().asFile
+                        PropertiesWriter.writeProperties(propFile, manifestPlugin)
                     }
                     jarTask.doLast {
                         //we need to cleanup file in case we got multiple jar tasks

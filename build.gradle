@@ -21,7 +21,7 @@ plugins {
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
 
-description 'Gradle plugin collect and provide information about the environment'
+description = 'Gradle plugin collect and provide information about the environment'
 
 contacts {
     'nebula-plugins-oss@netflix.com' {

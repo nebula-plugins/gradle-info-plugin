@@ -43,7 +43,10 @@ class PerforceScmProvider extends AbstractScmProvider {
         // Better to check git first, since it can make a more intelligent guess
         // TODO When we can make p4java optional, we'll add a classForName check here.
         try {
-            return (providerFactory.environmentVariable('WORKSPACE').present &&  providerFactory.environmentVariable('P4CLIENT').present) || findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').get())
+            boolean hasWorkspaceAndClient = providerFactory.environmentVariable('WORKSPACE').present &&
+                                           providerFactory.environmentVariable('P4CLIENT').present
+            boolean hasP4ConfigFile = findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').getOrElse(null))
+            return hasWorkspaceAndClient || hasP4ConfigFile
         } catch(Exception e) {
             return false
         }
@@ -51,10 +54,10 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        String workspacePath = providerFactory.environmentVariable('WORKSPACE').present ? providerFactory.environmentVariable('WORKSPACE').get() : {
+        String workspacePath = providerFactory.environmentVariable('WORKSPACE').getOrElse(DEFAULT_WORKSPACE)
+        if (workspacePath == DEFAULT_WORKSPACE) {
             logger.info("WORKSPACE environment variable is not set. Using ${DEFAULT_WORKSPACE}")
-            DEFAULT_WORKSPACE
-        }.call()
+        }
         File workspace = new File(workspacePath)
         return calculateModuleSource(workspace, projectDir)
     }
@@ -73,7 +76,7 @@ class PerforceScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateChange(File projectDir) {
-        return  providerFactory.environmentVariable('P4_CHANGELIST').get()
+        return providerFactory.environmentVariable('P4_CHANGELIST').getOrElse(null)
     }
 
     @Override
@@ -143,7 +146,9 @@ class PerforceScmProvider extends AbstractScmProvider {
         findP4Config(projectDir) // Might be noop
         if (p4configFile) {
             Properties props = new Properties()
-            props.load(new FileReader(p4configFile))
+            p4configFile.withInputStream { inputStream ->
+                props.load(inputStream)
+            }
             defaults = overrideFromMap(defaults, props as Map<String, String>)
         }
 
@@ -165,7 +170,7 @@ class PerforceScmProvider extends AbstractScmProvider {
     @PackageScope
     void findP4Config(File starting) {
         if (p4configFile == null) {
-            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').get())
+            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').getOrElse(null))
         }
     }
 }

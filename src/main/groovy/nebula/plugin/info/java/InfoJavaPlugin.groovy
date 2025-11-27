@@ -59,8 +59,8 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
     void apply(Project project) {
         // This can't change, so we can commit it early
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            String javaRuntimeVersion = providers.systemProperty("java.runtime.version").get()
-            String javaVmVendor = providers.systemProperty("java.vm.vendor").get()
+            String javaRuntimeVersion = providers.systemProperty("java.runtime.version").getOrElse("unknown")
+            String javaVmVendor = providers.systemProperty("java.vm.vendor").getOrElse("unknown")
 
             manifestPlugin.add(CREATED_PROPERTY, "$javaRuntimeVersion ($javaVmVendor)")
         }
@@ -77,7 +77,7 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
                     if (javaLauncher.isPresent()) {
                         manifestPlugin.add(JDK_PROPERTY, javaLauncher.get().metadata.languageVersion.toString())
                     } else {
-                        String javaVersionFromSystemProperty = providers.systemProperty("java.version").get()
+                        String javaVersionFromSystemProperty = providers.systemProperty("java.version").getOrElse("unknown")
                         manifestPlugin.add(JDK_PROPERTY, javaVersionFromSystemProperty)
                     }
                 }

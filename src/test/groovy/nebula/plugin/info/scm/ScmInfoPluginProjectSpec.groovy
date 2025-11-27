@@ -32,8 +32,8 @@ class ScmInfoPluginProjectSpec extends ProjectSpec {
 
         def extension = project.extensions.getByType(ScmInfoExtension)
         extension != null
-        extension.source.startsWith('/build/nebulatest')
-        extension.origin.contains('plugin')
+        extension.source.get().startsWith('/build/nebulatest')
+        extension.origin.get().contains('plugin')
     }
 
 
@@ -56,12 +56,12 @@ class ScmInfoPluginProjectSpec extends ProjectSpec {
 
         def extensionSubProjectA = subprojectA.extensions.getByType(ScmInfoExtension)
         extensionSubProjectA != null
-        extensionSubProjectA.source.startsWith('/build/nebulatest')
-        extensionSubProjectA.origin.contains('plugin')
+        extensionSubProjectA.source.get().startsWith('/build/nebulatest')
+        extensionSubProjectA.origin.get().contains('plugin')
 
         def extensionSubProjectB = subprojectB.extensions.getByType(ScmInfoExtension)
         extensionSubProjectB != null
-        extensionSubProjectB.source.startsWith('/build/nebulatest')
-        extensionSubProjectB.origin.contains('plugin')
+        extensionSubProjectB.source.get().startsWith('/build/nebulatest')
+        extensionSubProjectB.origin.get().contains('plugin')
     }
 }

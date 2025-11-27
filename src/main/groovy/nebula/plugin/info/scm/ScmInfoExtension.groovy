@@ -16,10 +16,12 @@
 
 package nebula.plugin.info.scm
 
-class ScmInfoExtension {
-    String origin
-    String source
-    String change
-    String fullChange
-    String branch
+import org.gradle.api.provider.Property
+
+abstract class ScmInfoExtension {
+    abstract Property<String> getOrigin()
+    abstract Property<String> getSource()
+    abstract Property<String> getChange()
+    abstract Property<String> getFullChange()
+    abstract Property<String> getBranch()
 }
