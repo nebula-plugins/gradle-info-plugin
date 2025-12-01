@@ -100,8 +100,8 @@ class BasicInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             manifestPlugin.add(IMPLEMENTATION_VERSION.toString(), { projectVersion.get() })
             manifestPlugin.add(BUILD_STATUS_PROPERTY, { projectStatus.get() }) // Could be promoted, so this is the actual status necessarily
 
-            String builtBy = providers.systemProperty("user.name").get()
-            String builtOs = providers.systemProperty("os.name").get()
+            String builtBy = providers.systemProperty("user.name").getOrElse("unknown")
+            String builtOs = providers.systemProperty("os.name").getOrElse("unknown")
             manifestPlugin.add(BUILT_BY_PROPERTY, builtBy)
             manifestPlugin.add(BUILT_OS_PROPERTY, builtOs)
 

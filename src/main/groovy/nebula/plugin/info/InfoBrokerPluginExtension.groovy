@@ -1,6 +1,8 @@
 package nebula.plugin.info
 
-class InfoBrokerPluginExtension {
-    List<String> includedManifestProperties = []
-    List<String> excludedManifestProperties = []
+import org.gradle.api.provider.ListProperty
+
+abstract class InfoBrokerPluginExtension {
+    abstract ListProperty<String> getIncludedManifestProperties()
+    abstract ListProperty<String> getExcludedManifestProperties()
 }

@@ -16,10 +16,12 @@
 
 package nebula.plugin.info.ci
 
-class ContinuousIntegrationInfoExtension {
-    String host
-    String job
-    String buildNumber
-    String buildId
-    String buildUrl
+import org.gradle.api.provider.Property
+
+abstract class ContinuousIntegrationInfoExtension {
+    abstract Property<String> getHost()
+    abstract Property<String> getJob()
+    abstract Property<String> getBuildNumber()
+    abstract Property<String> getBuildId()
+    abstract Property<String> getBuildUrl()
 }

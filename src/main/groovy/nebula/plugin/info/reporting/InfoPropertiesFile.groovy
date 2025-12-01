@@ -18,11 +18,9 @@ package nebula.plugin.info.reporting
 
 import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
+import org.gradle.api.DefaultTask
 import org.gradle.api.Project
-import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.internal.ConventionTask
-import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
@@ -35,7 +33,7 @@ import javax.inject.Inject
  */
 @CompileDynamic
 @DisableCachingByDefault
-abstract class InfoPropertiesFile extends ConventionTask {
+abstract class InfoPropertiesFile extends DefaultTask {
     private InfoBrokerPlugin infoBrokerPlugin
 
     @Inject

@@ -57,25 +57,28 @@ class InfoBrokerPlugin implements Plugin<Project> {
     }
 
     private void filterManifestEntries(InfoBrokerPluginExtension extension) {
-        if (extension.includedManifestProperties && extension.excludedManifestProperties) {
+        List<String> includedProperties = extension.includedManifestProperties.getOrElse([])
+        List<String> excludedProperties = extension.excludedManifestProperties.getOrElse([])
+        boolean hasIncluded = !includedProperties.isEmpty()
+        boolean hasExcluded = !excludedProperties.isEmpty()
+
+        if (hasIncluded && hasExcluded) {
             throw new GradleException("includedManifestProperties and excludedManifestProperties are mutually exclusive. Only one should be provided")
-        } else if (extension.excludedManifestProperties) {
-            removeExcludedProperties(extension)
-        } else if (extension.includedManifestProperties) {
-            filterOnlyIncludedProperties(extension)
+        } else if (hasExcluded) {
+            removeExcludedProperties(excludedProperties)
+        } else if (hasIncluded) {
+            filterOnlyIncludedProperties(includedProperties)
         }
     }
 
-    private void filterOnlyIncludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> includedProperties = extension.includedManifestProperties
+    private void filterOnlyIncludedProperties(List<String> includedProperties) {
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             (entry.name in includedProperties)
         }
         manifestEntries = filteredManifestEntries
     }
 
-    private void removeExcludedProperties(InfoBrokerPluginExtension extension) {
-        List<String> excludedProperties = extension.excludedManifestProperties
+    private void removeExcludedProperties(List<String> excludedProperties) {
         List<ManifestEntry> filteredManifestEntries = manifestEntries.findAll { entry ->
             !(entry.name in excludedProperties)
         }

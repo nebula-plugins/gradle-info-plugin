@@ -16,13 +16,10 @@
 
 package nebula.plugin.info.scm
 
-import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.internal.ConventionMapping
-import org.gradle.api.internal.IConventionAware
 import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
@@ -86,7 +83,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private void configureWithScmProvider(Project project) {
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
         project.logger.debug("Project $project.name SCM information is being collected from provider ${selectedProvider.class.name}")
-        configureExtMappingWithScmProvider(project, extension)
+        configureExtensionFromProvider(project, extension)
         configureInfoBrokerManifest(project, extension)
     }
 
@@ -97,28 +94,24 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private void configureWithoutScmProvider(Project project, ScmInfoExtension scmInfoRootProjectExtension) {
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
         project.logger.debug("Project $project.name SCM information is being collected from rootProject extension")
-        configureExtMappingWithoutScmProvider(project, extension, scmInfoRootProjectExtension)
+        configureExtensionFromRootProject(extension, scmInfoRootProjectExtension)
         configureInfoBrokerManifest(project, extension)
     }
 
-    @CompileDynamic
-    private void configureExtMappingWithScmProvider(Project project, ScmInfoExtension extension) {
-        ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
-        extMapping.origin = { selectedProvider.calculateOrigin(project) }
-        extMapping.source = { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) }
-        extMapping.change = { selectedProvider.calculateChange(project) }
-        extMapping.fullChange = { selectedProvider.calculateFullChange(project) }
-        extMapping.branch = { selectedProvider.calculateBranch(project) }
+    private void configureExtensionFromProvider(Project project, ScmInfoExtension extension) {
+        extension.origin.convention(providerFactory.provider { selectedProvider.calculateOrigin(project) })
+        extension.source.convention(providerFactory.provider { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) })
+        extension.change.convention(providerFactory.provider { selectedProvider.calculateChange(project) })
+        extension.fullChange.convention(providerFactory.provider { selectedProvider.calculateFullChange(project) })
+        extension.branch.convention(providerFactory.provider { selectedProvider.calculateBranch(project) })
     }
 
-    @CompileDynamic
-    private void configureExtMappingWithoutScmProvider(Project project, ScmInfoExtension extension, ScmInfoExtension scmInfoRootProjectExtension) {
-        ConventionMapping extMapping = ((IConventionAware) extension).getConventionMapping()
-        extMapping.origin = { scmInfoRootProjectExtension.origin }
-        extMapping.source = { scmInfoRootProjectExtension.source }
-        extMapping.change = { scmInfoRootProjectExtension.change }
-        extMapping.fullChange = { scmInfoRootProjectExtension.fullChange }
-        extMapping.branch = { scmInfoRootProjectExtension.branch }
+    private void configureExtensionFromRootProject(ScmInfoExtension extension, ScmInfoExtension scmInfoRootProjectExtension) {
+        extension.origin.convention(scmInfoRootProjectExtension.origin)
+        extension.source.convention(scmInfoRootProjectExtension.source)
+        extension.change.convention(scmInfoRootProjectExtension.change)
+        extension.fullChange.convention(scmInfoRootProjectExtension.fullChange)
+        extension.branch.convention(scmInfoRootProjectExtension.branch)
     }
 
     /**
@@ -128,11 +121,11 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      */
     private void configureInfoBrokerManifest(Project project, ScmInfoExtension scmInfoExtension ) {
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
-            manifestPlugin.add(MODULE_SOURCE_PROPERTY) { scmInfoExtension.source }
-            manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { scmInfoExtension.origin }
-            manifestPlugin.add(CHANGE_PROPERTY) { scmInfoExtension.change }
-            manifestPlugin.add(FULL_CHANGE_PROPERTY) { scmInfoExtension.fullChange }
-            manifestPlugin.add(BRANCH_PROPERTY) { scmInfoExtension.branch }
+            manifestPlugin.add(MODULE_SOURCE_PROPERTY) { scmInfoExtension.source.getOrNull() }
+            manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { scmInfoExtension.origin.getOrNull() }
+            manifestPlugin.add(CHANGE_PROPERTY) { scmInfoExtension.change.getOrNull() }
+            manifestPlugin.add(FULL_CHANGE_PROPERTY) { scmInfoExtension.fullChange.getOrNull() }
+            manifestPlugin.add(BRANCH_PROPERTY) { scmInfoExtension.branch.getOrNull() }
         }
     }
 
