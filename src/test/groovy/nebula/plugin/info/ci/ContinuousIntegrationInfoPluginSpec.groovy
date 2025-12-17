@@ -10,7 +10,7 @@ import java.util.jar.Attributes
 import java.util.jar.JarFile
 import java.util.jar.Manifest
 
-@IgnoreIf({ System.getenv('TITUS_TASK_ID') || jvm.isJava21() || jvm.isJava17() })
+@IgnoreIf({ System.getenv('TITUS_TASK_ID') || !jvm.isJava8() })
 class ContinuousIntegrationInfoPluginSpec extends BaseIntegrationTestKitSpec {
 
     @Rule
