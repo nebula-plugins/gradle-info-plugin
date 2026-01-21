@@ -17,11 +17,14 @@
 package nebula.plugin.info
 
 import groovy.transform.Canonical
+import java.util.function.Predicate
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+
+import static nebula.plugin.info.InfoBrokerPlugin.ManifestEntry.TRUE_RESOLVE_MANIFEST_PREDICATE
 
 /**
  * Broker between Collectors and Reporters. Collectors report to this plugin about manifest values,
@@ -125,12 +128,20 @@ class InfoBrokerPlugin implements Plugin<Project> {
         return entry
     }
 
+    Map<String, String> buildNonChangingManifest(Predicate<ManifestEntry> resolvePredicate) {
+        return collectEntries(manifestEntries.findAll { (!it.changing) }, resolvePredicate)
+    }
+
     Map<String, String> buildNonChangingManifest() {
-        return collectEntries(manifestEntries.findAll { it.changing == false })
+        return buildNonChangingManifest(TRUE_RESOLVE_MANIFEST_PREDICATE)
+    }
+
+    Map<String, String> buildManifest(Predicate<ManifestEntry> resolvePredicate) {
+        return collectEntries(manifestEntries, resolvePredicate)
     }
 
     Map<String, String> buildManifest() {
-        return collectEntries(manifestEntries)
+        return collectEntries(manifestEntries, TRUE_RESOLVE_MANIFEST_PREDICATE)
     }
 
     Map<String, Object> buildReports() {
@@ -141,12 +152,14 @@ class InfoBrokerPlugin implements Plugin<Project> {
         return Collections.unmodifiableMap(reportEntries)
     }
 
-    private Map<String, String> collectEntries(Collection<ManifestEntry> entries) {
+    private static Map<String, String> collectEntries(Collection<ManifestEntry> entries, Predicate<ManifestEntry> resolvePredicate) {
 
         // We can't validate via all() because multiple calls would leave the all's closure around
-        (Map<String, String>) entries.collectEntries { ManifestEntry entry ->
+         entries.collectEntries { ManifestEntry entry ->
 
-            resolve(entry)
+            if (resolvePredicate.test(entry)) {
+                resolve(entry)
+            }
             return [entry.name, entry.value]
         }.findAll {
             it.value != null
@@ -158,7 +171,7 @@ class InfoBrokerPlugin implements Plugin<Project> {
     /**
      * Resolves entry, forcing a call to the valueProvided if needed, then caching it.
      */
-    private void resolve(ManifestEntry entry) {
+    private static void resolve(ManifestEntry entry) {
         // Validate, we can't do this earlier since objects are configured after being added.
         if (!(entry.value || entry.valueProvider)) {
             throw new GradleException("Manifest entry (${entry.name}) is missing a value")
@@ -212,13 +225,15 @@ class InfoBrokerPlugin implements Plugin<Project> {
         }
     }
 
-    private callWatcher(ManifestEntry entry, Closure reaction) {
+    private static callWatcher(ManifestEntry entry, Closure reaction) {
         resolve(entry)
         reaction.call(entry.value)
     }
 
     @Canonical
     static class ManifestEntry {
+        private static final Predicate<ManifestEntry> TRUE_RESOLVE_MANIFEST_PREDICATE = manifestEntry -> true
+
         ManifestEntry(String name) {
             this.name = name
         }
