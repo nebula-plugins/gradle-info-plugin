@@ -19,12 +19,14 @@ package nebula.plugin.info.scm
 import groovy.transform.Memoized
 import org.gradle.api.Project
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.Nullable
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 class GitScmProvider extends AbstractScmProvider {
     private Logger logger = LoggerFactory.getLogger(GitScmProvider
     )
+
     GitScmProvider(ProviderFactory providerFactory) {
         super(providerFactory)
     }
@@ -37,7 +39,10 @@ class GitScmProvider extends AbstractScmProvider {
     @Memoized
     @Override
     String calculateModuleOrigin(File projectDir) {
-        def remoteOriginUrl = executeGitCommand("git", "config", "--get", "remote.origin.url")
+        String remoteOriginUrl = executeGitCommand(projectDir, "git", "config", "--get", "remote.origin.url")
+        if (remoteOriginUrl == null) {
+            return "LOCAL"
+        }
         try {
             URL url = remoteOriginUrl.toURL()
             if (url.getUserInfo()) {
@@ -53,8 +58,8 @@ class GitScmProvider extends AbstractScmProvider {
 
     @Override
     String calculateModuleSource(File projectDir) {
-        String gitWorkDir = executeGitCommand("git", "rev-parse", "--show-toplevel")
-        if(!gitWorkDir) {
+        String gitWorkDir = executeGitCommand(projectDir, "git", "rev-parse", "--show-toplevel")
+        if (!gitWorkDir) {
             return projectDir.absolutePath
         }
         return projectDir.absolutePath - new File(gitWorkDir).absolutePath
@@ -69,19 +74,21 @@ class GitScmProvider extends AbstractScmProvider {
     String calculateFullChange(File projectDir) {
         String hash = providerFactory.environmentVariable('GIT_COMMIT').getOrElse(null)
         if (!hash) {
-            hash = executeGitCommand("git", "rev-parse", "HEAD")
+            hash = executeGitCommand(projectDir, "git", "rev-parse", "HEAD")
         }
         return hash
     }
 
     @Override
     String calculateBranch(File projectDir) {
-        return executeGitCommand("git", "rev-parse", "--abbrev-ref", "HEAD")
+        return executeGitCommand(projectDir, "git", "rev-parse", "--abbrev-ref", "HEAD")
     }
 
-    private String executeGitCommand(Object... args) {
+    @Nullable
+    private String executeGitCommand(File projectDir, Object... args) {
         try {
             return providerFactory.exec {
+                it.workingDir(projectDir)
                 it.commandLine(args)
             }.standardOutput.asText.get().replaceAll("\n", "").trim()
         } catch (Exception e) {

@@ -82,7 +82,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      */
     private void configureWithScmProvider(Project project) {
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
-        project.logger.debug("Project $project.name SCM information is being collected from provider ${selectedProvider.class.name}")
+        project.logger.info("Project $project.name SCM information is being collected from provider ${selectedProvider.class.name}")
         configureExtensionFromProvider(project, extension)
         configureInfoBrokerManifest(project, extension)
     }
@@ -93,7 +93,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      */
     private void configureWithoutScmProvider(Project project, ScmInfoExtension scmInfoRootProjectExtension) {
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
-        project.logger.debug("Project $project.name SCM information is being collected from rootProject extension")
+        project.logger.info("Project $project.name SCM information is being collected from rootProject extension")
         configureExtensionFromRootProject(extension, scmInfoRootProjectExtension)
         configureInfoBrokerManifest(project, extension)
     }
