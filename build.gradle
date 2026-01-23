@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-
 plugins {
-    id 'com.netflix.nebula.plugin-plugin' version '22.0.2'
+    id("com.netflix.nebula.plugin-plugin") version("25.+")
 }
 
 compileGroovy.groovyOptions.configurationScript = file('src/groovyCompile/groovycConfig.groovy')
@@ -41,6 +40,17 @@ dependencies {
     testImplementation 'com.github.stefanbirkner:system-rules:1.19.0'
     testImplementation ('org.ajoberstar.grgit:grgit-core:4.1.1') {
         exclude group: 'org.codehaus.groovy', module: 'groovy'
+    }
+    testImplementation("org.spockframework:spock-junit4:2.4-groovy-4.0")
+    testImplementation("org.eclipse.jgit:org.eclipse.jgit:7.+")
+    testImplementation(libs.assertj)
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
     }
 }
 
