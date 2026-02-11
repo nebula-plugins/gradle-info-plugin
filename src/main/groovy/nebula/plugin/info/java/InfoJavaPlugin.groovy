@@ -93,9 +93,9 @@ class InfoJavaPlugin implements Plugin<Project>, InfoCollectorPlugin {
             return new JavaCompatibility(javaPluginExtension.sourceCompatibility.toString(), javaPluginExtension.targetCompatibility.toString())
         }
         List<String> compileTaskNames = supportedLanguages.collect { mainSourceSet.getCompileTaskName(it)}
-        Set<AbstractCompile> compileTasks = project.tasks.withType(AbstractCompile).findAll {
+        List<AbstractCompile> compileTasks = project.tasks.withType(AbstractCompile).matching {
             it.name in compileTaskNames
-        }
+        }.toList()
 
         if(!compileTasks) {
             return JavaCompatibility.UNKNOWN
