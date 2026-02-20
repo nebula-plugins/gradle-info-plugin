@@ -15,41 +15,49 @@
  */
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import groovy.transform.CompileStatic
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
 
+@NullMarked
+@CompileStatic
 class CirrusCIProvider extends AbstractContinuousIntegrationProvider {
     CirrusCIProvider(ProviderFactory providerFactory) {
         super(providerFactory)
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable("CIRRUS_CI")
+    boolean supports() {
+        environmentVariable("CIRRUS_CI").isPresent()
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable("CIRRUS_REPO_FULL_NAME")
+    Provider<String> job() {
+        environmentVariable("CIRRUS_REPO_FULL_NAME")
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable("CIRRUS_CHANGE_IN_REPO")
+    Provider<String> buildNumber() {
+        environmentVariable("CIRRUS_CHANGE_IN_REPO")
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable("CIRRUS_BUILD_ID")
+    Provider<String> buildId() {
+        environmentVariable("CIRRUS_BUILD_ID")
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        "${hostname()}/build/${getEnvironmentVariable("CIRRUS_BUILD_ID")}"
+    Provider<String> buildUrl() {
+        return host().flatMap { host ->
+            buildId().map { id ->
+                "${host}/build/${id}".toString()
+            }
+        }
     }
 }

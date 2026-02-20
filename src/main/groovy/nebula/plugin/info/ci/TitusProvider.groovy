@@ -16,7 +16,7 @@
 
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 /**
@@ -31,32 +31,36 @@ class TitusProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('TITUS_JOB_ID') && getEnvironmentVariable('TITUS_TASK_ID')
+    boolean supports() {
+        environmentVariable('TITUS_JOB_ID').isPresent() && environmentVariable('TITUS_TASK_ID').isPresent()
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable('TITUS_JOB_ID')
+    Provider<String> buildNumber() {
+        environmentVariable('TITUS_JOB_ID')
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable('TITUS_JOB_ID')
+    Provider<String> buildId() {
+        environmentVariable('TITUS_JOB_ID')
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        return "${getEnvironmentVariable('NETFLIX_INSTANCE_ID')}/${getEnvironmentVariable('TITUS_JOB_ID')}"
+    Provider<String> buildUrl() {
+        return environmentVariable('NETFLIX_INSTANCE_ID').flatMap { instance ->
+            buildId().map { buildId ->
+                "${instance}/${buildId}".toString()
+            }
+        }
     }
 
     @Override
-    String calculateHost(Project project) {
-        getEnvironmentVariable('NETFLIX_INSTANCE_ID')
+    Provider<String> host() {
+        environmentVariable('NETFLIX_INSTANCE_ID')
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable('NETFLIX_APP')
+    Provider<String> job() {
+        environmentVariable('NETFLIX_APP')
     }
 }

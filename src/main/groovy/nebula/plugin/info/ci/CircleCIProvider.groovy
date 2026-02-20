@@ -15,7 +15,7 @@
  */
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 class CircleCIProvider extends AbstractContinuousIntegrationProvider {
@@ -24,32 +24,32 @@ class CircleCIProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('CIRCLECI')
+    boolean supports() {
+        environmentVariable('CIRCLECI').isPresent()
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable("CIRCLE_JOB")
+    Provider<String> job() {
+        environmentVariable("CIRCLE_JOB")
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable("CIRCLE_BUILD_NUM")
+    Provider<String> buildNumber() {
+        environmentVariable("CIRCLE_BUILD_NUM")
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable("CIRCLE_BUILD_NUM")
+    Provider<String> buildId() {
+        environmentVariable("CIRCLE_BUILD_NUM")
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        getEnvironmentVariable("CIRCLE_BUILD_URL")
+    Provider<String> buildUrl() {
+        environmentVariable("CIRCLE_BUILD_URL")
     }
 }

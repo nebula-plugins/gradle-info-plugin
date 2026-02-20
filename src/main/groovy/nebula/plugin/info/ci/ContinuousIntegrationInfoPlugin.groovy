@@ -61,11 +61,11 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
     }
 
     private void configureExtMapping(Project project, ContinuousIntegrationInfoExtension extension) {
-        extension.host.convention(providerFactory.provider { selectedProvider.calculateHost(project) })
-        extension.job.convention(providerFactory.provider { selectedProvider.calculateJob(project) })
-        extension.buildNumber.convention(providerFactory.provider { selectedProvider.calculateBuildNumber(project) })
-        extension.buildId.convention(providerFactory.provider { selectedProvider.calculateBuildId(project) })
-        extension.buildUrl.convention(providerFactory.provider { selectedProvider.calculateBuildUrl(project) })
+        extension.host.convention(selectedProvider.host())
+        extension.job.convention(selectedProvider.job())
+        extension.buildNumber.convention(selectedProvider.buildNumber())
+        extension.buildId.convention(selectedProvider.buildId())
+        extension.buildUrl.convention(selectedProvider.buildUrl())
     }
 
     ContinuousIntegrationInfoProvider findProvider(Project project) {

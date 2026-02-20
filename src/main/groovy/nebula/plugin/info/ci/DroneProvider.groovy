@@ -15,9 +15,8 @@
  */
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
-
 
 class DroneProvider extends AbstractContinuousIntegrationProvider {
 
@@ -26,32 +25,36 @@ class DroneProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('DRONE')
+    boolean supports() {
+        environmentVariable('DRONE').isPresent()
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable("DRONE_REPO")
+    Provider<String> job() {
+        environmentVariable("DRONE_REPO")
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable("DRONE_BUILD_NUMBER")
+    Provider<String> buildNumber() {
+        environmentVariable("DRONE_BUILD_NUMBER")
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable("DRONE_BUILD_NUMBER")
+    Provider<String> buildId() {
+        environmentVariable("DRONE_BUILD_NUMBER")
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        return "http://${hostname()}/build/${getEnvironmentVariable("DRONE_BUILD_NUMBER")}"
+    Provider<String> buildUrl() {
+        return host().flatMap { host ->
+            buildNumber().map { number ->
+                "http://${host}/build/${number}".toString()
+            }
+        }
     }
 }

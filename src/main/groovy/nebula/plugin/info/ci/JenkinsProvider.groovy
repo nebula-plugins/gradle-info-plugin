@@ -16,7 +16,7 @@
 
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 class JenkinsProvider extends AbstractContinuousIntegrationProvider {
@@ -26,32 +26,32 @@ class JenkinsProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('BUILD_NUMBER') && getEnvironmentVariable('JOB_NAME')
+    boolean supports() {
+        environmentVariable('BUILD_NUMBER').isPresent() && environmentVariable('JOB_NAME').isPresent()
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable('BUILD_NUMBER')
+    Provider<String> buildNumber() {
+        environmentVariable('BUILD_NUMBER')
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable('BUILD_ID')
+    Provider<String> buildId() {
+        environmentVariable('BUILD_ID')
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        getEnvironmentVariable('BUILD_URL')
+    Provider<String> buildUrl() {
+        environmentVariable('BUILD_URL')
     }
 
     @Override
-    String calculateHost(Project project) {
-        getEnvironmentVariable('JENKINS_URL')
+    Provider<String> host() {
+        environmentVariable('JENKINS_URL')
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable('JOB_NAME')
+    Provider<String> job() {
+        environmentVariable('JOB_NAME')
     }
 }

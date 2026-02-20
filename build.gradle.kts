@@ -19,10 +19,6 @@ plugins {
     `kotlin-dsl`
 }
 
-tasks.named<GroovyCompile>("compileGroovy", GroovyCompile::class.java) {
-    groovyOptions.configurationScript = file("src/groovyCompile/groovycConfig.groovy")
-}
-
 description = "Gradle plugin collect and provide information about the environment"
 
 contacts {

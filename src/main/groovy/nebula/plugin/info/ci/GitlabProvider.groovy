@@ -16,9 +16,13 @@
 
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import groovy.transform.CompileStatic
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
 
+@NullMarked
+@CompileStatic
 class GitlabProvider extends AbstractContinuousIntegrationProvider {
 
     GitlabProvider(ProviderFactory providerFactory) {
@@ -26,32 +30,32 @@ class GitlabProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('GITLAB_CI')
+    boolean supports() {
+        environmentVariable('GITLAB_CI').isPresent()
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable('CI_BUILD_ID')
+    Provider<String> buildNumber() {
+        environmentVariable('CI_BUILD_ID')
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable('CI_BUILD_ID')
+    Provider<String> buildId() {
+        environmentVariable('CI_BUILD_ID')
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        getEnvironmentVariable('CI_JOB_URL')
+    Provider<String> buildUrl() {
+        environmentVariable('CI_JOB_URL')
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable('CI_BUILD_NAME')
+    Provider<String> job() {
+        environmentVariable('CI_BUILD_NAME')
     }
 }

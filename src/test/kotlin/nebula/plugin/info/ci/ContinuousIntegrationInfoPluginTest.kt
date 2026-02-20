@@ -91,6 +91,59 @@ internal class ContinuousIntegrationInfoPluginTest {
         assertThat(attributes.getKey("Build-Host")).isEqualTo("http://leeroy-jenkins")
     }
 
+    @Test
+    fun `test GitLab`() {
+        val runner = testProject(projectDir) {
+            exampleProject()
+        }
+        val result = runner.run("jar", "-Pversion=1.0") {
+            withEnvironment(
+                mapOf(
+                    "GITLAB_CI" to "true",
+                    "CI_BUILD_ID" to "1",
+                 "CI_JOB_URL" to "http://some-gitlab",
+                    "CI_BUILD_NAME" to "org/my-repo"
+                )
+            )
+        }
+
+        assertThat(result)
+            .hasNoDeprecationWarnings()
+            .hasNoMutableStateWarnings()
+
+        val attributes = readJarAttributes()
+        assertThat(attributes.getKey("Build-Job")).isEqualTo("org/my-repo")
+        assertThat(attributes.getKey("Build-Number")).isEqualTo("1")
+        assertThat(attributes.getKey("Build-Id")).isEqualTo("1")
+        assertThat(attributes.getKey("Build-Url")).isEqualTo("http://some-gitlab")
+        assertThat(attributes.getKey("Build-Host")).isEqualTo(HostnameValueSource.hostname())
+    }
+
+    @Test
+    fun `test Unknown or local`() {
+        val runner = testProject(projectDir) {
+            exampleProject()
+        }
+        val result = runner.run("jar", "-Pversion=1.0") {
+            withEnvironment(
+                mapOf(
+                    "RANDOM" to "need at least 1 variable to make testkit have a clean env",
+                )
+            )
+        }
+
+        assertThat(result)
+            .hasNoDeprecationWarnings()
+            .hasNoMutableStateWarnings()
+
+        val attributes = readJarAttributes()
+        assertThat(attributes.getKey("Build-Job")).isEqualTo("LOCAL")
+        assertThat(attributes.getKey("Build-Number")).isEqualTo("LOCAL")
+        assertThat(attributes.getKey("Build-Id")).isEqualTo("LOCAL")
+        assertThat(attributes.getKey("Build-Url")).isEqualTo("${HostnameValueSource.hostname()}/LOCAL")
+        assertThat(attributes.getKey("Build-Host")).isEqualTo(HostnameValueSource.hostname())
+    }
+
     fun Attributes.getKey(key: String): Any? {
         return get(Attributes.Name(key))
     }
