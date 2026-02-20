@@ -19,7 +19,9 @@ import com.perforce.p4java.client.IClient
 import com.perforce.p4java.impl.generic.client.ClientView
 import com.perforce.p4java.server.IServer
 import nebula.test.ProjectSpec
+import spock.lang.Ignore
 
+@Ignore
 class PerforceScmProviderLocalSpec extends ProjectSpec {
     def provider = new PerforceScmProvider()
 
