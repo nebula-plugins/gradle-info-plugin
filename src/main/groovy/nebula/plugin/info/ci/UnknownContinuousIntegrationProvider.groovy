@@ -16,7 +16,7 @@
 
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegrationProvider {
@@ -27,32 +27,32 @@ class UnknownContinuousIntegrationProvider extends AbstractContinuousIntegration
     }
 
     @Override
-    boolean supports(Project project) {
+    boolean supports() {
         return true
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        return "${hostname()}/${LOCAL}"
+    Provider<String> buildUrl() {
+        return host().map { "${it}/${LOCAL}".toString() }
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        return LOCAL
+    Provider<String> buildNumber() {
+        return providerFactory.provider { LOCAL }
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        return LOCAL
+    Provider<String> buildId() {
+        return providerFactory.provider { LOCAL }
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        return LOCAL
+    Provider<String> job() {
+        return providerFactory.provider { LOCAL }
     }
 }

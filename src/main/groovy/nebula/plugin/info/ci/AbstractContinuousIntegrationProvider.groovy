@@ -16,44 +16,26 @@
 
 package nebula.plugin.info.ci
 
-import com.sun.jna.platform.win32.Kernel32Util
-import groovy.util.logging.Log
+import groovy.transform.CompileStatic
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
-import org.gradle.internal.os.OperatingSystem
+import org.jspecify.annotations.NullMarked
 
-import java.util.logging.Level
-
-@Log
+@NullMarked
+@CompileStatic
 abstract class AbstractContinuousIntegrationProvider implements ContinuousIntegrationInfoProvider {
 
-    private final ProviderFactory providerFactory
+    protected final ProviderFactory providerFactory
 
     AbstractContinuousIntegrationProvider(ProviderFactory providerFactory) {
         this.providerFactory = providerFactory
     }
 
-    protected String getEnvironmentVariable(String envKey) {
-        return providerFactory.environmentVariable(envKey).getOrElse(null)
+    protected Provider<String> environmentVariable(String envKey) {
+        return providerFactory.environmentVariable(envKey)
     }
 
-    protected static String hostname() {
-        OperatingSystem currentOs = OperatingSystem.current()
-        if (currentOs.isWindows()) {
-            try {
-                return Kernel32Util.getComputerName()
-            } catch (Throwable t) {
-                // with variations in Gradle versions and JVMs, this can sometimes break
-                log.log(Level.FINEST, "Unable to determine the host name on this Windows instance", t)
-            }
-        } else if (currentOs.isUnix()) {
-            try {
-                return POSIXUtil.getHostName()
-            } catch (Throwable t) {
-                log.log(Level.FINEST, "Unable to determine the host name", t)
-            }
-        } else {
-            log.log(Level.FINEST, "Unknown operating system $currentOs, could not detect hostname")
-        }
-        return 'localhost'
+    protected Provider<String> hostname() {
+        return providerFactory.of(HostnameValueSource) {}
     }
 }

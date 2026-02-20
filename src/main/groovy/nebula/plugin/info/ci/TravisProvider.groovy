@@ -15,7 +15,7 @@
  */
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
 
 class TravisProvider extends AbstractContinuousIntegrationProvider {
@@ -24,32 +24,32 @@ class TravisProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('TRAVIS')
+    boolean supports() {
+        environmentVariable('TRAVIS').isPresent()
     }
 
     @Override
-    String calculateHost(Project project) {
+    Provider<String> host() {
         return hostname()
     }
 
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable("TRAVIS_REPO_SLUG")
+    Provider<String> job() {
+        environmentVariable("TRAVIS_REPO_SLUG")
     }
 
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable("TRAVIS_BUILD_NUMBER")
+    Provider<String> buildNumber() {
+        environmentVariable("TRAVIS_BUILD_NUMBER")
     }
 
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable("TRAVIS_BUILD_ID")
+    Provider<String> buildId() {
+        environmentVariable("TRAVIS_BUILD_ID")
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        getEnvironmentVariable("TRAVIS_BUILD_WEB_URL")
+    Provider<String> buildUrl() {
+        environmentVariable("TRAVIS_BUILD_WEB_URL")
     }
 }

@@ -16,9 +16,13 @@
 
 package nebula.plugin.info.ci
 
-import org.gradle.api.Project
+import groovy.transform.CompileStatic
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
 
+@CompileStatic
+@NullMarked
 class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
 
     GithubActionsProvider(ProviderFactory providerFactory) {
@@ -26,8 +30,8 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
     }
 
     @Override
-    boolean supports(Project project) {
-        getEnvironmentVariable('CI') && getEnvironmentVariable('GITHUB_ACTION')  && getEnvironmentVariable('GITHUB_RUN_ID')
+    boolean supports() {
+        environmentVariable('CI').isPresent() && environmentVariable('GITHUB_ACTION').isPresent() && environmentVariable('GITHUB_RUN_ID').isPresent()
     }
 
     /**
@@ -37,8 +41,8 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
      * @return
      */
     @Override
-    String calculateBuildNumber(Project project) {
-        getEnvironmentVariable('GITHUB_RUN_NUMBER')
+    Provider<String> buildNumber() {
+        environmentVariable('GITHUB_RUN_NUMBER')
     }
 
     /**
@@ -47,8 +51,8 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
      * @return
      */
     @Override
-    String calculateBuildId(Project project) {
-        getEnvironmentVariable('GITHUB_RUN_ID')
+    Provider<String> buildId() {
+        environmentVariable('GITHUB_RUN_ID')
     }
 
     /**
@@ -57,8 +61,8 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
      * @return
      */
     @Override
-    String calculateHost(Project project) {
-        getEnvironmentVariable('GITHUB_SERVER_URL')
+    Provider<String> host() {
+        environmentVariable('GITHUB_SERVER_URL')
     }
 
     /**
@@ -67,12 +71,19 @@ class GithubActionsProvider extends AbstractContinuousIntegrationProvider {
      * @return
      */
     @Override
-    String calculateJob(Project project) {
-        getEnvironmentVariable('GITHUB_ACTION')
+    Provider<String> job() {
+        environmentVariable('GITHUB_ACTION')
     }
 
     @Override
-    String calculateBuildUrl(Project project) {
-        return "${getEnvironmentVariable('GITHUB_SERVER_URL')}/${getEnvironmentVariable('GITHUB_REPOSITORY')}/actions/runs/${getEnvironmentVariable('GITHUB_RUN_ID')}"
+    Provider<String> buildUrl() {
+        return environmentVariable('GITHUB_SERVER_URL')
+                .flatMap { host ->
+                    environmentVariable("GITHUB_REPOSITORY")
+                            .flatMap { repo ->
+                                environmentVariable("GITHUB_RUN_ID")
+                                        .map { runId -> "${host}/${repo}/actions/runs/${runId}".toString() }
+                            }
+                }
     }
 }

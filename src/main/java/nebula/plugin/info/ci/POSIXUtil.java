@@ -1,5 +1,5 @@
 /*
- * Copyright 2014-2019 Netflix, Inc.
+ * Copyright 2014-2026 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-package nebula.plugin.info.ci
+package nebula.plugin.info.ci;
 
-import spock.lang.IgnoreIf
-import spock.lang.Specification
+import com.sun.jna.LastErrorException;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
 
-/**
- * Tests for {@link UnknownContinuousIntegrationProvider}.
- */
-@IgnoreIf({ Boolean.valueOf(env['TRAVIS']) })
-class UnknownContinuousIntegrationProviderTest extends Specification {
-    def 'calculated hostname matches resolved local host'() {
-        given:
-        def hostname = InetAddress.getLocalHost().getHostName()
+class POSIXUtil {
+    private static final C c = Native.loadLibrary("c", C.class);
 
-        expect:
-        new UnknownContinuousIntegrationProvider().calculateHost(null) == hostname
+    private interface C extends Library {
+        int gethostname(byte[] name, int size_t) throws LastErrorException;
+    }
+
+    static String getHostName() {
+        byte[] hostname = new byte[256];
+        c.gethostname(hostname, hostname.length);
+        return Native.toString(hostname);
     }
 }
