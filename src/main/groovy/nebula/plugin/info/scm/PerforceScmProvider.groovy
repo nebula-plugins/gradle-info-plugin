@@ -21,95 +21,87 @@ import com.perforce.p4java.server.IServer
 import com.perforce.p4java.server.ServerFactory
 import groovy.transform.PackageScope
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 class PerforceScmProvider extends AbstractScmProvider {
+    private static final String DEFAULT_WORKSPACE = "."
+    private final File projectDir
+    private final Provider<RegularFile> configFile
 
-    File p4configFile
-
-    private Logger logger = LoggerFactory.getLogger(PerforceScmProvider)
-
-    private static final String DEFAULT_WORKSPACE = '.'
-
-    PerforceScmProvider(ProviderFactory providerFactory) {
+    PerforceScmProvider(Project project, ProviderFactory providerFactory) {
         super(providerFactory)
+        this.projectDir = project.layout.projectDirectory.asFile
+        configFile = providerFactory.environmentVariable("P4CONFIG").map {
+            findFile(project, it)
+        }
     }
 
     @Override
-    boolean supports(Project project) {
+    boolean supports() {
         // Pretty poor way to check, but Perforce leave no indication of where the current tree came from
         // Better to check git first, since it can make a more intelligent guess
         // TODO When we can make p4java optional, we'll add a classForName check here.
         try {
             boolean hasWorkspaceAndClient = providerFactory.environmentVariable('WORKSPACE').present &&
-                                           providerFactory.environmentVariable('P4CLIENT').present
-            boolean hasP4ConfigFile = findFile(project.projectDir, providerFactory.environmentVariable('P4CONFIG').getOrElse(null))
+                    providerFactory.environmentVariable('P4CLIENT').present
+            boolean hasP4ConfigFile = configFile.map {it.asFile.exists()}.getOrElse(false)
             return hasWorkspaceAndClient || hasP4ConfigFile
-        } catch(Exception e) {
+        } catch (Exception e) {
             return false
         }
     }
 
     @Override
-    String calculateModuleSource(File projectDir) {
-        String workspacePath = providerFactory.environmentVariable('WORKSPACE').getOrElse(DEFAULT_WORKSPACE)
-        if (workspacePath == DEFAULT_WORKSPACE) {
-            logger.info("WORKSPACE environment variable is not set. Using ${DEFAULT_WORKSPACE}")
-        }
-        File workspace = new File(workspacePath)
-        return calculateModuleSource(workspace, projectDir)
-    }
-
-    String calculateModuleSource(File workspace, File projectDir) {
-        // TODO Don't hardcode depot
-        String relativePath = projectDir.getAbsolutePath() - (workspace.getAbsolutePath() + '/')
-        return "//depot/${relativePath}"
+    Provider<String> source() {
+        File root = projectDir
+        return providerFactory.environmentVariable("WORKSPACE")
+                .map { workspace -> root.relativePath(new File(workspace)) + "/" }
+                .map { "//depot/${it}" }
+                .orElse(DEFAULT_WORKSPACE)
     }
 
     @Override
-    String calculateModuleOrigin(File projectDir) {
-        Map<String, String> defaults = perforceDefaults(projectDir)
-        return getUrl(defaults)
+    Provider<String> origin() {
+        return getUrl()
     }
 
     @Override
-    String calculateChange(File projectDir) {
-        return providerFactory.environmentVariable('P4_CHANGELIST').getOrElse(null)
+    Provider<String> change() {
+        return providerFactory.environmentVariable("P4_CHANGELIST")
     }
 
     @Override
-    def calculateFullChange(File projectDir) {
-        return calculateChange(projectDir)
+    Provider<String> fullChange() {
+        return change()
     }
 
     @Override
-    String calculateBranch(File projectDir) {
-        return null // unsupported in perforce
+    Provider<String> branch() {
+        return providerFactory.provider { null }
     }
 
     @PackageScope
     <T> T withPerforce(File projectDir, Closure<T> closure) {
-        Map<String, String> defaults = perforceDefaults(projectDir)
-        String uri = getUrl(defaults)
-        IServer server = ServerFactory.getServer(uri, null);
+        String uri = getUrl()
+        IServer server = ServerFactory.getServer(uri, null)
         server.connect()
-        if (defaults.P4PASSWD) {
-            server.login(defaults.P4PASSWD)
+        if (getPassword().isPresent() && !getPassword().get().isBlank()) {
+            server.login(getPassword().get())
         }
 
         IClient client
-        if (defaults.P4CLIENT) {
-            client = server.getClient(defaults.P4CLIENT)
+        if (getClient().isPresent()) {
+            client = server.getClient(getClient().get())
             if (client != null) {
-                server.setCurrentClient(client);
+                server.setCurrentClient(client)
             }
         }
 
         T ret
         try {
-            if (closure.maximumNumberOfParameters==1) {
+            if (closure.maximumNumberOfParameters == 1) {
                 ret = closure.call(server)
             } else {
                 if (client == null) {
@@ -118,59 +110,70 @@ class PerforceScmProvider extends AbstractScmProvider {
                 ret = closure.call(server, client)
             }
         } finally {
-            if (server!=null) {
+            if (server != null) {
                 server.disconnect()
             }
         }
         return ret
     }
 
-    @PackageScope
-    String getUrl(Map<String, String> defaults) {
-        // TODO Support SSL
-        //return "p4java://${defaults.P4USER}${passAppend}@${defaults.P4PORT}"
-        return "p4java://${defaults.P4PORT}?userName=${defaults.P4USER}"
-    }
-
-    @PackageScope
-    Map<String, String> perforceDefaults(File projectDir) {
-        // Set some default values then look for overrides
-        Map<String, String> defaults = [
-                P4CLIENT: null,
-                P4USER: 'rolem',
-                P4PASSWD: '',
-                P4PORT: 'perforce:1666'
-        ] as Map<String, String>
-
-        // First look for P4CONFIG name
-        findP4Config(projectDir) // Might be noop
-        if (p4configFile) {
-            Properties props = new Properties()
-            p4configFile.withInputStream { inputStream ->
-                props.load(inputStream)
+    private Provider<String> getPort() {
+        configFile.flatMap {
+            providerFactory.fileContents(it).asBytes.map {
+                Properties props = new Properties()
+                try (ByteArrayInputStream is = new ByteArrayInputStream(it)) {
+                    props.load(is)
+                }
+                return props.get("P4PORT")
             }
-            defaults = overrideFromMap(defaults, props as Map<String, String>)
-        }
-
-        // Second user environment variables
-        defaults = overrideFromMap(defaults, System.getenv())
-
-        return defaults
+        }.orElse(providerFactory.environmentVariable("P4PORT"))
+                .orElse('perforce:1666')
     }
 
-    @PackageScope
-    Map<String, String> overrideFromMap(Map<String, String> orig, Map<String, String> override) {
-        Map<String, String> dest = [:]
-        orig.keySet().each { String key ->
-            dest[key] = override.keySet().contains(key) ? override[key] : orig[key]
-        }
-        return dest
+    private Provider<String> getUser() {
+        configFile.flatMap {
+            providerFactory.fileContents(it).asBytes.map {
+                Properties props = new Properties()
+                try (ByteArrayInputStream is = new ByteArrayInputStream(it)) {
+                    props.load(is)
+                }
+                return props.get("P4USER")
+            }
+        }.orElse(providerFactory.environmentVariable("P4USER"))
+                .orElse("rolem")
     }
 
-    @PackageScope
-    void findP4Config(File starting) {
-        if (p4configFile == null) {
-            p4configFile = findFile(starting, providerFactory.environmentVariable('P4CONFIG').getOrElse(null))
+    private Provider<String> getClient() {
+        configFile.flatMap {
+            providerFactory.fileContents(it).asBytes.map {
+                Properties props = new Properties()
+                try (ByteArrayInputStream is = new ByteArrayInputStream(it)) {
+                    props.load(is)
+                }
+                return props.get("P4CLIENT")
+            }
+        }.orElse(providerFactory.environmentVariable("P4CLIENT"))
+                .orElse(null)
+    }
+
+    private Provider<String> getPassword() {
+        configFile.flatMap {
+            providerFactory.fileContents(it).asBytes.map { bytes ->
+                Properties props = new Properties()
+                try (ByteArrayInputStream is = new ByteArrayInputStream(bytes)) {
+                    props.load(is)
+                }
+                return props.get("P4PASSWD")
+            }
+        }.orElse(providerFactory.environmentVariable("P4PASSWD"))
+                .orElse("")
+    }
+
+    private Provider<String> getUrl() {
+        getPort().flatMap { port ->
+            getUser().map { user ->
+                return "p4java://${port}?userName=${user}"
+            }
         }
     }
 }

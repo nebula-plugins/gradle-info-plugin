@@ -24,6 +24,7 @@ class ScmInfoPluginTest {
             def runner = testProject(projectDir) {
                 properties {
                     buildCache(true)
+                    configurationCache(true)
                 }
                 rootProject {
                     plugins {
@@ -38,7 +39,7 @@ afterEvaluate {
                 }
             }
 
-            def result = runner.run("build")
+            def result = runner.run("build", "--stacktrace")
             assertThat(result.output)
                     .contains("scminfo.origin = file:" + remoteGitDir.absolutePath + "/.git")
                     .contains("scminfo.source = ")
@@ -51,6 +52,7 @@ afterEvaluate {
             def runner = testProject(projectDir) {
                 properties {
                     buildCache(true)
+                    configurationCache(true)
                 }
                 rootProject {
                     plugins {
@@ -74,6 +76,7 @@ afterEvaluate {
         def runner = testProject(projectDir) {
             properties {
                 buildCache(true)
+                configurationCache(true)
             }
             rootProject {
                 plugins {
@@ -87,7 +90,7 @@ afterEvaluate {
             }
         }
 
-        def result = runner.run("build")
+        def result = runner.run("build", "--stacktrace")
         assertThat(result.output).contains("scminfo.origin = LOCAL")
     }
 
@@ -97,6 +100,7 @@ afterEvaluate {
             def runner = testProject(projectDir) {
                 properties {
                     buildCache(true)
+                    configurationCache(true)
                 }
                 rootProject {
                 }

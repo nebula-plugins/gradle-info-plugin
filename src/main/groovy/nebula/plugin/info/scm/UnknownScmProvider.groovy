@@ -16,44 +16,51 @@
 
 package nebula.plugin.info.scm
 
+import groovy.transform.CompileStatic
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
 
+@NullMarked
+@CompileStatic
 class UnknownScmProvider extends AbstractScmProvider {
 
     public static final String LOCAL = 'LOCAL'
+    private final Project project
 
-    UnknownScmProvider(ProviderFactory providerFactory) {
+    UnknownScmProvider(Project project, ProviderFactory providerFactory) {
         super(providerFactory)
+        this.project = project
     }
 
     @Override
-    boolean supports(Project project) {
+    boolean supports() {
         return true
     }
 
     @Override
-    String calculateModuleOrigin(File projectDir) {
-        return LOCAL
+    Provider<String> origin() {
+        return providerFactory.provider {LOCAL}
     }
 
     @Override
-    String calculateModuleSource(File projectDir) {
-        return projectDir.absolutePath
+    Provider<String> source() {
+        return providerFactory.provider { project.layout.projectDirectory.asFile.absolutePath }
     }
 
     @Override
-    String calculateChange(File projectDir) {
-        return null
+    Provider<String> change() {
+        return providerFactory.provider { null }
     }
 
     @Override
-    def calculateFullChange(File projectDir) {
-        return null
+    Provider<String> fullChange() {
+        return providerFactory.provider { null }
     }
 
     @Override
-    String calculateBranch(File projectDir) {
-        return null
+    Provider<String> branch() {
+        return providerFactory.provider { null }
     }
 }

@@ -44,9 +44,9 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     @Override
     void apply(Project project) {
         configureProviders(project)
-        if(project.rootProject == project) {
+        if (project.rootProject == project) {
             configureWithScmProvider(project)
-        } else if(project.rootProject != project) {
+        } else if (project.rootProject != project) {
             handleSubProject(project)
         }
     }
@@ -57,7 +57,11 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      * @param project
      */
     private void configureProviders(Project project) {
-        providers = [new GitScmProvider(providerFactory), new PerforceScmProvider(providerFactory), new UnknownScmProvider(providerFactory)] as List<ScmInfoProvider>
+        providers = [
+                new GitScmProvider(project, providerFactory),
+                new PerforceScmProvider(project, providerFactory),
+                new UnknownScmProvider(project, providerFactory)
+        ] as List<ScmInfoProvider>
         selectedProvider = findProvider(project)
     }
 
@@ -69,7 +73,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      */
     private void handleSubProject(Project project) {
         ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
-        if(!scmInfoRootProjectExtension) {
+        if (!scmInfoRootProjectExtension) {
             configureWithScmProvider(project)
         } else {
             configureWithoutScmProvider(project, scmInfoRootProjectExtension)
@@ -83,7 +87,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     private void configureWithScmProvider(Project project) {
         ScmInfoExtension extension = project.extensions.create('scminfo', ScmInfoExtension)
         project.logger.info("Project $project.name SCM information is being collected from provider ${selectedProvider.class.name}")
-        configureExtensionFromProvider(project, extension)
+        configureExtensionFromProvider(extension)
         configureInfoBrokerManifest(project, extension)
     }
 
@@ -98,12 +102,12 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         configureInfoBrokerManifest(project, extension)
     }
 
-    private void configureExtensionFromProvider(Project project, ScmInfoExtension extension) {
-        extension.origin.convention(providerFactory.provider { selectedProvider.calculateOrigin(project) })
-        extension.source.convention(providerFactory.provider { selectedProvider.calculateSource(project)?.replace(File.separatorChar, '/' as char) })
-        extension.change.convention(providerFactory.provider { selectedProvider.calculateChange(project) })
-        extension.fullChange.convention(providerFactory.provider { selectedProvider.calculateFullChange(project) })
-        extension.branch.convention(providerFactory.provider { selectedProvider.calculateBranch(project) })
+    private void configureExtensionFromProvider(ScmInfoExtension extension) {
+        extension.origin.convention(selectedProvider.origin())
+        extension.source.convention(selectedProvider.source().map { it.replace(File.separatorChar, '/' as char) })
+        extension.change.convention(selectedProvider.change())
+        extension.fullChange.convention(selectedProvider.fullChange())
+        extension.branch.convention(selectedProvider.branch())
     }
 
     private void configureExtensionFromRootProject(ScmInfoExtension extension, ScmInfoExtension scmInfoRootProjectExtension) {
@@ -119,7 +123,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      * @param project
      * @param scmInfoExtension
      */
-    private void configureInfoBrokerManifest(Project project, ScmInfoExtension scmInfoExtension ) {
+    private void configureInfoBrokerManifest(Project project, ScmInfoExtension scmInfoExtension) {
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
             manifestPlugin.add(MODULE_SOURCE_PROPERTY) { scmInfoExtension.source.getOrNull() }
             manifestPlugin.add(MODULE_ORIGIN_PROPERTY) { scmInfoExtension.origin.getOrNull() }
@@ -137,11 +141,11 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
      */
     ScmInfoProvider findProvider(Project project) {
         ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
-        if(scmInfoRootProjectExtension) {
+        if (scmInfoRootProjectExtension) {
             return project.rootProject.plugins.findPlugin(ScmInfoPlugin).selectedProvider
         }
 
-        ScmInfoProvider provider = providers.find { it.supports(project) }
+        ScmInfoProvider provider = providers.find { it.supports() }
         if (provider) {
             return provider
         } else {

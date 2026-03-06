@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 /*
  * Copyright 2014-2019 Netflix, Inc.
  *
@@ -15,8 +17,9 @@
  */
 
 plugins {
-    id("com.netflix.nebula.plugin-plugin") version ("25.+")
+    id("com.netflix.nebula.plugin-plugin")
     `kotlin-dsl`
+    id("com.netflix.nebula.archrules.library")
 }
 
 description = "Gradle plugin collect and provide information about the environment"
@@ -41,6 +44,8 @@ dependencies {
     testImplementation("org.spockframework:spock-junit4:2.4-groovy-4.0")
     testImplementation("org.eclipse.jgit:org.eclipse.jgit:7.+")
     testImplementation(libs.assertj)
+
+    archRulesImplementation("com.netflix.nebula:archrules-common:0.+")
 }
 
 testing {
@@ -87,6 +92,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.ci.ContinuousIntegrationInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
         create("infoJAR") {
             id = "com.netflix.nebula.info-jar"
@@ -129,6 +139,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.scm.ScmInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
