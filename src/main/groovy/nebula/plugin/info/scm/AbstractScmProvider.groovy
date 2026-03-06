@@ -17,11 +17,21 @@
 package nebula.plugin.info.scm
 
 import org.gradle.api.Project
+import org.gradle.api.file.RegularFile
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
+import org.jspecify.annotations.Nullable
 
-
+@NullMarked
 abstract class AbstractScmProvider implements ScmInfoProvider {
-    abstract calculateModuleSource(File projectDir)
+    /**
+     * @deprecated Use {@link #source()} instead
+     */
+    @Deprecated
+    @Nullable
+    String calculateModuleSource(File projectDir) {
+        source().getOrNull()
+    }
 
     private final ProviderFactory providerFactory
 
@@ -33,53 +43,55 @@ abstract class AbstractScmProvider implements ScmInfoProvider {
         return this.providerFactory
     }
 
-    @Override
-    String calculateSource(Project project) {
-        return calculateModuleSource(project.projectDir)
-    }
-
-    protected File findFile(File starting, String filename) {
-        // TODO Stop looking when we get to the home directory, to avoid paths which we know aren't a SCM root
-        if (!filename) {
+    /**
+     * when we convert to kotlin, make sure to optimise with tailrec
+     */
+    @Nullable
+    protected RegularFile findFile(Project starting, String filename) {
+        RegularFile file = starting.layout.projectDirectory.file(filename)
+        if (file.asFile.exists()) {
+            println("found" +filename + " at " + file.asFile.absolutePath)
+            return file
+        }
+        if (starting.parent == null) {
             return null
         }
-
-        File dirToLookIn = starting
-        while(dirToLookIn) {
-            File p4configFile = new File(dirToLookIn, filename)
-            if (p4configFile.exists()) {
-                return p4configFile
-            }
-            dirToLookIn = dirToLookIn?.getParentFile()
-        }
-        return null
+        return findFile(starting.parent, filename)
     }
 
-    @Override
-    String calculateOrigin(Project project) {
-        return calculateModuleOrigin(project.projectDir)
+    /**
+     * @deprecated Use {@link #origin()} instead
+     */
+    @Deprecated
+    @Nullable
+    String calculateModuleOrigin(File projectDir) {
+        return origin().getOrNull()
     }
 
-    abstract calculateModuleOrigin(File projectDir)
-
-    @Override
-    String calculateChange(Project project) {
-        return calculateChange(project.projectDir)
+    /**
+     * @deprecated Use {@link #change()} instead
+     */
+    @Nullable
+    @Deprecated
+    String calculateChange(File projectDir) {
+        change().getOrNull()
     }
 
-    abstract calculateChange(File projectDir)
-
-    @Override
-    String calculateFullChange(Project project) {
-        return calculateFullChange(project.projectDir)
+    /**
+     * @deprecated Use {@link #fullChange()} instead
+     */
+    @Nullable
+    @Deprecated
+    String calculateFullChange(File projectDir) {
+        return fullChange().getOrNull()
     }
 
-    abstract calculateFullChange(File projectDir)
-
-    @Override
-    String calculateBranch(Project project) {
-        return calculateBranch(project.projectDir)
+    /**
+     * @deprecated Use {@link #branch()} instead
+     */
+    @Nullable
+    @Deprecated
+    String calculateBranch(File projectDir) {
+        return branch().getOrNull()
     }
-
-    abstract calculateBranch(File projectDir)
 }

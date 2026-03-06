@@ -16,84 +16,78 @@
 
 package nebula.plugin.info.scm
 
-import groovy.transform.Memoized
+import groovy.transform.CompileStatic
 import org.gradle.api.Project
+import org.gradle.api.provider.Provider
 import org.gradle.api.provider.ProviderFactory
+import org.jspecify.annotations.NullMarked
 import org.jspecify.annotations.Nullable
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
+@CompileStatic
+@NullMarked
 class GitScmProvider extends AbstractScmProvider {
-    private Logger logger = LoggerFactory.getLogger(GitScmProvider
-    )
+    private boolean supports
+    private final GitReadOnlyCommandUtil gitUtil
+    private final File projectDir
 
-    GitScmProvider(ProviderFactory providerFactory) {
+    GitScmProvider(Project project, ProviderFactory providerFactory) {
         super(providerFactory)
-    }
-
-    @Override
-    boolean supports(Project project) {
-        return findFile(project.projectDir, '.git') != null
-    }
-
-    @Memoized
-    @Override
-    String calculateModuleOrigin(File projectDir) {
-        String remoteOriginUrl = executeGitCommand(projectDir, "git", "config", "--get", "remote.origin.url")
-        if (remoteOriginUrl == null) {
-            return "LOCAL"
+        @Nullable
+        File gitDir = findFile(project, ".git")?.asFile
+        supports = gitDir != null && gitDir.exists()
+        if (supports) {
+            gitUtil = GitReadOnlyCommandUtil.create(gitDir.parentFile, providerFactory)
+        } else {
+            gitUtil = GitReadOnlyCommandUtil.create(project.rootProject.layout.projectDirectory.asFile, providerFactory)
         }
-        try {
-            URL url = remoteOriginUrl.toURL()
-            if (url.getUserInfo()) {
-                def user = url.getUserInfo().split(":").first()
-                url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
-            }
-            String urlAsExternalForm = url.toExternalForm()
-            return urlAsExternalForm.endsWith('.git') ? url.toExternalForm() : urlAsExternalForm + ".git"
-        } catch (MalformedURLException ignore) {
-            return remoteOriginUrl
-        }
+        projectDir = project.layout.projectDirectory.asFile
     }
 
     @Override
-    String calculateModuleSource(File projectDir) {
-        String gitWorkDir = executeGitCommand(projectDir, "git", "rev-parse", "--show-toplevel")
-        if (!gitWorkDir) {
-            return projectDir.absolutePath
-        }
-        return projectDir.absolutePath - new File(gitWorkDir).absolutePath
+    boolean supports() {
+        return supports
     }
 
     @Override
-    String calculateChange(File projectDir) {
-        return calculateFullChange(projectDir)?.substring(0, 7)
+    Provider<String> origin() {
+        return gitUtil.remoteOrigin()
+                .map {
+                    try {
+                        URL url = it.toURL()
+                        if (url.getUserInfo()) {
+                            def user = url.getUserInfo().split(":").first()
+                            url = new URL(url.protocol, user + "@" + url.host, url.port, url.file)
+                        }
+                        String urlAsExternalForm = url.toExternalForm()
+                        return urlAsExternalForm.endsWith('.git') ? url.toExternalForm() : urlAsExternalForm + ".git"
+                    } catch (MalformedURLException ignore) {
+                        return it
+                    }
+                }
+                .orElse("LOCAL")
     }
 
     @Override
-    String calculateFullChange(File projectDir) {
-        String hash = providerFactory.environmentVariable('GIT_COMMIT').getOrElse(null)
-        if (!hash) {
-            hash = executeGitCommand(projectDir, "git", "rev-parse", "HEAD")
-        }
-        return hash
+    Provider<String> source() {
+        File root = projectDir
+        return gitUtil.moduleSource()
+                .map { root.absolutePath - new File(it).absolutePath }
+                .orElse(projectDir.absolutePath)
     }
 
     @Override
-    String calculateBranch(File projectDir) {
-        return executeGitCommand(projectDir, "git", "rev-parse", "--abbrev-ref", "HEAD")
+    Provider<String> change() {
+        return fullChange().map { it.substring(0, 7) }
     }
 
-    @Nullable
-    private String executeGitCommand(File projectDir, Object... args) {
-        try {
-            return providerFactory.exec {
-                it.workingDir(projectDir)
-                it.commandLine(args)
-            }.standardOutput.asText.get().replaceAll("\n", "").trim()
-        } catch (Exception e) {
-            logger.error("Could not execute Git command: ${args.join(' ')}")
-            return null
-        }
+    @Override
+    Provider<String> fullChange() {
+        return providerFactory.environmentVariable('GIT_COMMIT')
+                .orElse(gitUtil.fullChange())
+    }
+
+    @Override
+    Provider<String> branch() {
+        return gitUtil.currentBranch()
     }
 }

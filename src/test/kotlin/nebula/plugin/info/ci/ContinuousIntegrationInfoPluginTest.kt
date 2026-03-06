@@ -1,12 +1,12 @@
 package nebula.plugin.info.ci
 
+import nebula.plugin.info.getKey
+import nebula.plugin.info.readJarAttributes
 import nebula.test.dsl.*
 import nebula.test.dsl.TestKitAssertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.util.jar.Attributes
-import java.util.jar.JarFile
 
 internal class ContinuousIntegrationInfoPluginTest {
 
@@ -53,7 +53,7 @@ internal class ContinuousIntegrationInfoPluginTest {
             .hasNoDeprecationWarnings()
             .hasNoMutableStateWarnings()
 
-        val attributes = readJarAttributes()
+        val attributes = readJarAttributes(projectDir, "module", "1.0")
         assertThat(attributes.getKey("Build-Job")).isEqualTo("my-action")
         assertThat(attributes.getKey("Build-Number")).isEqualTo("10")
         assertThat(attributes.getKey("Build-Id")).isEqualTo("1")
@@ -83,7 +83,7 @@ internal class ContinuousIntegrationInfoPluginTest {
             .hasNoDeprecationWarnings()
             .hasNoMutableStateWarnings()
 
-        val attributes = readJarAttributes()
+        val attributes = readJarAttributes(projectDir, "module", "1.0")
         assertThat(attributes.getKey("Build-Job")).isEqualTo("org/my-repo")
         assertThat(attributes.getKey("Build-Number")).isEqualTo("10")
         assertThat(attributes.getKey("Build-Id")).isEqualTo("1")
@@ -111,7 +111,7 @@ internal class ContinuousIntegrationInfoPluginTest {
             .hasNoDeprecationWarnings()
             .hasNoMutableStateWarnings()
 
-        val attributes = readJarAttributes()
+        val attributes = readJarAttributes(projectDir, "module", "1.0")
         assertThat(attributes.getKey("Build-Job")).isEqualTo("org/my-repo")
         assertThat(attributes.getKey("Build-Number")).isEqualTo("1")
         assertThat(attributes.getKey("Build-Id")).isEqualTo("1")
@@ -136,19 +136,11 @@ internal class ContinuousIntegrationInfoPluginTest {
             .hasNoDeprecationWarnings()
             .hasNoMutableStateWarnings()
 
-        val attributes = readJarAttributes()
+        val attributes = readJarAttributes(projectDir, "module", "1.0")
         assertThat(attributes.getKey("Build-Job")).isEqualTo("LOCAL")
         assertThat(attributes.getKey("Build-Number")).isEqualTo("LOCAL")
         assertThat(attributes.getKey("Build-Id")).isEqualTo("LOCAL")
         assertThat(attributes.getKey("Build-Url")).isEqualTo("${HostnameValueSource.hostname()}/LOCAL")
         assertThat(attributes.getKey("Build-Host")).isEqualTo(HostnameValueSource.hostname())
-    }
-
-    fun Attributes.getKey(key: String): Any? {
-        return get(Attributes.Name(key))
-    }
-
-    fun readJarAttributes(): Attributes {
-        return JarFile(projectDir.resolve("build/libs/module-1.0.jar")).manifest.mainAttributes
     }
 }
