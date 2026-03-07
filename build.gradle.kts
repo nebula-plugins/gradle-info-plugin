@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import org.gradle.plugin.compatibility.compatibility
 
 plugins {
     id("com.netflix.nebula.plugin-plugin") version ("25.+")
@@ -59,6 +60,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.InfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoBasic") {
             id = "com.netflix.nebula.info-basic"
@@ -66,6 +72,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.basic.BasicInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoDependencies") {
             id = "com.netflix.nebula.info-dependencies"
@@ -73,6 +84,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.dependencies.DependenciesInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoBroker") {
             id = "com.netflix.nebula.info-broker"
@@ -80,6 +96,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.InfoBrokerPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoCI") {
             id = "com.netflix.nebula.info-ci"
@@ -87,6 +108,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.ci.ContinuousIntegrationInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoJAR") {
             id = "com.netflix.nebula.info-jar"
@@ -94,6 +120,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.reporting.InfoJarManifestPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoJARProperties") {
             id = "com.netflix.nebula.info-jar-properties"
@@ -101,6 +132,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.reporting.InfoJarPropertiesFilePlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoJava") {
             id = "com.netflix.nebula.info-java"
@@ -108,6 +144,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.java.InfoJavaPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoOwners") {
             id = "com.netflix.nebula.info-owners"
@@ -115,6 +156,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.basic.ManifestOwnersPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoProps") {
             id = "com.netflix.nebula.info-props"
@@ -122,6 +168,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.reporting.InfoPropertiesFilePlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
         create("infoScm") {
             id = "com.netflix.nebula.info-scm"
@@ -129,6 +180,11 @@ gradlePlugin {
             description = project.description
             implementationClass = "nebula.plugin.info.scm.ScmInfoPlugin"
             tags.set(listOf("nebula", "info"))
+            compatibility {
+                features {
+                    configurationCache.set(true)
+                }
+            }
         }
     }
 }
