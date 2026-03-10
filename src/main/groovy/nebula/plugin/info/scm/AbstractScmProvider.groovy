@@ -50,7 +50,7 @@ abstract class AbstractScmProvider implements ScmInfoProvider {
     protected RegularFile findFile(Project starting, String filename) {
         RegularFile file = starting.layout.projectDirectory.file(filename)
         if (file.asFile.exists()) {
-            println("found" +filename + " at " + file.asFile.absolutePath)
+            starting.logger.info("found" +filename + " at " + file.asFile.absolutePath)
             return file
         }
         if (starting.parent == null) {
