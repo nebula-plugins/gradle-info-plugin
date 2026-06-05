@@ -1,19 +1,13 @@
 pluginManagement {
     plugins {
+        id("com.netflix.nebula.oss.settings") version("25.+")
         id("com.netflix.nebula.plugin-plugin") version ("25.+")
         id("com.netflix.nebula.archrules.library") version ("0.+")
     }
 }
 
 plugins {
-    id "com.gradle.develocity" version "4.2"
-}
-
-develocity {
-    buildScan {
-        termsOfUseUrl = 'https://gradle.com/terms-of-service'
-        termsOfUseAgree = 'yes'
-    }
+    id("com.netflix.nebula.oss.settings")
 }
 
 rootProject.name='gradle-info-plugin'

@@ -77,9 +77,9 @@ class InfoPlugin implements Plugin<Project> {
         project.plugins.apply(InfoJavaPlugin)
 
         // Reporting
-        project.plugins.apply(InfoPropertiesFilePlugin)
-        project.plugins.apply(InfoJarPropertiesFilePlugin)
-        project.plugins.apply(InfoJarManifestPlugin)
+        project.plugins.apply("com.netflix.nebula.info-props")
+        project.plugins.apply("com.netflix.nebula.info-jar-properties")
+        project.plugins.apply("com.netflix.nebula.info-jar")
 
     }
 }

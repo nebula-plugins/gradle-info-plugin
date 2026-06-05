@@ -7,6 +7,7 @@ on:
 
 jobs:
   publish:
+    if: github.event.base_ref == 'refs/heads/main' # tags must be pushed to main
     runs-on: ubuntu-latest
     name: Gradle Build and Publish
     environment:
@@ -22,7 +23,7 @@ jobs:
       GRADLE_PUBLISH_KEY: ${{ secrets.ORG_GRADLE_PUBLISH_KEY }}
       GRADLE_PUBLISH_SECRET: ${{ secrets.ORG_GRADLE_PUBLISH_SECRET }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Setup git user
         run: |
           git config --global user.name "Nebula Plugin Maintainers"
@@ -39,6 +40,11 @@ jobs:
         uses: gradle/actions/setup-gradle@v5
         with:
           cache-overwrite-existing: true
+          build-scan-publish: true
+          build-scan-terms-of-use-url: 'https://gradle.com/terms-of-service'
+          build-scan-terms-of-use-agree: 'yes'
+      - name: Gradle build
+        run: ./gradlew --stacktrace build
       - name: Verify plugin publication
         if: (!contains(github.ref, '-rc.'))
         run: ./gradlew  --stacktrace -Prelease.useLastTag=true final publishPlugin --validate-only -x check
