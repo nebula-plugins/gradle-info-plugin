@@ -44,7 +44,7 @@ class ContinuousIntegrationInfoPlugin implements Plugin<Project>, InfoCollectorP
 
     @Override
     void apply(Project project) {
-        providers = [new JenkinsProvider(providerFactory), new TitusProvider(providerFactory), new CircleCIProvider(providerFactory), new CirrusCIProvider(providerFactory), new DroneProvider(providerFactory), new GithubActionsProvider(providerFactory), new GitlabProvider(providerFactory),  new TravisProvider(providerFactory), new UnknownContinuousIntegrationProvider(providerFactory)] as List<ContinuousIntegrationInfoProvider>
+        providers = [new BuildkiteProvider(providerFactory), new JenkinsProvider(providerFactory), new TitusProvider(providerFactory), new CircleCIProvider(providerFactory), new CirrusCIProvider(providerFactory), new DroneProvider(providerFactory), new GithubActionsProvider(providerFactory), new GitlabProvider(providerFactory),  new TravisProvider(providerFactory), new UnknownContinuousIntegrationProvider(providerFactory)] as List<ContinuousIntegrationInfoProvider>
         selectedProvider = findProvider(project)
 
         ContinuousIntegrationInfoExtension extension = project.extensions.create('ciinfo', ContinuousIntegrationInfoExtension)

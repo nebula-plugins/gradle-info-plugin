@@ -32,6 +32,36 @@ internal class ContinuousIntegrationInfoPluginTest {
     }
 
     @Test
+    fun `test Buildkite`() {
+        val runner = testProject(projectDir) {
+            exampleProject()
+        }
+        val result = runner.run("jar", "-Pversion=1.0") {
+            withEnvironment(
+                mapOf(
+                    "BUILDKITE" to "true",
+                    "BUILDKITE_BUILD_NUMBER" to "1514",
+                    "BUILDKITE_BUILD_ID" to "4735ba57-80d0-46e2-8fa0-b28223a86586",
+                    "BUILDKITE_BUILD_URL" to "https://buildkite.com/acme-inc/my-project/builds/1514",
+                    "BUILDKITE_ORGANIZATION_SLUG" to "acme-inc",
+                    "BUILDKITE_PIPELINE_SLUG" to "my-project"
+                )
+            )
+        }
+
+        assertThat(result)
+            .hasNoDeprecationWarnings()
+            .hasNoMutableStateWarnings()
+
+        val attributes = readJarAttributes(projectDir, "module", "1.0")
+        assertThat(attributes.getKey("Build-Job")).isEqualTo("acme-inc/my-project")
+        assertThat(attributes.getKey("Build-Number")).isEqualTo("1514")
+        assertThat(attributes.getKey("Build-Id")).isEqualTo("4735ba57-80d0-46e2-8fa0-b28223a86586")
+        assertThat(attributes.getKey("Build-Url")).isEqualTo("https://buildkite.com/acme-inc/my-project/builds/1514")
+        assertThat(attributes.getKey("Build-Host")).isEqualTo("https://buildkite.com")
+    }
+
+    @Test
     fun `test Github Actions`() {
         val runner = testProject(projectDir) {
             exampleProject()
