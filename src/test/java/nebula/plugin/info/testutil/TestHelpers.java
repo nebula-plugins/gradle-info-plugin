@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 public class TestHelpers {
     public static void withGit(File workingDir, Consumer<Git> work) {
         try (Git git = Git.init().setBare(false).setDirectory(workingDir).setInitialBranch("main").call()) {
-            git.commit().setMessage("Initial").call();
+            git.commit().setSign(false).setMessage("Initial").call();
             git.checkout().setName("main").call();
             work.accept(git);
         } catch (GitAPIException e) {
@@ -24,7 +24,7 @@ public class TestHelpers {
 
     public static void withRemoteGit(File remote, File workingDir, BiConsumer<Git, Git> work) {
         try (Git remoteGit = Git.init().setBare(false).setDirectory(remote).setInitialBranch("main").call()) {
-            remoteGit.commit().setMessage("initial").call();
+            remoteGit.commit().setSign(false).setMessage("initial").call();
             try (Git cloneGit = Git.cloneRepository().setCloneAllBranches(true)
                     .setURI(remote.toURI().toString())
                     .setDirectory(workingDir)
