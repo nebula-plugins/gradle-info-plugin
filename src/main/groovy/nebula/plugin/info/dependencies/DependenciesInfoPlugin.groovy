@@ -15,7 +15,6 @@
  */
 package nebula.plugin.info.dependencies
 
-import groovy.transform.CompileDynamic
 import nebula.plugin.info.InfoBrokerPlugin
 import nebula.plugin.info.InfoCollectorPlugin
 import org.gradle.api.Action
@@ -24,66 +23,116 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
 import org.gradle.api.artifacts.ResolvableDependencies
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.VersionInfo
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.DefaultVersionComparator
-import org.gradle.api.internal.artifacts.ivyservice.ivyresolve.strategy.VersionParser
+import org.gradle.api.attributes.Attribute
+import org.gradle.api.provider.MapProperty
+import org.gradle.util.GradleVersion
 
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
-    private final DefaultVersionComparator versionComparator = new DefaultVersionComparator()
-    private final VersionParser versionParser = new VersionParser()
-    private static final List<String> RESOLVABLE_WITH_DEPRECATION_CONF_SUFFIXES = ['compileOnly', 'compile', 'runtime']
-
     @Override
     void apply(Project project) {
-        setInfoDependencies(project)
-        def dependencyMap = project.rootProject.property('nebulaInfoDependencies')
-        Map dependencies = [:]
+        MapProperty<String, String> dependencies = project.objects.mapProperty(String, String).convention([:])
+        def services = project.gradle.sharedServices
+        List<String> paths = project.path == ':' ? project.allprojects.collect { it.path }.sort() : [project.path]
+        Map initialEntries = project.extensions.extraProperties.has('nebulaInfoDependencies') ?
+                project.extensions.extraProperties.get('nebulaInfoDependencies') as Map : [:]
+        def reports = new DependencyInfoReports(project.providers.provider(new DependencyInfoReports.Sources(services, paths)), initialEntries)
+        def extension = project.extensions.create('dependencyInfo', DependencyInfoExtension)
+        boolean cacheRequested = GradleVersion.current() >= GradleVersion.version('8.5') ?
+                project.objects.newInstance(DependencyInfoBuildFeatures).configurationCacheRequested :
+                project.gradle.startParameter.isConfigurationCache()
+        if (!cacheRequested) {
+            project.gradle.projectsEvaluated { reports.captureLegacySources() }
+        }
+        // The root exposes the aggregate compatibility view; children expose only their own inputs.
+        project.extensions.extraProperties.set('nebulaInfoDependencies', project.path == ':' ? reports : [:])
         project.plugins.withType(InfoBrokerPlugin) { InfoBrokerPlugin manifestPlugin ->
+            String projectName = project.name
+            services.registerIfAbsent(DependencyInfoReports.SERVICE_PREFIX + project.path, DependencyInfoState) {
+                parameters.projectName.set(projectName)
+                parameters.dependencies.set(dependencies)
+                parameters.configurationCacheRequested.set(cacheRequested)
+            }
             processProjectDependencies(project, dependencies)
-            dependencyMap["${project.name}-dependencies".toString()] = dependencies
-            if (project == project.rootProject) {
-                manifestPlugin.addReport('resolved-dependencies', dependencyMap)
+            def report = project.tasks.register('writeDependencyInfo', DependencyInfoReportTask) {
+                it.group = 'reporting'
+                it.description = 'Writes the dependency information explicitly selected in this project.'
+                it.projectName.set(projectName)
+                it.dependencies.set(extension.dependencies)
+                it.explicitSelection.set(extension.explicitSelection)
+                it.outputFile.set(project.layout.buildDirectory.file('reports/dependency-info/dependencies.json'))
+            }
+            def elements = project.configurations.create('nebulaDependencyInfoElements') {
+                it.canBeResolved = false
+                it.canBeConsumed = true
+                it.visible = false
+                it.attributes.attribute(Attribute.of('nebula.dependency-info', String), 'report')
+            }
+            project.artifacts.add(elements.name, report.flatMap { it.outputFile }) { it.builtBy(report) }
+            if (project.path == ':') {
+                manifestPlugin.addReport('resolved-dependencies', reports)
+                def incoming = project.configurations.create('nebulaDependencyInfoReports') {
+                    it.canBeResolved = true
+                    it.canBeConsumed = false
+                    it.visible = false
+                }
+                paths.findAll { it != ':' }.each { path ->
+                    project.dependencies.add(incoming.name, project.dependencies.project(path: path, configuration: elements.name))
+                }
+                def files = incoming.incoming.artifactView { it.lenient = true }.files
+                def failures = project.providers.provider(new DependencyInfoReportFailures(incoming.incoming.resolutionResult.rootComponent, services))
+                project.tasks.register('writeResolvedDependencies', ResolvedDependenciesReportTask) {
+                    it.group = 'reporting'
+                    it.description = 'Aggregates dependency information from participating projects.'
+                    it.reports.from(report.flatMap { it.outputFile }, files)
+                    it.resolutionFailures.set(failures)
+                    it.outputFile.set(project.layout.buildDirectory.file('reports/dependency-info/resolved-dependencies.json'))
+                }
+            } else {
+                project.extensions.extraProperties.set('nebulaInfoDependencies',
+                        reports)
             }
         }
     }
 
-    private void processProjectDependencies(Project project, Map dependencies) {
+    private static void processProjectDependencies(Project project, MapProperty<String, String> dependencies) {
+        Map<String, Long> activeConfigurations = Collections.synchronizedMap(new HashMap<String, Long>())
+        def sequence = new java.util.concurrent.atomic.AtomicLong()
+        project.configurations.whenObjectRemoved { Configuration conf -> activeConfigurations.remove(conf.name) }
         project.configurations.all({ Configuration conf ->
-            if (canBeResolved(conf)) {
-                conf.incoming.afterResolve { ResolvableDependencies resolvableDependencies ->
-                    if (project.configurations.contains(conf)) {
-                        processIncomingDependencies(resolvableDependencies, 'Resolved-Dependencies', dependencies)
-                    }
-                }
+            long identity = sequence.incrementAndGet()
+            activeConfigurations.put(conf.name, identity)
+            if (DependenciesInfoSupport.canBeReported(conf)) {
+                conf.incoming.afterResolve(new CollectDependencies(dependencies, activeConfigurations, identity))
             }
         })
     }
-    private void processIncomingDependencies(ResolvableDependencies resolvableDependencies, String prefix, Map dependencies) {
-        String resolvedDependencies = resolvableDependencies.resolutionResult.allComponents.findAll {
+    private static String resolvedModules(ResolvableDependencies resolvableDependencies) {
+        DependenciesInfoSupport.formatModules(resolvableDependencies.resolutionResult.allComponents.findAll {
             it.id instanceof ModuleComponentIdentifier
-        }*.moduleVersion
-                .sort(true, { m1, m2 ->
-                    if (m1.group != m2.group) {
-                        return m1.group <=> m2.group ?: -1
-                    }
-                    if (m1.name != m2.name) {
-                        return m1.name <=> m2.name
-                    } // name is required
-                    versionComparator.compare(new VersionInfo(versionParser.transform(m1.version)), new VersionInfo(versionParser.transform(m2.version)))
-                })*.toString().join(',')
-        if (resolvedDependencies) {
-            dependencies.put("$prefix-${resolvableDependencies.name.capitalize()}", resolvedDependencies)
+        }*.moduleVersion)
+    }
+
+    private static class CollectDependencies implements Action<ResolvableDependencies> {
+        private final MapProperty<String, String> dependencies
+        private final Map<String, Long> activeConfigurations
+        private final long identity
+
+        CollectDependencies(MapProperty<String, String> dependencies, Map<String, Long> activeConfigurations, long identity) {
+            this.dependencies = dependencies
+            this.activeConfigurations = activeConfigurations
+            this.identity = identity
         }
-    }
 
-    private boolean canBeResolved(Configuration conf) {
-        conf.isCanBeResolved() && !RESOLVABLE_WITH_DEPRECATION_CONF_SUFFIXES.any { conf.name.toLowerCase().endsWith(it.toLowerCase()) }
-    }
-
-    @CompileDynamic
-    private void setInfoDependencies(Project project) {
-        if (!project.rootProject.hasProperty('nebulaInfoDependencies')) {
-            project.rootProject.ext.nebulaInfoDependencies = [:]
+        @Override
+        void execute(ResolvableDependencies incoming) {
+            if (activeConfigurations.get(incoming.name) == identity) {
+                String modules = resolvedModules(incoming)
+                if (modules) {
+                    synchronized (dependencies) {
+                        dependencies.put("Resolved-Dependencies-${incoming.name.capitalize()}".toString(), modules)
+                    }
+                }
+            }
         }
     }
 }

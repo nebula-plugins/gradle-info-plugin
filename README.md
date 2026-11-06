@@ -103,6 +103,83 @@ apply plugin: 'com.netflix.nebula.info-dependencies'
 
 Reports on selected binary module versions (including transitives) of configurations that are resolved.
 
+The broker must also be applied. Without configuration cache, the root broker's
+`buildReports()['resolved-dependencies']` and root `nebulaInfoDependencies` extra
+property retain the aggregate of naturally resolved configurations. Each
+participant contributes a `<project-name>-dependencies` entry, including an empty
+map when it has no resolved modules. Configuration keys remain
+`Resolved-Dependencies-<CapitalizedConfigurationName>`. Module coordinates are
+sorted by group, name, and Gradle's version comparator. Configurations ending in
+`compileOnly`, `compile`, or `runtime` (case insensitive), detached configurations,
+and configurations removed from the container are excluded. Empty configurations
+do not add a configuration key. The collector contributes reports, not manifest
+attributes; existing manifest and properties reporters keep their content and
+task dependencies.
+
+For configuration cache or Isolated Projects, declare the report's resolution
+inputs in **each participating project's own build script or convention plugin**:
+
+```groovy
+plugins {
+    id 'java'
+    id 'com.netflix.nebula.info-broker'
+    id 'com.netflix.nebula.info-dependencies'
+}
+
+dependencyInfo.report(configurations.named('compileClasspath'))
+dependencyInfo.report(configurations.named('runtimeClasspath'))
+// A participant with no report inputs must explicitly use dependencyInfo.reportNone().
+```
+
+`writeDependencyInfo` writes that project's selected inputs to
+`build/reports/dependency-info/dependencies.json`. When the root applies the broker
+and collector, `writeResolvedDependencies` aggregates all participating projects to
+`build/reports/dependency-info/resolved-dependencies.json`, using project artifact
+dependencies. Root-only, child-only, sibling, and nested participation are
+supported; child-only builds use the child's `writeDependencyInfo` task.
+Non-participants contribute no entries. Either plugin application order is
+supported. No dependency configuration is resolved by applying the collector or
+declaring a report input. Resolution is deferred until selected report inputs are
+queried, normally by the report tasks, including during cache storage.
+Unselected configurations remain unresolved. Report tasks are not added to
+`assemble`, `jar`, or other existing task dependencies.
+
+Cached consumers must use these task outputs and wire the output provider into
+their task inputs, for example:
+
+```groovy
+tasks.register('dependencyReportZip', Zip) {
+    from(tasks.named('writeResolvedDependencies').flatMap { it.outputFile })
+    destinationDirectory = layout.buildDirectory.dir('reports')
+    archiveFileName = 'resolved-dependencies.zip'
+}
+```
+
+Automatic callback reports and `buildFinished` consumers remain a **no-cache
+compatibility API**. Gradle does not replay resolution callbacks on cache reuse;
+reading the legacy dependency map with configuration cache now fails with adoption
+guidance instead of returning an incomplete report. Explicit file reports have the
+same report keys, filtering, and sorting, but their scope is the configurations
+declared with `dependencyInfo.report`, rather than whichever configurations other
+tasks happened to resolve.
+
+The extra property is now a read-only view. Root reads continue to aggregate
+participants; child reads expose that child's information. A child no longer
+creates an extra property on an otherwise unconfigured root. Apply the collector
+to the root to obtain the root view. Preexisting root report entries are retained
+for no-cache readers. Consumers that mutate the old shared map, expect every
+child's property to alias the root map, or read it with configuration cache must
+adopt project-local inputs and the report task outputs. These are observable
+compatibility changes and require a major-version release decision.
+
+The collector/report path is verified on Gradle 7.5.1 with JDK 17 (ordinary
+configuration cache), and Gradle 8.14.3, 9.2.1, and 9.7.1 with strict Isolated
+Projects. The repository has no declared consumer Gradle minimum; 7.5.1 is the
+verified floor for this path, not a claim about older versions or the full facade.
+This does not establish Isolated Projects support for `com.netflix.nebula.info`,
+SCM/CI collectors, arbitrary broker closures, or every reporter combination. See
+[the standalone verification guide](verification/dependency-info/README.md).
+
 info-scm Plugin (Collector)
 --------------
 ```
