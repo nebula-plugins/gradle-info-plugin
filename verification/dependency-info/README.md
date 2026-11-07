@@ -47,20 +47,22 @@ plugin/ABI validation, use the regular build:
 ```
 
 `--continue` keeps independent checks running after failures; it does not disable
-checks or make a failing build successful. In the inspected baseline, the regular
-build's `verifyDependencyResolution` check fails resolving existing locked
-dependencies, including contacts, interop, Perforce, JNA, and JUnit artifacts. This
-also failed before the collector changes. Keep that failure visible and address it
-separately; the standalone build isolates report behavior from that blocker.
+checks or make a failing build successful. The baseline's stale ArchRules lock
+entries caused dependency resolution to fail before task execution when storing
+configuration cache, or in `verifyDependencyResolution` without configuration
+cache. This PR repairs the ArchRules lock state, including its configuration
+membership, so the regular build can run with configuration cache enabled.
 `validatePlugins` passes. `checkLegacyAbi` was skipped and no tracked ABI baseline
 exists, so its invocation is not an ABI compatibility pass.
 Public signatures of the collector and broker were compared with the published
 16.3.0 classes: existing signatures remain, while the extra-property and cached
 legacy-reader behavior changes are documented in the main README.
 
-The final standalone matrix passed 31 tests on JDK 17, including three intentional
-error guards. The regular targeted run passed 50 tests with two existing skips on
-JDK 21; its overall build still failed dependency verification as described above.
+The standalone matrix passed 31 tests on JDK 17, including three intentional
+error guards. After repairing the locks, the full regular build passed 68 tests
+with four existing skips on JDK 21, with configuration cache enabled and
+dependency verification enforced. The test task was forced to execute using
+`./gradlew --stacktrace build test --rerun --configuration-cache-problems=fail`.
 
 | Consumer Gradle | Ordinary cache: cold and warm explicit reports | Strict Isolated Projects: cold and warm explicit reports |
 | --- | --- | --- |
