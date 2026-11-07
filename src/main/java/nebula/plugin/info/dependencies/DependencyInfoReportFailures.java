@@ -10,16 +10,34 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-/** Missing report variants are expected only for projects that do not participate. */
+/**
+ * Validates failures from the root task's lenient project-report artifact view.
+ *
+ * <p>Projects without the collector and broker do not publish a report variant and
+ * may be skipped. A missing or broken variant on a registered participant must fail
+ * aggregation. Other resolution failures must also fail, even for non-participants,
+ * so lenient artifact selection cannot silently turn a broken report into partial data.
+ */
 public final class DependencyInfoReportFailures implements Callable<List<String>> {
     private final Provider<ResolvedComponentResult> root;
     private final BuildServiceRegistry services;
 
+    /**
+     * Creates deferred validation for the aggregate report's project dependencies.
+     *
+     * @param root lazy root component of the report-collection configuration
+     * @param services registry used to distinguish participants from unrelated projects
+     */
     public DependencyInfoReportFailures(Provider<ResolvedComponentResult> root, BuildServiceRegistry services) {
         this.root = root;
         this.services = services;
     }
 
+    /**
+     * Evaluates the report graph and describes failures that aggregation must reject.
+     *
+     * @return dependency display names and cause messages, or an empty list when acceptable
+     */
     @Override
     public List<String> call() {
         List<String> failures = new ArrayList<>();

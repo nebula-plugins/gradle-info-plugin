@@ -23,15 +23,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/** Shared filtering, module ordering, and graph traversal for both reporting paths. */
 final class DependenciesInfoSupport {
     private DependenciesInfoSupport() {}
 
+    /** Preserves the legacy exclusions for non-resolvable and deprecated configuration names. */
     static boolean canBeReported(Configuration configuration) {
         String name = configuration.getName().toLowerCase(java.util.Locale.ROOT);
         return configuration.isCanBeResolved() && !name.endsWith("compileonly")
                 && !name.endsWith("compile") && !name.endsWith("runtime");
     }
 
+    /** Formats module coordinates in the legacy group/name/Gradle-version order. */
     static String formatModules(Collection<ModuleVersionIdentifier> values) {
         List<ModuleVersionIdentifier> modules = new ArrayList<>(values);
         DefaultVersionComparator comparator = new DefaultVersionComparator();
@@ -47,6 +50,11 @@ final class DependenciesInfoSupport {
         return modules.stream().map(Object::toString).collect(Collectors.joining(","));
     }
 
+    /**
+     * Traverses a selected graph, including transitives, and emits its configuration entry.
+     * Retains only the configuration name so provider state does not capture a project
+     * or configuration. Unresolved edges fail the report instead of being omitted.
+     */
     static final class Notation implements Transformer<Map<String, String>, ResolvedComponentResult> {
         private final String configurationName;
 

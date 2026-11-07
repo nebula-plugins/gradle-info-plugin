@@ -169,8 +169,10 @@ creates an extra property on an otherwise unconfigured root. Apply the collector
 to the root to obtain the root view. Preexisting root report entries are retained
 for no-cache readers. Consumers that mutate the old shared map, expect every
 child's property to alias the root map, or read it with configuration cache must
-adopt project-local inputs and the report task outputs. These are observable
-compatibility changes and require a major-version release decision.
+adopt project-local inputs and the report task outputs. Existing collector and
+broker method signatures are retained, but these behavioral changes make this
+update backward incompatible for those consumers. Release it in a new major
+version unless the legacy behavior is restored.
 
 The collector/report path is verified on Gradle 7.5.1 with JDK 17 (ordinary
 configuration cache), and Gradle 8.14.3, 9.2.1, and 9.7.1 with strict Isolated

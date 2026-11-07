@@ -27,7 +27,36 @@ import org.gradle.api.attributes.Attribute
 import org.gradle.api.provider.MapProperty
 import org.gradle.util.GradleVersion
 
+/**
+ * Collects dependency observations and registers explicitly selected file reports.
+ *
+ * <p>Apply {@code com.netflix.nebula.info-dependencies} and the info broker in each
+ * participating project. The {@code dependencyInfo} extension is always registered;
+ * the report tasks and variant are registered when the broker is present, in either
+ * plugin application order. Applying the collector does not resolve configurations.
+ *
+ * <p>Without configuration cache, the root broker's {@code resolved-dependencies}
+ * report aggregates naturally resolved configurations. The legacy
+ * {@code nebulaInfoDependencies} extra property is a read-only aggregate on the root
+ * and a read-only local view on a participating child. Applying only to a child
+ * does not create this property on the root. These semantics differ from the former
+ * shared mutable root map; existing readers that mutate or rely on that alias must migrate.
+ *
+ * <p>With configuration cache, select inputs through {@link DependencyInfoExtension}
+ * and consume the {@code writeDependencyInfo} output, or the root-only
+ * {@code writeResolvedDependencies} aggregate. Legacy map evaluation fails because
+ * resolution callbacks are not replayed on cache reuse. Report tasks are independent
+ * of existing assemble, jar, manifest, and properties task dependencies.
+ *
+ * <p>This collector's explicit reporting path supports Isolated Projects. It does
+ * not establish isolation support for other collectors or the full info facade.
+ */
 class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
+    /**
+     * Registers project-local inputs and observes broker application without resolving dependencies.
+     *
+     * @param project project that owns the collector, extension, and local report task
+     */
     @Override
     void apply(Project project) {
         MapProperty<String, String> dependencies = project.objects.mapProperty(String, String).convention([:])
@@ -94,6 +123,7 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         }
     }
 
+    /** Tracks configuration identities so callbacks from removed or replaced instances are ignored. */
     private static void processProjectDependencies(Project project, MapProperty<String, String> dependencies) {
         Map<String, Long> activeConfigurations = Collections.synchronizedMap(new HashMap<String, Long>())
         def sequence = new java.util.concurrent.atomic.AtomicLong()
@@ -112,6 +142,7 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
         }*.moduleVersion)
     }
 
+    /** Records completed resolutions without retaining a Project or Configuration in callback state. */
     private static class CollectDependencies implements Action<ResolvableDependencies> {
         private final MapProperty<String, String> dependencies
         private final Map<String, Long> activeConfigurations
