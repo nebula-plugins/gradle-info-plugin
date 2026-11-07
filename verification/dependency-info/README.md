@@ -63,6 +63,9 @@ error guards. After repairing the locks, the full regular build passed 68 tests
 with four existing skips on JDK 21, with configuration cache enabled and
 dependency verification enforced. The test task was forced to execute using
 `./gradlew --stacktrace build test --rerun --configuration-cache-problems=fail`.
+The CI workflow also installs JDK 8 for the existing test that overrides the
+Java 17 project toolchain with a Java 8 compiler. Ubuntu 26.04 runners no longer
+provide JDK 8 by default; the test JVM matrix remains JDK 17, 21, and 25.
 
 | Consumer Gradle | Ordinary cache: cold and warm explicit reports | Strict Isolated Projects: cold and warm explicit reports |
 | --- | --- | --- |
