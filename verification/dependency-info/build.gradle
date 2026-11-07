@@ -1,0 +1,58 @@
+// Standalone collector verification, intentionally independent of the release/publishing facade.
+plugins {
+    id 'groovy'
+    id 'java-gradle-plugin'
+}
+
+repositories { mavenCentral() }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    implementation localGroovy()
+    testImplementation 'org.spockframework:spock-core:2.4-groovy-4.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.12.2'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir '../../src/main/java'
+            include 'nebula/plugin/info/dependencies/**'
+        }
+        groovy {
+            srcDir '../../src/main/groovy'
+            include 'nebula/plugin/info/dependencies/**'
+            include 'nebula/plugin/info/InfoBrokerPlugin.groovy'
+            include 'nebula/plugin/info/InfoBrokerPluginExtension.groovy'
+            include 'nebula/plugin/info/InfoCollectorPlugin.groovy'
+        }
+    }
+    test.groovy {
+        srcDir '../../src/test/groovy'
+        include 'nebula/plugin/info/dependency/DependenciesInfoIsolationSpec.groovy'
+    }
+}
+
+gradlePlugin {
+    plugins {
+        broker {
+            id = 'com.netflix.nebula.info-broker'
+            implementationClass = 'nebula.plugin.info.InfoBrokerPlugin'
+        }
+        collector {
+            id = 'com.netflix.nebula.info-dependencies'
+            implementationClass = 'nebula.plugin.info.dependencies.DependenciesInfoPlugin'
+        }
+    }
+}
+
+test {
+    useJUnitPlatform()
+    systemProperty 'dependencyInfo.gradleVersions', System.getProperty('dependencyInfo.gradleVersions', '7.5.1,9.2.1,9.7.1')
+    systemProperty 'dependencyInfo.testJavaHome', System.getProperty('dependencyInfo.testJavaHome', System.getProperty('java.home'))
+    testLogging { events 'passed', 'failed', 'skipped' }
+}
