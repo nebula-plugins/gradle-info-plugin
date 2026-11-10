@@ -27,11 +27,11 @@ import org.jspecify.annotations.NullMarked
 class UnknownScmProvider extends AbstractScmProvider {
 
     public static final String LOCAL = 'LOCAL'
-    private final Project project
+    private final String projectDirectory
 
     UnknownScmProvider(Project project, ProviderFactory providerFactory) {
         super(providerFactory)
-        this.project = project
+        this.projectDirectory = project.layout.projectDirectory.asFile.absolutePath
     }
 
     @Override
@@ -46,7 +46,8 @@ class UnknownScmProvider extends AbstractScmProvider {
 
     @Override
     Provider<String> source() {
-        return providerFactory.provider { project.layout.projectDirectory.asFile.absolutePath }
+        String directory = projectDirectory
+        return providerFactory.provider { directory }
     }
 
     @Override

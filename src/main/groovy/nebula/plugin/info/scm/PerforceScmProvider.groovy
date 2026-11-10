@@ -33,8 +33,12 @@ class PerforceScmProvider extends AbstractScmProvider {
     PerforceScmProvider(Project project, ProviderFactory providerFactory) {
         super(providerFactory)
         this.projectDir = project.layout.projectDirectory.asFile
-        configFile = providerFactory.environmentVariable("P4CONFIG").map {
-            findFile(project, it)
+        if (IsolatedScmSupport.enabled(providerFactory)) {
+            configFile = IsolatedScmSupport.perforceConfig(providerFactory, IsolatedScmSupport.projectDirectories(project))
+        } else {
+            configFile = providerFactory.environmentVariable("P4CONFIG").map {
+                findFile(project, it)
+            }
         }
     }
 

@@ -24,6 +24,18 @@ import org.gradle.api.provider.ProviderFactory
 
 import javax.inject.Inject
 
+/**
+ * Collects SCM metadata in the current project's {@code scminfo} extension.
+ *
+ * <p>With {@code nebula.info.isolatedProjectsSupport=true}, each project selects
+ * its own provider and owns its metadata. Discovery reads immutable directory
+ * identities along the logical project ancestry; root extension overrides are
+ * not inherited. Apply the plugin and any shared conventions locally.</p>
+ *
+ * <p>The flag defaults to false, preserving root-provider reuse. The isolated
+ * path requires Gradle 8.8 or newer and covers this collector, not every info
+ * facade or reporting plugin.</p>
+ */
 class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     static final String MODULE_SOURCE_PROPERTY = 'Module-Source'
     static final String MODULE_ORIGIN_PROPERTY = 'Module-Origin'
@@ -44,6 +56,11 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
     @Override
     void apply(Project project) {
         configureProviders(project)
+        if (IsolatedScmSupport.enabled(project.providers)) {
+            // Each project owns its provider and extension. Root overrides are not inherited.
+            configureWithScmProvider(project)
+            return
+        }
         if (project.rootProject == project) {
             configureWithScmProvider(project)
         } else if (project.rootProject != project) {
@@ -53,7 +70,7 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     /**
      * Creates a list of providers for support SCMs and selects based on current repository
-     * If a subproject applies the plugin and root project is already applied, we re-use the provider detection
+     * In legacy mode, reuses root provider detection when the root already applies this plugin.
      * @param project
      */
     private void configureProviders(Project project) {
@@ -135,14 +152,17 @@ class ScmInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
 
     /**
      * Returns a SCM provider based on project setup
-     * If we find an existing config in the root project, we re-use the provider to avoid calculating this multiple times
+     * In legacy mode, reuses an existing root provider. With isolation enabled,
+     * selects a project-local provider without reading another project's extensions.
      * @param project
      * @return
      */
     ScmInfoProvider findProvider(Project project) {
-        ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
-        if (scmInfoRootProjectExtension) {
-            return project.rootProject.plugins.findPlugin(ScmInfoPlugin).selectedProvider
+        if (!IsolatedScmSupport.enabled(project.providers)) {
+            ScmInfoExtension scmInfoRootProjectExtension = project.rootProject.extensions.findByType(ScmInfoExtension)
+            if (scmInfoRootProjectExtension) {
+                return project.rootProject.plugins.findPlugin(ScmInfoPlugin).selectedProvider
+            }
         }
 
         ScmInfoProvider provider = providers.find { it.supports() }
