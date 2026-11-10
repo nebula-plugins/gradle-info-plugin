@@ -93,7 +93,6 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
             def elements = project.configurations.create('nebulaDependencyInfoElements') {
                 it.canBeResolved = false
                 it.canBeConsumed = true
-                it.visible = false
                 it.attributes.attribute(Attribute.of('nebula.dependency-info', String), 'report')
             }
             project.artifacts.add(elements.name, report.flatMap { it.outputFile }) { it.builtBy(report) }
@@ -102,7 +101,6 @@ class DependenciesInfoPlugin implements Plugin<Project>, InfoCollectorPlugin {
                 def incoming = project.configurations.create('nebulaDependencyInfoReports') {
                     it.canBeResolved = true
                     it.canBeConsumed = false
-                    it.visible = false
                 }
                 paths.findAll { it != ':' }.each { path ->
                     project.dependencies.add(incoming.name, project.dependencies.project(path: path, configuration: elements.name))

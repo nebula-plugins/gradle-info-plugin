@@ -12,13 +12,40 @@ import java.util.zip.ZipOutputStream
 class DependenciesInfoIsolationSpec extends Specification {
     @TempDir File directory
 
-    private static final List<String> VERSIONS = System.getProperty('dependencyInfo.gradleVersions', '9.2.1,9.7.1').split(',').toList()
+    private static final List<String> VERSIONS = System.getProperty('dependencyInfo.gradleVersions', '9.2.1,9.7.1,9.8.2').split(',').toList()
     private static final String PLUGINS = '''
         plugins {
             id 'com.netflix.nebula.info-broker'
             id 'com.netflix.nebula.info-dependencies'
         }
     '''
+
+    def 'report configurations avoid deprecations on Gradle 9.8 with isolated=#isolated'() {
+        given:
+        fixture([':', ':alpha'], [])
+        Map expected = ['sample-dependencies': expectedDependencies('1.0'),
+                        'alpha-dependencies': expectedDependencies('1.0')]
+
+        when:
+        def cold = run('9.8.2', true, isolated, 'writeResolvedDependencies', '--warning-mode=fail')
+
+        then:
+        cold.task(':writeResolvedDependencies').outcome == TaskOutcome.SUCCESS
+        cold.output.contains('Configuration cache entry stored')
+        report(':') == expected
+
+        when:
+        deleteReports()
+        def warm = run('9.8.2', true, isolated, 'writeResolvedDependencies', '--warning-mode=fail')
+
+        then:
+        warm.output.contains('Reusing configuration cache')
+        warm.task(':writeResolvedDependencies').outcome == TaskOutcome.SUCCESS
+        report(':') == expected
+
+        where:
+        isolated << [false, true]
+    }
 
     def 'reports single sibling and nested participants with Gradle #version and isolated=#isolated'() {
         given:
