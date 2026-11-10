@@ -204,6 +204,49 @@ buildscript {
 }
 ```
 
+### Experimental isolated SCM collection
+
+Enable project-local SCM collection in the root `gradle.properties`:
+
+```properties
+nebula.info.isolatedProjectsSupport=true
+```
+
+Apply `com.netflix.nebula.info-scm` in each project that needs SCM metadata, usually
+through a project convention plugin. No settings plugin is required. The flag is
+false by default, retaining the existing root-provider and root-override inheritance.
+
+With the flag enabled, every project owns its `scminfo` extension and selects its
+own Git, Perforce, or local fallback provider. Root `scminfo` overrides no longer
+propagate to children. Configure shared overrides locally through conventions:
+
+```groovy
+plugins { id 'com.netflix.nebula.info-scm' }
+scminfo.origin.set('https://example.org/team/library.git')
+```
+
+Repository discovery searches the current project and its logical parents using
+Gradle's immutable `IsolatedProject.projectDirectory` view. It supports custom
+project directories, nested repositories, Git worktrees, and Perforce `P4CONFIG`
+files. It does not configure another project or retain a `Project` in SCM provider
+execution state. Perforce config contents and Git commands remain tracked provider
+inputs, so changed metadata is reflected with configuration-cache reuse.
+
+The isolated path requires Gradle 8.8 or newer; integration tests verify Gradle
+9.0.0 and 9.2.1 with parallel execution, strict configuration-cache checks, and
+cold/warm Isolated Projects builds. Enable Gradle's mode separately:
+
+```shell
+./gradlew <task-consuming-scminfo> -Dorg.gradle.unsafe.isolated-projects=true \
+  --configuration-cache --configuration-cache-problems=fail
+```
+
+This establishes support for the SCM collector's provider properties only. It does
+not establish support for the full `com.netflix.nebula.info` facade, CI collectors,
+arbitrary broker closures, or all reporter combinations. Consumers should wire
+`scminfo` providers into declared task inputs, rather than read extensions from
+task actions.
+
 info-owners (Collector)
 --------------
 ```

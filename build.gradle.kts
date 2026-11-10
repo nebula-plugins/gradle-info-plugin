@@ -56,6 +56,12 @@ testing {
     }
 }
 
+tasks.withType<Test>().configureEach {
+    systemProperty("scm.testJavaHome", javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }.get().metadata.installationPath.asFile.absolutePath)
+}
+
 gradlePlugin {
     plugins {
         create("info") {

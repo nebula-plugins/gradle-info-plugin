@@ -38,7 +38,10 @@ class GitScmProvider extends AbstractScmProvider {
         if (supports) {
             gitUtil = GitReadOnlyCommandUtil.create(gitDir.parentFile, providerFactory)
         } else {
-            gitUtil = GitReadOnlyCommandUtil.create(project.rootProject.layout.projectDirectory.asFile, providerFactory)
+            File rootDir = IsolatedScmSupport.enabled(providerFactory)
+                    ? IsolatedScmSupport.rootDirectory(project)
+                    : project.rootProject.layout.projectDirectory.asFile
+            gitUtil = GitReadOnlyCommandUtil.create(rootDir, providerFactory)
         }
         projectDir = project.layout.projectDirectory.asFile
     }
